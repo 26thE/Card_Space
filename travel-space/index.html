@@ -292,6 +292,81 @@
     border-radius:14px;padding:14px;margin-bottom:12px;animation:fade .3s}
   .share-panel .sp-h{font-size:14px;font-weight:700;color:#0A5A38;margin-bottom:4px}
   .share-panel .sp-b{font-size:12px;color:#0A5A38;line-height:1.6}
+  /* === 阶段0 小红书收藏夹 === */
+  .xhs-fav-head{display:flex;align-items:center;justify-content:space-between;padding:46px 18px 10px;flex-shrink:0}
+  .xhs-fav-share{border:none;background:#FF4F5E;color:#fff;border-radius:18px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+  .fav-list{display:flex;flex-direction:column;gap:10px}
+  .fav-item{display:flex;gap:12px;background:rgba(255,255,255,.95);border-radius:14px;padding:12px;align-items:center}
+  .fav-cover{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;background:linear-gradient(135deg,#FFE4E8,#FFF0F3)}
+  .fav-cover.skill{background:linear-gradient(135deg,#E4F0FF,#F0F6FF)}
+  .fav-body{flex:1;min-width:0}
+  .fav-body .ft{font-size:13px;font-weight:600;line-height:1.4}
+  .fav-body .fm{font-size:11px;color:var(--panel-sub);margin-top:3px}
+  .fav-tag{font-size:10px;padding:2px 7px;border-radius:8px;flex-shrink:0}
+  .fav-tag.guide{background:#FFE4E8;color:#CF2238}
+  .fav-tag.skill{background:#E4F0FF;color:#0A59F7}
+  .share-sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;padding:16px 18px 24px;z-index:38;animation:slide .3s}
+  .share-sheet .ss-h{font-size:14px;font-weight:700;text-align:center;margin-bottom:12px}
+  .share-sheet .ss-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--card-line);margin-bottom:8px;cursor:pointer}
+  .share-sheet .ss-row.xy{background:#E8EEFF}
+  .share-sheet .ss-ico{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;background:#fff;flex-shrink:0}
+  .share-sheet .ss-row b{font-size:14px}
+  .share-sheet .ss-row .mini{font-size:11px;color:var(--panel-sub)}
+  .share-sheet .ss-cancel{text-align:center;padding:12px;font-size:13px;color:var(--panel-sub);cursor:pointer}
+  .share-mask{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:37}
+  /* === 阶段1 对话列表 === */
+  .xy-list-head{padding:46px 18px 10px;flex-shrink:0}
+  .xy-list-head .fh-top{font-size:20px;font-weight:700;color:#1A1A1A}
+  .xy-search{background:rgba(255,255,255,.6);border-radius:12px;padding:9px 14px;font-size:13px;color:var(--panel-sub);margin-top:10px}
+  .conv-list{display:flex;flex-direction:column}
+  .conv{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.06);cursor:pointer;align-items:flex-start}
+  .conv-ico{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:linear-gradient(135deg,#0A59F7,#8A5CF6);color:#fff}
+  .conv-ico.detected{background:linear-gradient(135deg,#0A7A4A,#1D9E75)}
+  .conv-ico.xhs{background:linear-gradient(135deg,#FF4F5E,#FF7A8A)}
+  .conv-body{flex:1;min-width:0}
+  .conv-body .ct{font-size:14px;font-weight:600;line-height:1.4}
+  .conv-body .ct .badge{font-size:10px;background:#0A7A4A;color:#fff;padding:1px 6px;border-radius:6px;margin-left:6px;font-weight:600}
+  .conv-body .cm{font-size:12px;color:var(--panel-sub);margin-top:3px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .conv-time{font-size:10px;color:var(--panel-sub);flex-shrink:0}
+  .conv-dot{width:8px;height:8px;border-radius:50%;background:#FF4D6A;flex-shrink:0;align-self:center}
+  /* === 阶段2 总行程流水可编辑 === */
+  .flow-head2{padding:46px 18px 6px;flex-shrink:0}
+  .flow-head2 .fh-top{font-size:20px;font-weight:700;color:#1A1A1A}
+  .flow-head2 .fh-sub{font-size:12px;color:var(--panel-sub);margin-top:4px}
+  .tl-flow{display:flex;flex-direction:column;gap:10px}
+  .tl-day-card{background:rgba(255,255,255,.95);border-radius:14px;padding:12px}
+  .tl-day-card .tdc-h{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .tl-day-card .tdc-badge{background:var(--accent);color:#fff;border-radius:8px;padding:3px 9px;font-size:11px;font-weight:700}
+  .tl-day-card .tdc-date{font-size:11px;color:var(--panel-sub)}
+  .tl-day-card .tdc-theme{font-size:13px;font-weight:600;flex:1}
+  .tl-spot-row{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;background:var(--card-line);margin-bottom:6px;transition:all .25s}
+  .tl-spot-row:last-child{margin-bottom:0}
+  .tl-spot-row .tsr-ico{font-size:18px;flex-shrink:0}
+  .tl-spot-row .tsr-name{flex:1;font-size:13px;font-weight:500}
+  .tl-spot-row .tsr-time{font-size:11px;color:var(--panel-sub);flex-shrink:0}
+  .tl-spot-row .tsr-up,.tl-spot-row .tsr-dn{width:24px;height:24px;border-radius:6px;border:none;background:rgba(0,0,0,.06);color:var(--panel-sub);font-size:11px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .tl-spot-row .tsr-up:disabled,.tl-spot-row .tsr-dn:disabled{opacity:.3;cursor:not-allowed}
+  .tl-spot-row.moving{background:#FFF3D6;outline:1px dashed #EF9F27}
+  .tl-confirm-bar{padding:12px 0}
+  /* === 阶段4 拍照攻略卡 === */
+  .photo-pop{position:absolute;left:14px;right:14px;bottom:86px;z-index:39;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:slide .35s ease}
+  .photo-pop .pp-head{background:linear-gradient(135deg,#FF7A1A,#FFB02E);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+  .photo-pop .pp-head .pp-ico{font-size:24px}
+  .photo-pop .pp-head .pp-t{font-size:15px;font-weight:700}
+  .photo-pop .pp-head .pp-sub{font-size:11px;opacity:.9}
+  .photo-pop .pp-head .pp-close{margin-left:auto;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);border:none;color:#fff;font-size:14px;cursor:pointer}
+  .photo-pop .pp-body{padding:14px 16px;max-height:320px;overflow:auto}
+  .photo-pop .pp-sec{margin-bottom:14px}
+  .photo-pop .pp-sec:last-child{margin-bottom:0}
+  .photo-pop .pp-sec-h{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .photo-pop .pp-src{font-size:10px;background:#FFE4E8;color:#CF2238;padding:1px 6px;border-radius:6px}
+  .photo-pop .pp-src.xy{background:#E4F0FF;color:#0A59F7}
+  .photo-pop .pp-shot{display:flex;gap:10px;margin-bottom:8px}
+  .photo-pop .pp-shot .pps-cover{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#FFE4E8,#FFF0F3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .photo-pop .pp-shot .pps-txt{flex:1;font-size:12px;line-height:1.5}
+  .photo-pop .pp-shot .pps-txt b{font-size:13px}
+  .photo-pop .pp-shot .pps-txt .mini{font-size:11px;color:var(--panel-sub);margin-top:2px}
+  .photo-pop .pp-tip{font-size:11px;color:var(--panel-sub);background:var(--card-line);border-radius:8px;padding:8px 10px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -562,12 +637,12 @@ const floatTip=document.getElementById('floatTip');
 let mode='flow', fStep=0, fImport=null, fPhase='行前·准备';
 
 const FLOW=[
-  {title:'① 统一导入入口',hint:'打开「我的行程」。系统已被动识别你在筹备旅行，顶部亮出提示位。点「自规划识别」进入确认；也可试小艺 / 小红书两条路径，或点提示位旁看「弱信号示例」(P2)。'},
-  {title:'② 强信号·确认生成',hint:'系统把"看到"的证据摊开给你确认（日历 / 地图 / 短信）。点「确认生成」进入组装——也可点「这次不准」让系统 14 天冷却并回灌误触发样本。'},
-  {title:'③ 构建画布·组装预览',hint:'时间线主轴 + 环绕卡实时拼装。用小艺自然语言改行程（如输入「把玉龙雪山放到第2天」发送，画布会真实重排）。点「生成并完成」。'},
-  {title:'④ 使用态·多卡桌面',hint:'进入旅行期，桌面按阶段自动路由。点下方「阶段标签」切换（行前→出发→大理→丽江→返程），看卡片组合如何随阶段变化。'},
-  {title:'⑤ 点击卡片·详情页',hint:'点桌面任意卡片拉起详情页（整卡热区）。重点试「行程时间线」卡看 4 天总览；行李卡可在页内勾选编辑（合规：编辑在页不在卡）。'},
-  {title:'⑥ 复盘·沉淀偏好',hint:'返程后系统生成行程回眸与花费小结，邀请你打分沉淀，反哺下次识别权重。'}
+  {title:'① 小红书收藏夹',hint:'在小红书把攻略博文和skill博文加入收藏夹。点右上角「分享」→ 分享到小艺，触发后续行程生成。'},
+  {title:'② 小艺·对话列表',hint:'小艺对话列表里有多条对话：系统自动识别「已识别大理+丽江5.1-5.4」+ 从小红书导入的行程对话。点进任一条进入行程流水。'},
+  {title:'③ 总行程流水·确认',hint:'v1风格：总行程按天分开（Day1-Day4），每天展示导航顺序。可上下移动景点反复编辑每日顺序。满意后点「确认生成」。'},
+  {title:'④ 生成卡片空间',hint:'确认后生成多卡组合空间。按旅游阶段路由（行前/出发/大理/丽江/返程），点阶段标签切换看卡片组合变化。'},
+  {title:'⑤ 景点拍照攻略卡',hint:'基于位置围栏，到达景点（如玉龙雪山）时自动弹出拍照攻略卡：参考的小红书博文拍照机位 + 小艺自动搜索的拍照攻略。'},
+  {title:'⑥ 返程·复盘沉淀',hint:'返程后系统生成行程回眸与花费小结，邀请打分沉淀，反哺下次识别权重。'}
 ];
 
 function setMode(m){
@@ -583,21 +658,27 @@ function goStep(n){ if(n<0||n>=FLOW.length) return; renderStep(n); }
 function renderStep(i){
   fStep=i;
   renderWiz();
-  const k=i;
   floatTip.classList.remove('show');
-  if(k===3 || k===4){            // P5/P6：使用态桌面
+  closePhotoPop();
+  if(i===3){                  // ④ 卡片空间桌面
     flowEl.classList.remove('show');
     closePage();
     assemble(fPhase);
-    if(k===4) floatTip.classList.add('show');
-  } else {
-    closePage();
-    flowEl.classList.add('show');
-    if(k===0) flowBody.innerHTML=p1HTML();
-    else if(k===1) flowBody.innerHTML=p3HTML();
-    else if(k===2){ flowBody.innerHTML=p4HTML(); renderP4(); }
-    else if(k===5) flowBody.innerHTML=p7HTML();
+    return;
   }
+  if(i===4){                  // ⑤ 景点拍照卡（桌面+自动弹出）
+    flowEl.classList.remove('show');
+    closePage();
+    assemble('目的地·丽江');
+    setTimeout(showPhotoPop,700);
+    return;
+  }
+  closePage();
+  flowEl.classList.add('show');
+  if(i===0) flowBody.innerHTML=p0HTML();
+  else if(i===1) flowBody.innerHTML=p1HTML();
+  else if(i===2){ flowBody.innerHTML=p2HTML(); renderP2(); }
+  else if(i===5) flowBody.innerHTML=p7HTML();
 }
 function renderWiz(){
   const steps=FLOW.map((s,i)=>`<div class="ws ${i===fStep?'on':''} ${i<fStep?'done':''}">
@@ -621,26 +702,78 @@ function renderWiz(){
 }
 function setPhase(p){ fPhase=p; assemble(p); document.querySelectorAll('#wizPhases button').forEach(b=>b.classList.toggle('on',b.dataset.key===p)); }
 
-/* P1 统一导入入口 */
-function p1HTML(){
+/* P0 小红书收藏夹（独立全屏） */
+function p0HTML(){
   return `
-  <div class="flow-head">
-    <div class="fh-top">我的行程</div>
-    <div class="detect-tip" onclick="showWeak()">🟢 已识别你在筹备 · 大理+丽江 5/1–5/4<small>强信号 · 点我看「弱信号」示例场景</small></div>
+  <div class="xhs-fav-head">
+    <div class="fh-top">📕 我的收藏</div>
+    <button type="button" class="xhs-fav-share" onclick="openShareSheet()">分享</button>
   </div>
   <div class="flow-scroll">
-    <div class="imp-title">选择导入方式</div>
-    <div class="imp-card" onclick="pickImport('xiaoyi')"><div class="imp-ico">🤖</div><div><b>小艺语音规划</b><div class="mini">直接告诉小艺"帮我规划五一去大理丽江"</div></div></div>
-    <div class="imp-card" onclick="pickImport('xhs')"><div class="imp-ico">📕</div><div><b>小红书导入</b><div class="mini">导入博文 + skill 一键生成</div></div></div>
-    <div class="imp-card rec" onclick="pickImport('self')"><div class="imp-ico">🧭</div><div><b>自规划识别 · 推荐</b><div class="mini">系统已发现你的行程，无需手动</div></div></div>
-    <div id="weakSlot" style="position:relative"></div>
+    <div class="fav-list">
+      <div class="fav-item"><div class="fav-cover">🏔️</div><div class="fav-body"><div class="ft">大理丽江4天保姆级攻略｜附每日路线</div><div class="fm">收藏 2.3w · 含每日路线/美食/住宿</div></div><span class="fav-tag guide">攻略</span></div>
+      <div class="fav-item"><div class="fav-cover skill">📷</div><div class="fav-body"><div class="ft">玉龙雪山拍照机位·大索道4680m</div><div class="fm">skill · 拍照攻略 · 收藏 8.6k</div></div><span class="fav-tag skill">skill</span></div>
+      <div class="fav-item"><div class="fav-cover">🌊</div><div class="fav-body"><div class="ft">洱海环海骑行路线·喜洲到双廊</div><div class="fm">收藏 1.5w · 含租车/补给点</div></div><span class="fav-tag guide">攻略</span></div>
+      <div class="fav-item"><div class="fav-cover skill">🏨</div><div class="fav-body"><div class="ft">丽江束河古镇住宿·纳西庭院</div><div class="fm">skill · 住宿攻略 · 收藏 5.2k</div></div><span class="fav-tag skill">skill</span></div>
+      <div class="fav-item"><div class="fav-cover">🍜</div><div class="fav-body"><div class="ft">大理本地人吃的美食·不踩雷</div><div class="fm">收藏 3.1w · 含地址/人均</div></div><span class="fav-tag guide">攻略</span></div>
+    </div>
+    <div id="shareSlot"></div>
   </div>`;
 }
-function showWeak(){
-  const slot=document.getElementById('weakSlot');
-  if(!slot) return;
-  slot.innerHTML=`<div class="weak-toast">💡 弱信号示例：若系统只看到"搜过地图 / 刷过视频"等探索期信号，<b>只会轻提示</b>"帮你整理行程？"，不弹确认页、也不生成卡片，避免打扰。<span onclick="this.parentNode.remove()">✕</span></div>`;
+function openShareSheet(){
+  const slot=document.getElementById('shareSlot'); if(!slot) return;
+  slot.innerHTML=`<div class="share-mask" onclick="closeShareSheet()"></div>
+  <div class="share-sheet">
+    <div class="ss-h">分享到</div>
+    <div class="ss-row xy" onclick="shareToXiaoyi()"><div class="ss-ico">🤖</div><div><b>小艺</b><div class="mini">分享给小艺，自动生成行程</div></div></div>
+    <div class="ss-row" onclick="closeShareSheet()"><div class="ss-ico">💬</div><div><b>微信好友</b></div></div>
+    <div class="ss-row" onclick="closeShareSheet()"><div class="ss-ico">🔗</div><div><b>复制链接</b></div></div>
+    <div class="ss-cancel" onclick="closeShareSheet()">取消</div>
+  </div>`;
 }
+function closeShareSheet(){ const slot=document.getElementById('shareSlot'); if(slot) slot.innerHTML=''; }
+function shareToXiaoyi(){ closeShareSheet(); window.__importFrom='xhs'; goStep(1); }
+
+/* P1 小艺·对话列表（多对话：自动识别 + 小红书导入） */
+function p1HTML(){
+  const fromXhs = window.__importFrom==='xhs';
+  return `
+  <div class="xy-list-head">
+    <div class="fh-top">🤖 小艺</div>
+    <div class="xy-search">🔍 搜索对话</div>
+  </div>
+  <div class="flow-scroll">
+    <div class="conv-list">
+      <div class="conv" onclick="enterConv('self')">
+        <div class="conv-ico detected">🟢</div>
+        <div class="conv-body">
+          <div class="ct">已识别你在筹备大理+丽江 5.1-5.4<span class="badge">自动识别</span></div>
+          <div class="cm">系统从日历/地图/短信发现你的行程，点开确认</div>
+        </div>
+        <div class="conv-dot"></div>
+      </div>
+      <div class="conv" onclick="enterConv('xhs')">
+        <div class="conv-ico xhs">📕</div>
+        <div class="conv-body">
+          <div class="ct">${fromXhs?'从小红书分享的攻略':'大理丽江4天攻略'}</div>
+          <div class="cm">${fromXhs?'已接收5篇博文·解析为行程草稿':'导入博文+skill一键生成行程'}</div>
+        </div>
+        <div class="conv-time">${fromXhs?'刚刚':'昨天'}</div>
+      </div>
+      <div class="conv" onclick="enterConv('chat')">
+        <div class="conv-ico">💬</div>
+        <div class="conv-body"><div class="ct">日常对话</div><div class="cm">今天天气怎么样？</div></div>
+        <div class="conv-time">10:24</div>
+      </div>
+      <div class="conv" onclick="enterConv('chat')">
+        <div class="conv-ico">📝</div>
+        <div class="conv-body"><div class="ct">备忘</div><div class="cm">记得带防晒霜和氧气瓶</div></div>
+        <div class="conv-time">周一</div>
+      </div>
+    </div>
+  </div>`;
+}
+function enterConv(type){ window.__convType=type; window.__intent=parseIntent('大理丽江4天'); goStep(2); }
 /* === S1 真实交互：意图解析 + 模板 + 小红书解析 === */
 const XHS_SAMPLE=`大理丽江4天保姆级攻略｜附每日路线
 Day1 大理古城慢逛，傍晚洱海生态廊道看日落
@@ -811,87 +944,68 @@ function appendBubble(box, text, role){
   box.appendChild(b);
   const sc=box.parentElement; sc.scrollTop=sc.scrollHeight;
 }
-/* P3 强信号确认 */
-function p3HTML(){
-  const ev = fImport==='self'
-   ? `<div class="evidence"><div class="ev-h">📡 我们从这些地方发现你的行程</div>
-        <div class="ev-row">📅 日历：5/1–5/4 多日跨城日程</div>
-        <div class="ev-row">🗺️ 地图：近期高频搜索"大理 / 丽江"并收藏 POI</div>
-        <div class="ev-row">✉️ 短信：含东航航班号 + 客栈确认短信</div></div>`
-   : `<div class="evidence"><div class="ev-h">📥 导入来源</div>
-        <div class="ev-row">${fImport==='xiaoyi'?'🤖 小艺语音规划结果':'📕 小红书博文 + skill'}</div>
-        <div class="ev-row">已转换为统一「行程草稿」结构</div></div>`;
-  return `
-  <div class="flow-head"><div class="fh-top">确认行程</div></div>
-  <div class="flow-scroll">
-    ${ev}
-    <div class="draft-card">
-      <div class="dc-h">草稿预览</div>
-      <div class="dc-line">🗺️ 行程时间线（主轴）· 4 天 大理 + 丽江</div>
-      <div class="dc-grid">${['✈️大交通','🏨客栈','🧳行李','📸景点','⛅天气','🍜美食','🧭地图','💰预算'].map(x=>`<span class="dc-chip">${x}</span>`).join('')}</div>
-    </div>
-    <div class="gen-btn primary" onclick="goStep(2)">确认生成 →</div>
-    <div class="weak-link" onclick="markWrong()">这次不准（14 天冷却 + 回灌误触发）</div>
-  </div>`;
-}
-function markWrong(){
-  flowBody.innerHTML=`<div class="flow-head"><div class="fh-top">已记录</div></div>
-    <div class="flow-scroll"><div class="bubble ai">已标记为误触发 ✓ 该目的地 14 天内不再主动提示，并回灌校准样本优化阈值。</div>
-    <div class="gen-btn" onclick="goStep(0)">返回入口</div></div>`;
-}
-/* P4 构建画布（可重排时间线 + 自然语言改行程） */
-function p4HTML(){
+/* P2 总行程流水·可编辑确认（v1 风格按天流水） */
+function p2HTML(){
   const intent=window.__intent||parseIntent('大理丽江4天');
   const days=intent.days;
-  const spotsByDay=[null]; for(let d=1;d<=days;d++) spotsByDay[d]=[];
-  intent.tpl.spots.forEach((s,i)=> spotsByDay[(i%days)+1].push(s));
-  window.__p4={spotsByDay,days,intent};
+  if(!window.__p2 || window.__p2.days!==days){
+    const spotsByDay=[null];
+    for(let d=1;d<=days;d++) spotsByDay[d]=[];
+    intent.tpl.spots.forEach((s,i)=> spotsByDay[(i%days)+1].push({name:s,ico:spotIco(s),time:spotTime(i)}));
+    window.__p2={spotsByDay,days,intent};
+  }
   return `
-  <div class="flow-head"><div class="fh-top">构建画布</div></div>
-  <div class="flow-scroll">
-    <div class="p4-tl" id="p4TL"></div>
-    <div class="xiao-input">🤖 小艺：<input id="xiaoCmd" placeholder='如 "把玉龙雪山放到第2天" / "删除蓝月谷" / "添加丽江千古情到第3天"' style="flex:1;border:none;background:transparent;font-size:13px;outline:none;color:#333" onkeydown="if(event.key==='Enter')aiEdit()"> <button type="button" onclick="aiEdit()">发送</button></div>
-    <div class="p4-cmd-log" id="p4Log">💡 试试：把玉龙雪山放到第2天</div>
-    <div class="gen-btn primary" onclick="goStep(3)">生成并完成 →</div>
+  <div class="flow-head2">
+    <div class="fh-top">总行程流水</div>
+    <div class="fh-sub">${intent.tpl.title} · ${days}天 · 确认每日导航顺序</div>
+  </div>
+  <div class="flow-scroll" style="padding-bottom:80px">
+    <div class="tl-flow" id="tlFlow"></div>
+    <div class="tl-confirm-bar"><div class="gen-btn primary" onclick="confirmFlow()">确认生成卡片空间 →</div></div>
   </div>`;
 }
-function renderP4(){
-  const st=window.__p4; if(!st) return;
-  const tl=document.getElementById('p4TL'); if(!tl) return;
-  tl.innerHTML=`<div class="cv-hero">🗺️ 行程时间线（主轴）· ${st.intent.tpl.title} · ${st.days}天</div>`+
-    Array.from({length:st.days},(_,i)=>i+1).map(d=>{
-      const arr=st.spotsByDay[d]||[];
-      return `<div class="p4-day"><div class="p4-day-h"><span class="dnum">D${d}</span> Day ${d}</div>
-        <div class="p4-spots">${arr.length?arr.map(s=>`<span class="p4-spot" data-spot="${s}">${s}</span>`).join(''):'<span class="mini" style="color:#aaa">（空）</span>'}</div></div>`;
-    }).join('');
+function spotIco(name){
+  if(/雪山/.test(name)) return '🏔️';
+  if(/洱海|海/.test(name)) return '🌊';
+  if(/古城/.test(name)) return '🏮';
+  if(/喜洲|田园/.test(name)) return '🌿';
+  if(/双廊/.test(name)) return '🏖️';
+  if(/蓝月/.test(name)) return '💎';
+  if(/束河/.test(name)) return '🏡';
+  if(/四方/.test(name)) return '🏮';
+  return '📸';
 }
-function aiEdit(){
-  const inp=document.getElementById('xiaoCmd'); if(!inp) return;
-  const cmd=inp.value.trim(); if(!cmd) return;
-  const st=window.__p4; const log=document.getElementById('p4Log');
-  let msg='';
-  const m1=cmd.match(/把(.+?)放到第?(\d)\s*天/);
-  if(m1){
-    const spot=m1[1].trim(), day=parseInt(m1[2]);
-    let found=false;
-    for(let d=1;d<=st.days;d++){
-      const before=st.spotsByDay[d].length;
-      st.spotsByDay[d]=st.spotsByDay[d].filter(s=>!(s.includes(spot)||spot.includes(s)));
-      if(st.spotsByDay[d].length<before) found=true;
-    }
-    if(day>=1&&day<=st.days){ st.spotsByDay[day].push(spot); msg=found?`✓ 已将「${spot}」移动到 Day${day}`:`✓ 已添加「${spot}」到 Day${day}`; }
-    else msg=`⚠ 第${day}天无效（共${st.days}天）`;
-  } else if(/删除|去掉|移除/.test(cmd)){
-    const m2=cmd.match(/(?:删除|去掉|移除)(.+)/);
-    if(m2){ const spot=m2[1].trim(); let n=0; for(let d=1;d<=st.days;d++){ const b=st.spotsByDay[d].length; st.spotsByDay[d]=st.spotsByDay[d].filter(s=>!(s.includes(spot)||spot.includes(s))); n+=b-st.spotsByDay[d].length; } msg=n?`✓ 已删除「${spot}」（${n}处）`:`⚠ 未找到「${spot}」`; }
-  } else if(/添加|加/.test(cmd)){
-    const m3=cmd.match(/(?:添加|加)(.+?)(?:到|至)?\s*第?(\d)?\s*天?$/);
-    if(m3){ const spot=m3[1].trim(); const day=m3[2]?parseInt(m3[2]):1; if(day>=1&&day<=st.days){ st.spotsByDay[day].push(spot); msg=`✓ 已添加「${spot}」到 Day${day}`; } else msg=`⚠ 第${day}天无效`; }
-  } else { msg=`⚠ 暂不支持，试试"把X放到第Y天" / "删除X" / "添加X到第Y天"`; }
-  inp.value=''; renderP4();
-  setTimeout(()=>{ document.querySelectorAll('.p4-spot').forEach(s=>{ if(s.dataset.spot&&cmd.includes(s.dataset.spot)) s.classList.add('moved'); }); },40);
-  if(log){ log.textContent=msg; log.style.color=msg.startsWith('⚠')?'#d33':'#0A7A4A'; }
+function spotTime(i){ const t=['09:00','11:00','14:00','16:00','19:00']; return t[i%t.length]; }
+function renderP2(){
+  const st=window.__p2; if(!st) return;
+  const box=document.getElementById('tlFlow'); if(!box) return;
+  box.innerHTML=Array.from({length:st.days},(_,i)=>i+1).map(d=>{
+    const arr=st.spotsByDay[d]||[];
+    return `<div class="tl-day-card">
+      <div class="tdc-h">
+        <span class="tdc-badge">Day ${d}</span>
+        <span class="tdc-date">5/${d} · ${d<=2?'大理':'丽江'}</span>
+        <span class="tdc-theme">${st.intent.tpl.themes[d-1]||'自由安排'}</span>
+      </div>
+      ${arr.length?arr.map((s,i)=>`<div class="tl-spot-row" data-d="${d}" data-i="${i}">
+        <span class="tsr-ico">${s.ico}</span>
+        <span class="tsr-name">${s.name}</span>
+        <span class="tsr-time">${s.time}</span>
+        <button type="button" class="tsr-up" onclick="moveSpot(${d},${i},-1)" ${i===0?'disabled':''}>▲</button>
+        <button type="button" class="tsr-dn" onclick="moveSpot(${d},${i},1)" ${i===arr.length-1?'disabled':''}>▼</button>
+      </div>`).join(''):'<div class="mini" style="color:#aaa;padding:8px">（空）</div>'}
+    </div>`;
+  }).join('');
 }
+function moveSpot(d,i,dir){
+  const st=window.__p2; const arr=st.spotsByDay[d];
+  const j=i+dir;
+  if(j<0||j>=arr.length) return;
+  [arr[i],arr[j]]=[arr[j],arr[i]];
+  renderP2();
+  setTimeout(()=>{ const rows=document.querySelectorAll('.tl-spot-row[data-d="'+d+'"]'); const row=rows[j]; if(row){ row.classList.add('moving'); setTimeout(()=>row.classList.remove('moving'),600);} },20);
+}
+function confirmFlow(){ goStep(3); }
 /* P7 复盘沉淀（星标可点选 + 分享成功态） */
 let starVal=0;
 function p7HTML(){
@@ -934,6 +1048,32 @@ function shareTrip(){
   if(review) review.after(panel); else sc.prepend(panel);
   sc.scrollTop=sc.scrollHeight;
 }
+
+/* P5 景点拍照攻略卡（到达景点自动弹出） */
+function showPhotoPop(){
+  if(document.getElementById('photoPop')) return;
+  const pop=document.createElement('div'); pop.className='photo-pop'; pop.id='photoPop';
+  pop.innerHTML=`
+    <div class="pp-head">
+      <div class="pp-ico">🏔️</div>
+      <div><div class="pp-t">玉龙雪山·拍照攻略</div><div class="pp-sub">📍 已到达景点 · 自动为你整理</div></div>
+      <button type="button" class="pp-close" onclick="closePhotoPop()">✕</button>
+    </div>
+    <div class="pp-body">
+      <div class="pp-sec">
+        <div class="pp-sec-h">📷 来自你收藏的小红书博文 <span class="pp-src">小红书</span></div>
+        <div class="pp-shot"><div class="pps-cover">📸</div><div class="pps-txt"><b>大索道4680m·雪山全景机位</b><div class="mini">上午9-11点光线最佳·云海概率高</div></div></div>
+        <div class="pp-shot"><div class="pps-cover">🤳</div><div class="pps-txt"><b>蓝月谷倒影·人像机位</b><div class="mini">下午2-4点·Tiffany蓝水面反光</div></div></div>
+      </div>
+      <div class="pp-sec">
+        <div class="pp-sec-h">🔍 小艺实时搜索 <span class="pp-src xy">小艺</span></div>
+        <div class="pp-shot"><div class="pps-cover">❄️</div><div class="pps-txt"><b>今日雪山实况</b><div class="mini">气温-5°·能见度极佳·建议租羽绒服</div></div></div>
+        <div class="pp-tip">💡 小艺提示：山顶紫外线极强，记得涂防晒SPF50+，氧气瓶每瓶吸30秒间隔使用。</div>
+      </div>
+    </div>`;
+  const screen=document.querySelector('.screen'); if(screen) screen.appendChild(pop);
+}
+function closePhotoPop(){ const p=document.getElementById('photoPop'); if(p) p.remove(); }
 
 /* 初始：进入全流程体验（默认推荐） */
 assemble('行前·准备');
