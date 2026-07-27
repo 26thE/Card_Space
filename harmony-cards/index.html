@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鸿蒙 NEXT 卡片系统 · 多场景 + 自动组装引擎</title>
+<style>
+  :root{
+    --card-bg:#FFFFFF; --card-text:#1A1A1A; --card-sub:#8A8A8A; --card-line:#F0F0F0;
+    --page-bg:#F5F6FA; --panel-bg:#FFFFFF; --panel-text:#1A1A1A; --panel-sub:#6B6B6B;
+    --accent:#0A59F7; --wall1:#DCE7FF; --wall2:#ECE3FF; --wall3:#E6F4FF;
+  }
+  [data-theme="dark"]{
+    --card-bg:#2E3033; --card-text:#E8E8E8; --card-sub:#9A9A9A; --card-line:#3A3D42;
+    --page-bg:#1A1B1E; --panel-bg:#26282B; --panel-text:#E8E8E8; --panel-sub:#9A9A9A;
+    --wall1:#1B2440; --wall2:#2A1F40; --wall3:#10283A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:"HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--page-bg);color:var(--panel-text);display:flex;justify-content:center;
+    gap:28px;padding:28px;flex-wrap:wrap;align-items:flex-start}
+  /* ---- 控制台（卡片自动组装 Skill）---- */
+  .console{width:340px;background:var(--panel-bg);border-radius:20px;padding:20px;
+    box-shadow:0 8px 30px rgba(0,0,0,.08)}
+  .console h1{font-size:18px;font-weight:700;margin-bottom:2px}
+  .console .sub{font-size:12px;color:var(--panel-sub);margin-bottom:16px;line-height:1.5}
+  .seg-label{font-size:12px;color:var(--panel-sub);margin:14px 0 8px;font-weight:600}
+  .scn-btns{display:flex;flex-wrap:wrap;gap:8px}
+  .scn-btns button{border:1px solid var(--card-line);background:transparent;color:var(--panel-text);
+    padding:8px 12px;border-radius:12px;font-size:13px;cursor:pointer;transition:.2s;font-family:inherit}
+  .scn-btns button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .signals{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .chip{font-size:11px;background:var(--card-line);color:var(--panel-sub);padding:4px 9px;border-radius:20px}
+  .recipe{background:var(--card-line);border-radius:12px;padding:12px;font-size:12px;
+    color:var(--panel-sub);line-height:1.7;margin-top:6px}
+  .recipe b{color:var(--panel-text)}
+  .compliance{margin-top:16px;font-size:11px;color:var(--panel-sub);line-height:1.7;
+    border-top:1px dashed var(--card-line);padding-top:12px}
+  .compliance b{color:#0A7A4A}
+  .toggle{margin-top:14px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--panel-sub)}
+  /* ---- 手机 ---- */
+  .phone{width:384px;height:832px;background:#1c1c1e;border-radius:46px;padding:11px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;flex-shrink:0}
+  .screen{width:362px;height:810px;border-radius:36px;overflow:hidden;position:relative;
+    background:linear-gradient(165deg,var(--wall1),var(--wall2) 55%,var(--wall3));
+    display:flex;flex-direction:column}
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:10px;height:10px;
+    border-radius:50%;background:#000;z-index:30}
+  .statusbar{height:40px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;font-size:14px;font-weight:600;color:#fff;z-index:20;flex-shrink:0}
+  .statusbar .right{display:flex;align-items:center;gap:6px;font-size:12px}
+  .capsule{display:none;height:24px;background:rgba(0,0,0,.78);color:#fff;border-radius:12px;
+    align-items:center;gap:6px;padding:0 12px;font-size:11px;margin:0 14px 4px;flex-shrink:0}
+  .capsule.show{display:flex;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  /* 桌面：4 列、固定方格 74px、7 行上限、绝不溢出 */
+  .desktop{flex:1;display:grid;grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:74px;gap:9px;padding:14px;align-content:start;overflow:hidden}
+  .dock{height:64px;margin:4px 14px 14px;border-radius:24px;background:rgba(255,255,255,.25);
+    backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;flex-shrink:0}
+  .dock .d{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;
+    justify-content:center;font-size:22px;background:rgba(255,255,255,.85)}
+  /* ---- 卡片 ---- */
+  .card{background:var(--card-bg);border-radius:22px;padding:12px;color:var(--card-text);
+    box-shadow:0 4px 14px rgba(0,0,0,.10);display:flex;flex-direction:column;overflow:hidden;
+    cursor:pointer;transition:transform .15s,box-shadow .15s;animation:pop .35s ease;position:relative}
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.14)}
+  .card.s2x2{grid-column:span 2;grid-row:span 2;border-radius:18px;padding:10px}
+  .card.s2x4{grid-column:span 4;grid-row:span 2}
+  .card.s4x4{grid-column:span 4;grid-row:span 4}
+  @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+  .head{display:flex;align-items:center;gap:8px}
+  .app-ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
+  .s2x2 .app-ico{width:22px;height:22px;font-size:13px;border-radius:7px}
+  .htext .svc{font-size:11px;color:var(--card-sub);line-height:1.1}
+  .htext .nm{font-size:13px;font-weight:600;line-height:1.2}
+  .s2x2 .htext .nm{font-size:12px}
+  .body{flex:1;margin-top:8px;display:flex;flex-direction:column;gap:6px;min-height:0}
+  /* 健身 4x4 详情 */
+  .row{display:flex;align-items:center;gap:8px;font-size:12px}
+  .dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+  .row .act{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .mt{color:var(--card-sub);font-size:11px;flex-shrink:0}
+  .pbar{height:6px;border-radius:3px;background:var(--card-line);overflow:hidden;margin-top:2px}
+  .pbar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#FF7A1A,#FFB02E)}
+  .big{font-size:30px;font-weight:700;line-height:1}
+  .cta{margin-top:auto;background:var(--card-text);color:var(--card-bg);border:none;
+    border-radius:12px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+  .mini{font-size:11px;color:var(--card-sub)}
+  /* 追更/理财 2x4 行 */
+  .li{display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--card-line)}
+  .li:last-child{border-bottom:none}
+  .li .t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .li .v{color:var(--card-sub);font-size:11px;flex-shrink:0}
+  .tag{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--card-line);color:var(--card-sub)}
+  /* 详情页（合规编辑位，非卡片内） */
+  .page{position:absolute;inset:0;background:var(--card-bg);z-index:40;display:none;
+    flex-direction:column;animation:slide .3s ease}
+  .page.show{display:flex}
+  @keyframes slide{from{transform:translateY(20px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  .pbar-top{height:44px;display:flex;align-items:center;gap:10px;padding:0 16px;flex-shrink:0}
+  .back{border:none;background:var(--card-line);width:30px;height:30px;border-radius:50%;
+    font-size:15px;cursor:pointer;color:var(--card-text)}
+  .pbody{flex:1;padding:16px;overflow:auto}
+  .ptitle{font-size:20px;font-weight:700;margin-bottom:4px}
+  .pedit-hint{font-size:12px;color:var(--card-sub);margin:14px 0 8px}
+  .pedit-row{display:flex;gap:8px;margin-bottom:8px}
+  .pedit-row input{flex:1;border:1px solid var(--card-line);border-radius:10px;padding:8px;
+    font-size:13px;font-family:inherit;background:transparent;color:var(--card-text)}
+  .pedit-row button{border:none;background:var(--accent);color:#fff;border-radius:10px;
+    padding:0 14px;font-size:13px;cursor:pointer;font-family:inherit}
+  .plist .pitem{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--card-line);font-size:14px}
+  .chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--card-line);flex-shrink:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+  .chk.on{background:#0A7A4A;border-color:#0A7A4A}
+  .pitem.done .txt{text-decoration:line-through;color:var(--card-sub)}
+  .pitem .del{border:none;background:transparent;color:#d33;font-size:16px;cursor:pointer;margin-left:auto}
+  .pnote{font-size:11px;color:var(--card-sub);margin-top:14px;line-height:1.6}
+</style>
+</head>
+<body>
+  <!-- ============ 卡片自动组装 Skill 控制台 ============ -->
+  <div class="console">
+    <h1>卡片自动组装引擎</h1>
+    <div class="sub">意图路由 Skill：读取时空+健康+日历信号，自动拼装当下一屏的卡片组合。这是应用自绘做不到的「系统级编排」。</div>
+
+    <div class="seg-label">① 选择场景（演示意图路由）</div>
+    <div class="scn-btns" id="scnBtns"></div>
+
+    <div class="seg-label">② 当前信号（系统实时读取）</div>
+    <div class="signals" id="signals"></div>
+
+    <div class="seg-label">③ 组装配方（Skill 输出）</div>
+    <div class="recipe" id="recipe"></div>
+
+    <div class="toggle"><input type="checkbox" id="themeTgl"> 深色模式（卡片需适配 Dark #2E3033）</div>
+
+    <div class="compliance">
+      <b>✓ 合规要点</b><br>
+      · 卡片内无长按/滑动/二级菜单，编辑在「详情页」(Page) 完成<br>
+      · 卡片为独立沙箱，不直连网络；实时数据由 FormExtensionAbility 经 updateForm()/dataProxy 推送<br>
+      · 刷新以 30 分钟为单位；秒级进度需主动推送<br>
+      · 整卡为热区，点击一步直达元服务页<br>
+      · 上架必带 2×2；本系统同时提供 2×2 摘要 + 4×4 完整<br>
+      · <b>每屏严格落在 7 行网格内，零溢出</b>
+    </div>
+  </div>
+
+  <!-- ============ 鸿蒙直板机 ============ -->
+  <div class="phone">
+    <div class="screen">
+      <div class="notch"></div>
+      <div class="statusbar">
+        <span id="clk">9:41</span>
+        <span class="right">5G ▪ ▪ ▪ 100%</span>
+      </div>
+      <div class="capsule" id="capsule">🏋️ 健身中 · 第2组卧推</div>
+      <div class="desktop" id="desktop"></div>
+      <div class="dock">
+        <div class="d">📞</div><div class="d">💬</div><div class="d">🌐</div><div class="d">🎵</div>
+      </div>
+
+      <!-- 详情页（合规编辑位） -->
+      <div class="page" id="page">
+        <div class="pbar-top">
+          <button class="back" onclick="closePage()">‹</button>
+          <div>
+            <div class="svc" id="pSvc" style="font-size:11px;color:var(--card-sub)"></div>
+            <div id="pName" style="font-size:15px;font-weight:600"></div>
+          </div>
+        </div>
+        <div class="pbody" id="pBody"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===== 卡片数据模型（按鸿蒙 NEXT 规范：干净留白、左对齐、12vp 边距、大数字/进度条）===== */
+const C = {
+  fitness:{svc:"小肌·健身",nm:"今日训练",ico:"💪",ac:"#FF7A1A",
+    body:(size)=> size==='s4x4'
+      ? `<div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">力量 · 卧推 4×8</span><span class="mt">45′</span></div>
+         <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">有氧 · 跑步</span><span class="mt">30′</span></div>
+         <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">饮食 · 蛋白 180g</span><span class="mt">2200k</span></div>
+         <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">恢复 · 拉伸</span><span class="mt">15′</span></div>
+         <div class="mini" style="margin-top:4px">今日完成 2/4 · 训练 95′</div>
+         <div class="pbar"><i style="width:50%"></i></div>
+         <button class="cta" onclick="event.stopPropagation();openPage('fitness')">开始训练</button>`
+      : size==='s2x4'
+      ? `<div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">力量 · 卧推 4×8</span><span class="mt">45′</span></div>
+         <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">有氧 · 跑步</span><span class="mt">30′</span></div>
+         <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">饮食 · 蛋白 180g</span><span class="mt">2200k</span></div>
+         <div class="pbar"><i style="width:50%"></i></div>
+         <div class="mini">恢复·拉伸 15′ · 完成 2/4 · 95′ ›</div>`
+      : `<div class="mini">今日训练</div>
+         <div class="big" style="font-size:22px">2/4</div>
+         <div class="mini">已完成 · 95′</div>
+         <div class="pbar"><i style="width:50%"></i></div>
+         <button class="cta" onclick="event.stopPropagation();openPage('fitness')">查看计划</button>`},
+  track:{svc:"追剧喵",nm:"我的追更",ico:"📺",ac:"#FF4D6A",
+    body:()=>`<div class="li"><span>🎬</span><span class="t">《繁花》更新第12集</span><span class="v">续看 70%</span></div>
+      <div class="li"><span>🎬</span><span class="t">《庆余年3》预告</span><span class="tag">看预告</span></div>`},
+  study:{svc:"每日一词",nm:"单词打卡",ico:"📚",ac:"#0A59F7",
+    body:()=>`<div class="big">30<span style="font-size:14px;font-weight:400;color:var(--card-sub)"> 天</span></div>
+      <div class="mini">已坚持 · 今日 20/20 ✓</div>
+      <button class="cta" onclick="event.stopPropagation();openPage('study')">复习</button>`},
+  fund:{svc:"我的持仓",nm:"基金收益",ico:"💰",ac:"#00B578",
+    body:()=>`<div class="li"><span>📈</span><span class="t">今日预估</span><span class="v" style="color:#0A7A4A">+¥38.20</span></div>
+      <div class="li"><span>🟢</span><span class="t">华宝芯片 +1.2%</span><span class="v">东财通信 +0.8%</span></div>
+      <div class="li"><span>🔴</span><span class="t">天弘红利 -0.3%</span><span class="tag">详情</span></div>`},
+  express:{svc:"快递",nm:"物流",ico:"📦",ac:"#0091FF",
+    body:()=>`<div class="big" style="font-size:20px">派送中</div>
+      <div class="mini">顺丰 · 预计 14:30 送达</div>
+      <button class="cta" onclick="event.stopPropagation();openPage('express')">查看</button>`},
+  med:{svc:"健康",nm:"用药提醒",ico:"💊",ac:"#8A5CF6",
+    body:()=>`<div class="big" style="font-size:20px">该服药</div>
+      <div class="mini">降压药 · 09:00 早间</div>
+      <button class="cta" onclick="event.stopPropagation();openPage('med')">已服用</button>`},
+  weather:{svc:"天气",nm:"今日",ico:"⛅",ac:"#0A59F7",
+    body:()=>`<div class="big" style="font-size:28px">26°</div>
+      <div class="mini">多云 · 良 空气</div>`},
+  music:{svc:"音乐",nm:"正在播放",ico:"🎵",ac:"#FF4D6A",
+    body:()=>`<div class="mini" style="margin-top:2px">▶ 跑步律动</div>
+      <div class="big" style="font-size:16px;margin-top:6px">燃脂歌单</div>`},
+  calendar:{svc:"日历",nm:"今日日程",ico:"📅",ac:"#0A59F7",
+    body:()=>`<div class="big" style="font-size:18px">18:30</div>
+      <div class="mini">健身房 · 训练</div>`},
+  read:{svc:"阅读",nm:"书架",ico:"📖",ac:"#0A59F7",
+    body:()=>`<div class="big" style="font-size:18px">第 12 章</div>
+      <div class="mini">《认知觉醒》</div>`},
+  sleep:{svc:"助眠",nm:"睡眠",ico:"🌙",ac:"#8A5CF6",
+    body:()=>`<div class="big" style="font-size:18px">7.2h</div>
+      <div class="mini">昨夜睡眠 · 良好</div>`},
+};
+
+/* ===== 场景 → 卡片组合（意图路由 Skill 的输出）=====
+   每张卡显式声明 [id, 尺寸]，并确保整屏落在 7 行网格内、不溢出。
+   尺寸: s2x2(2×2方格) / s2x4(整行2行) / s4x4(整行4行) */
+const SCEN = {
+  "居家晨间":{sig:["🕖 07:30","🏠 在家","😴 睡眠良"],cap:false,
+    cards:[["weather","s2x2"],["study","s2x2"],["fitness","s2x4"],["music","s2x2"],["fund","s2x2"]],
+    recipe:"睡眠良 → 顶部天气+学习，中部健身 2×4 宽卡计划，底部音乐+基金概览（共 6 行）"},
+  "通勤中":{sig:["🕗 08:30","🚇 地铁","🎧 降噪"],cap:false,
+    cards:[["calendar","s2x2"],["music","s2x2"],["express","s2x2"],["study","s2x2"],["fund","s2x4"]],
+    recipe:"通勤 → 日历/音乐/快递/学习四小张，底部基金 2×4 整行概览（共 6 行）"},
+  "到店健身":{sig:["🕔 18:30","🏋️ 健身房","💓 心率正常"],cap:true,
+    cards:[["fitness","s4x4"],["music","s2x2"],["calendar","s2x2"]],
+    recipe:"地理围栏入店 → 健身 4×4 占满首屏 + 实况窗胶囊，下方音乐+日历两小张（共 6 行）"},
+  "晚间复盘":{sig:["🕘 21:00","🛋️ 在家","📺 休闲"],cap:false,
+    cards:[["fitness","s2x2"],["read","s2x2"],["track","s2x4"],["fund","s2x2"],["sleep","s2x2"]],
+    recipe:"晚间 → 健身 2×2 周复盘 + 阅读，中部追更 2×4，底部基金+睡眠"},
+  "睡前":{sig:["🕚 23:00","🛏️ 卧室","🌙 助眠"],cap:false,
+    cards:[["sleep","s2x2"],["read","s2x2"],["med","s2x2"],["fitness","s2x2"],["fund","s2x4"]],
+    recipe:"睡前 → 助眠+阅读+用药三小张，健身 2×2 预承诺，底部基金 2×4"},
+};
+
+/* ===== 渲染 ===== */
+const desk = document.getElementById('desktop');
+function assemble(key){
+  const s = SCEN[key];
+  desk.innerHTML='';
+  s.cards.forEach(([id,size])=>{
+    const c=C[id];
+    const el=document.createElement('div');
+    el.className='card '+size;
+    el.style.animationDelay=Math.random()*.12+'s';
+    el.onclick=()=>openPage(id);
+    el.innerHTML=`<div class="head"><div class="app-ico" style="background:${c.ac}">${c.ico}</div>
+      <div class="htext"><div class="svc">${c.svc}</div><div class="nm">${c.nm}</div></div></div>
+      <div class="body">${c.body(size)}</div>`;
+    desk.appendChild(el);
+  });
+  document.getElementById('signals').innerHTML=s.sig.map(x=>`<span class="chip">${x}</span>`).join('');
+  document.getElementById('recipe').innerHTML=`<b>${key}</b><br>${s.recipe}`;
+  document.getElementById('capsule').classList.toggle('show',s.cap);
+  [...document.querySelectorAll('#scnBtns button')].forEach(b=>b.classList.toggle('on',b.textContent===key));
+}
+
+document.getElementById('scnBtns').innerHTML=Object.keys(SCEN).map(k=>`<button onclick="assemble('${k}')">${k}</button>`).join('');
+assemble('居家晨间');
+
+/* ===== 详情页（合规：编辑在 Page，不在卡片内）===== */
+let editState={fitness:[['力量','卧推 4×8','45′',false],['有氧','跑步','30′',true],['饮食','蛋白 180g','2200k',false],['恢复','拉伸','15′',false]]};
+function openPage(id){
+  const c=C[id];
+  document.getElementById('pSvc').textContent=c.svc;
+  document.getElementById('pName').textContent=c.nm;
+  let h='';
+  if(id==='fitness'){
+    h+=`<div class="ptitle">今日训练计划</div><div class="mini" style="color:var(--card-sub)">数据由 Health Kit 经 FormExtensionAbility 推送（非卡内直读）</div>`;
+    h+=`<div class="pedit-hint">编辑计划（合规位：Page 内，非卡片长按）</div>
+      <div class="pedit-row"><input id="ei" placeholder="动作，如 腹部训练"><button onclick="addRow()">添加</button></div>
+      <div class="plist" id="plist"></div>
+      <div class="pnote">说明：鸿蒙规范禁止卡片内长按/二级菜单。编辑能力统一收口在元服务详情页，最长路径 ≤2 级，保证跨设备一致体验。</div>`;
+    renderList();
+  } else {
+    h+=`<div class="ptitle">${c.nm}</div><div class="mini" style="color:var(--card-sub);margin-bottom:12px">来自 ${c.svc} · 一步直达</div>
+      <div style="font-size:14px;line-height:1.8">${c.body('s2x2').replace(/<button[^>]*>.*?<\/button>/g,'').replace(/<div class="pbar">.*?<\/div>/g,'')}</div>
+      <div class="pnote">该卡片内容由系统聚合推送，点击卡片任意处即拉起此页（整卡热区）。</div>`;
+  }
+  document.getElementById('pBody').innerHTML=h;
+  document.getElementById('page').classList.add('show');
+}
+function renderList(){
+  document.getElementById('plist').innerHTML=editState.fitness.map((r,i)=>
+    `<div class="pitem ${r[3]?'done':''}"><div class="chk ${r[3]?'on':''}" onclick="toggleRow(${i})">${r[3]?'✓':''}</div>
+     <span class="txt">${r[0]} · ${r[1]} <span style="color:var(--card-sub);font-size:12px">${r[2]}</span></span>
+     <button class="del" onclick="delRow(${i})">✕</button></div>`).join('');
+}
+function toggleRow(i){editState.fitness[i][3]=!editState.fitness[i][3];renderList();}
+function delRow(i){editState.fitness.splice(i,1);renderList();}
+function addRow(){const v=document.getElementById('ei').value.trim();if(!v)return;
+  editState.fitness.push(['自定义',v,'',false]);document.getElementById('ei').value='';renderList();}
+function closePage(){document.getElementById('page').classList.remove('show');}
+
+document.getElementById('themeTgl').onchange=e=>{
+  document.documentElement.setAttribute('data-theme',e.target.checked?'dark':'light');
+};
+</script>
+</body>
+</html>

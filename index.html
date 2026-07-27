@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card_Space · 鸿蒙卡片空间演示</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:linear-gradient(160deg,#0A1A3F,#241A4A 60%,#0E2A3A);color:#fff;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:60px 20px}
+  .hero{text-align:center;max-width:760px;margin-bottom:48px}
+  .hero h1{font-size:40px;font-weight:800;letter-spacing:1px}
+  .hero .tag{display:inline-block;margin-top:14px;padding:6px 16px;border-radius:20px;
+    background:rgba(255,255,255,.12);font-size:13px;color:#cfe0ff}
+  .hero p{margin-top:18px;font-size:15px;line-height:1.7;color:rgba(255,255,255,.78)}
+  .grid{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;max-width:980px}
+  .card{width:380px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+    border-radius:22px;padding:26px;backdrop-filter:blur(10px);transition:.25s;text-decoration:none;color:#fff;display:block}
+  .card:hover{transform:translateY(-6px);background:rgba(255,255,255,.13);border-color:rgba(120,170,255,.6)}
+  .card .ico{font-size:40px}
+  .card h2{font-size:21px;font-weight:700;margin:14px 0 8px}
+  .card .desc{font-size:13px;line-height:1.6;color:rgba(255,255,255,.72);min-height:62px}
+  .card .meta{margin-top:14px;font-size:12px;color:#8fd0ff;display:flex;gap:8px;flex-wrap:wrap}
+  .card .meta span{background:rgba(143,208,255,.15);padding:3px 10px;border-radius:12px}
+  .go{margin-top:18px;font-size:14px;font-weight:600;color:#fff;display:flex;align-items:center;gap:6px}
+  .foot{margin-top:54px;font-size:12px;color:rgba(255,255,255,.5);text-align:center;line-height:1.7}
+  .foot code{background:rgba(255,255,255,.1);padding:2px 7px;border-radius:6px}
+</style>
+</head>
+<body>
+  <div class="hero">
+    <h1>Card_Space</h1>
+    <div class="tag">鸿蒙 NEXT 元服务卡片 · 自动组装桌面演示</div>
+    <p>两个纯静态单文件网页，演示「系统级卡片空间」：按鸿蒙 NEXT 规范（4×7 网格、独立沙箱、整卡热区）
+       把多应用数据自动拼装成桌面。点击下方任意卡片即可进入演示。</p>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="harmony-cards/index.html">
+      <div class="ico">📱</div>
+      <h2>多场景卡片桌面</h2>
+      <div class="desc">健身 / 追更 / 基金 / 学习等 10+ 卡片，按「时空意图路由」自动组装成不同场景桌面（居家晨间、通勤、到店健身、晚间、睡前）。</div>
+      <div class="meta"><span>意图路由</span><span>5 场景</span><span>10+ 卡片</span></div>
+      <div class="go">进入演示 →</div>
+    </a>
+
+    <a class="card" href="student-space/index.html">
+      <div class="ico">🎓</div>
+      <h2>学生·学习空间生成器</h2>
+      <div class="desc">学生先按「应用使用画像」选择感兴趣的内容（课表、宿舍、英语计划…），系统再自动拼装成专属学习桌面，可重新选择。</div>
+      <div class="meta"><span>兴趣选择</span><span>自动拼装</span><span>12 选项</span></div>
+      <div class="go">进入演示 →</div>
+    </a>
+  </div>
+
+  <div class="foot">
+    纯静态 · 无需构建 · 直接打开 <code>index.html</code> 即可预览<br>
+    部署方式：GitCode Pages（分支 <code>main</code>，根目录 <code>/</code>）
+  </div>
+</body>
+</html>
