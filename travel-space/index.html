@@ -367,6 +367,16 @@
   .photo-pop .pp-shot .pps-txt b{font-size:13px}
   .photo-pop .pp-shot .pps-txt .mini{font-size:11px;color:var(--panel-sub);margin-top:2px}
   .photo-pop .pp-tip{font-size:11px;color:var(--panel-sub);background:var(--card-line);border-radius:8px;padding:8px 10px;line-height:1.5}
+  /* === 阶段3 总流水·食住行 + 景点间交通 === */
+  .tl-spot-row .tsr-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .tl-spot-row .tsr-line1{display:flex;align-items:center;gap:8px}
+  .tl-spot-row .tsr-eat{font-size:11px;color:#B5680E;background:#FFF4E2;border-radius:6px;padding:1px 6px;align-self:flex-start;line-height:1.4}
+  .tl-go{display:flex;align-items:center;gap:6px;margin:0 0 6px 26px;padding-left:10px;border-left:2px dashed #FFC98A;font-size:11px;color:#8a6a3a;line-height:1.4}
+  .tl-go .tl-go-ico{flex-shrink:0}
+  .tl-day-foot{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.06);font-size:12px;color:#5a4a2a}
+  .tl-day-foot .tl-stay{background:#F1F6FF;color:#0A59F7;border-radius:6px;padding:2px 8px;font-weight:600}
+  .xy-chips .cp.used{opacity:.4;pointer-events:none;text-decoration:line-through}
+  .chat-empty{font-size:12px;color:var(--panel-sub);text-align:center;padding:18px 0}
 </style>
 </head>
 <body>
@@ -638,11 +648,12 @@ let mode='flow', fStep=0, fImport=null, fPhase='行前·准备';
 
 const FLOW=[
   {title:'① 小红书收藏夹',hint:'在小红书把攻略博文和skill博文加入收藏夹。点右上角「分享」→ 分享到小艺，触发后续行程生成。'},
-  {title:'② 小艺·对话列表',hint:'小艺对话列表里有多条对话：系统自动识别「已识别大理+丽江5.1-5.4」+ 从小红书导入的行程对话。点进任一条进入行程流水。'},
-  {title:'③ 总行程流水·确认',hint:'v1风格：总行程按天分开（Day1-Day4），每天展示导航顺序。可上下移动景点反复编辑每日顺序。满意后点「确认生成」。'},
-  {title:'④ 生成卡片空间',hint:'确认后生成多卡组合空间。按旅游阶段路由（行前/出发/大理/丽江/返程），点阶段标签切换看卡片组合变化。'},
-  {title:'⑤ 景点拍照攻略卡',hint:'基于位置围栏，到达景点（如玉龙雪山）时自动弹出拍照攻略卡：参考的小红书博文拍照机位 + 小艺自动搜索的拍照攻略。'},
-  {title:'⑥ 返程·复盘沉淀',hint:'返程后系统生成行程回眸与花费小结，邀请打分沉淀，反哺下次识别权重。'}
+  {title:'② 小艺·对话列表',hint:'小艺对话列表里有多条对话：系统自动识别「已识别大理+丽江5.1-5.4」+ 从小红书导入的行程对话。点进任一条进入行程对话。'},
+  {title:'③ 小艺对话·完善行程',hint:'进入行程对话，像 v1 demo 那样与小艺一问一答：确认住宿/美食/景点间交通，预设语句点一下即可推进，最后生成总流水。'},
+  {title:'④ 总行程流水·确认',hint:'v1风格：总行程按天分开（Day1-Day4），每天含食住行与景点间交通方式，可上下移动景点反复编辑每日顺序，满意后「确认生成」。'},
+  {title:'⑤ 生成卡片空间',hint:'确认后生成多卡组合空间。按旅游阶段路由（行前/出发/大理/丽江/返程），点阶段标签切换看卡片组合变化。'},
+  {title:'⑥ 景点拍照攻略卡',hint:'基于位置围栏，到达景点（如玉龙雪山）时自动弹出拍照攻略卡：参考的小红书博文拍照机位 + 小艺自动搜索的拍照攻略。'},
+  {title:'⑦ 返程·复盘沉淀',hint:'返程后系统生成行程回眸与花费小结，邀请打分沉淀，反哺下次识别权重。'}
 ];
 
 function setMode(m){
@@ -660,13 +671,13 @@ function renderStep(i){
   renderWiz();
   floatTip.classList.remove('show');
   closePhotoPop();
-  if(i===3){                  // ④ 卡片空间桌面
+  if(i===4){                  // ⑤ 卡片空间桌面
     flowEl.classList.remove('show');
     closePage();
     assemble(fPhase);
     return;
   }
-  if(i===4){                  // ⑤ 景点拍照卡（桌面+自动弹出）
+  if(i===5){                  // ⑥ 景点拍照卡（桌面+自动弹出）
     flowEl.classList.remove('show');
     closePage();
     assemble('目的地·丽江');
@@ -677,8 +688,9 @@ function renderStep(i){
   flowEl.classList.add('show');
   if(i===0) flowBody.innerHTML=p0HTML();
   else if(i===1) flowBody.innerHTML=p1HTML();
-  else if(i===2){ flowBody.innerHTML=p2HTML(); renderP2(); }
-  else if(i===5) flowBody.innerHTML=p7HTML();
+  else if(i===2) flowBody.innerHTML=pChatHTML();
+  else if(i===3){ flowBody.innerHTML=p2HTML(); renderP2(); }
+  else if(i===6) flowBody.innerHTML=p7HTML();
 }
 function renderWiz(){
   const steps=FLOW.map((s,i)=>`<div class="ws ${i===fStep?'on':''} ${i<fStep?'done':''}">
@@ -691,12 +703,12 @@ function renderWiz(){
       <button type="button" onclick="goStep(${fStep-1})" ${fStep===0?'disabled':''}>← 上一步</button>
       <button type="button" class="pri" onclick="goStep(${fStep+1})" ${fStep===FLOW.length-1?'disabled':''}>下一步 →</button>
     </div>`;
-  if(fStep===3){
+  if(fStep===4){
     html+=`<div class="seg-label">阶段切换（意图路由）</div>
       <div class="scn-btns" id="wizPhases">${Object.keys(SCEN).map(p=>`<button type="button" data-key="${p}" onclick="setPhase('${p}')">${p}</button>`).join('')}</div>`;
   }
   document.getElementById('wiz').innerHTML=html;
-  if(fStep===3){
+  if(fStep===4){
     document.querySelectorAll('#wizPhases button').forEach(b=>b.classList.toggle('on',b.dataset.key===fPhase));
   }
 }
@@ -783,7 +795,23 @@ Day4 丽江古城四方街，束河古镇，返程
 美食：腊排骨火锅、鲜花饼、喜洲粑粑、石板烧
 住宿：大理住洱海边客栈，丽江住束河庭院民宿`;
 const TRIP_TEMPLATES={
-  "大理,丽江":{title:"云南·大理+丽江",themes:["古城慢逛·洱海日落","环海骑行·喜洲田园","动车赴丽江·玉龙雪山","古城漫步·返程"],spots:["古城","洱海","喜洲","双廊","玉龙雪山","蓝月谷","束河","四方街"]},
+  "大理,丽江":{title:"云南·大理+丽江",themes:["古城慢逛·洱海日落","环海骑行·喜洲田园","动车赴丽江·玉龙雪山","古城漫步·返程"],spots:["古城","洱海","喜洲","双廊","玉龙雪山","蓝月谷","束河","四方街"],
+    schedule:[
+      {day:1,dest:'大理',date:'5/1',theme:'古城慢逛·洱海日落',stay:'洱海边设计师客栈',spots:[
+        {name:'大理古城',time:'09:30',eat:'早餐·喜洲粑粑',go:'步行 → 洱海生态廊道 · 约20min'},
+        {name:'洱海生态廊道',time:'15:00',eat:'下午茶·烤乳扇',go:'骑行返回古城 · 约30min'}]},
+      {day:2,dest:'大理',date:'5/2',theme:'环海骑行·喜洲田园',stay:'大理站旁酒店',spots:[
+        {name:'喜洲古镇',time:'09:00',eat:'午餐·喜洲粑粑+破酥',go:'租电动车 → 双廊 · 约40min'},
+        {name:'双廊',time:'14:00',eat:'下午茶·海景咖啡',go:'返回大理站 · 约50min'}]},
+      {day:3,dest:'丽江',date:'5/3',theme:'动车赴丽江·玉龙雪山',stay:'束河纳西庭院民宿',spots:[
+        {name:'大理→丽江动车',time:'08:30',eat:'车上早餐',go:'动车 D8689 · 约2h'},
+        {name:'玉龙雪山',time:'13:00',eat:'午餐·雪山自助',go:'景区大巴 → 蓝月谷 · 约15min'},
+        {name:'蓝月谷',time:'16:00',eat:'',go:'返回丽江城区 · 约30min'}]},
+      {day:4,dest:'丽江',date:'5/4',theme:'古城漫步·返程',stay:'',spots:[
+        {name:'丽江古城·四方街',time:'09:30',eat:'早餐·丽江粑粑',go:'打车 → 束河 · 约15min'},
+        {name:'束河古镇',time:'11:00',eat:'午餐·腊排骨火锅',go:'前往机场 · 约40min'},
+        {name:'返程',time:'15:00',eat:'',go:''}]}
+    ]},
   "三亚":{title:"海南·三亚海岛",themes:["抵达·椰梦长廊日落","蜈支洲岛一日游","亚龙湾热带天堂","南山文化旅游区","返程"],spots:["亚龙湾","蜈支洲岛","天涯海角","南山寺","椰梦长廊","热带天堂"]},
   "_generic":{title:"自定义行程",themes:["抵达·入住","深度游览","返程"],spots:["核心景区","当地美食","特色体验"]}
 };
@@ -944,20 +972,75 @@ function appendBubble(box, text, role){
   box.appendChild(b);
   const sc=box.parentElement; sc.scrollTop=sc.scrollHeight;
 }
+/* P3 小艺对话·完善行程（聊天式交互，预设语句可点选推进） */
+const CHAT_SCRIPT=[
+  {u:'大理丽江4天，想慢一点、多拍照 📸', a:'好呀～已为你规划 4 天慢旅行，主打古城慢逛、洱海日落与雪山出片。先定住宿：大理和丽江分别想住哪儿？'},
+  {u:'大理住洱海边，丽江住束河', a:'收到 ✦ 大理·洱海边设计师客栈；丽江·束河纳西庭院民宿。用餐有偏好吗？'},
+  {u:'想吃本地人吃的，腊排骨、喜洲粑粑', a:'已记下 ✦ 美食清单：腊排骨火锅、喜洲粑粑、烤乳扇、鲜花饼。景点之间怎么走？'},
+  {u:'大理环海骑车，大理→丽江坐动车', a:'完美 ✦ 古城→洱海步行、环海骑行；大理→丽江动车约 2h。行程草稿已就绪，看看总流水？'}
+];
+let chatSent=new Set();
+function pChatHTML(){
+  chatSent=new Set();
+  window.__chatDone=false;
+  return `
+  <div class="flow-head2">
+    <div class="fh-top">🤖 小艺 · 行程对话</div>
+    <div class="fh-sub">一问一答完善行程 · 点下方预设语句即可推进</div>
+  </div>
+  <div class="flow-scroll" style="padding-bottom:88px">
+    <div class="chat-wrap" id="chatBox"><div class="chat-empty">👇 点下方任意一句，开始和小艺完善行程</div></div>
+    <div class="xy-chips" id="chatPresets" style="padding:10px 0 2px">
+      ${CHAT_SCRIPT.map((s,i)=>`<div class="xy-chip cp" data-i="${i}" onclick="sendChat(${i})">${s.u}</div>`).join('')}
+    </div>
+    <div class="tl-confirm-bar"><div class="gen-btn primary" onclick="goStep(3)">查看总行程流水 →</div></div>
+  </div>`;
+}
+function sendChat(idx){
+  if(chatSent.has(idx)) return; chatSent.add(idx);
+  const box=document.getElementById('chatBox'); if(!box) return;
+  const empty=box.querySelector('.chat-empty'); if(empty) empty.remove();
+  const chip=document.querySelector('#chatPresets .cp[data-i="'+idx+'"]'); if(chip) chip.classList.add('used');
+  appendBubble(box, CHAT_SCRIPT[idx].u, 'me');
+  const a=CHAT_SCRIPT[idx].a;
+  setTimeout(()=>{
+    appendBubble(box, a, 'ai');
+    if(chatSent.size===CHAT_SCRIPT.length){ window.__chatDone=true; const c=document.getElementById('chatPresets'); if(c) c.style.opacity=.55; }
+  }, 480);
+}
+/* 景点间交通方式图标 */
+function goIcon(go){
+  if(/动车|高铁/.test(go)) return '🚄';
+  if(/骑行|电动车|自行车/.test(go)) return '🚲';
+  if(/步行|走路/.test(go)) return '🚶';
+  if(/打车|出租/.test(go)) return '🚕';
+  if(/大巴|景区车|公交/.test(go)) return '🚌';
+  if(/飞机|航班/.test(go)) return '✈️';
+  return '🚍';
+}
 /* P2 总行程流水·可编辑确认（v1 风格按天流水） */
 function p2HTML(){
   const intent=window.__intent||parseIntent('大理丽江4天');
   const days=intent.days;
-  if(!window.__p2 || window.__p2.days!==days){
-    const spotsByDay=[null];
-    for(let d=1;d<=days;d++) spotsByDay[d]=[];
-    intent.tpl.spots.forEach((s,i)=> spotsByDay[(i%days)+1].push({name:s,ico:spotIco(s),time:spotTime(i)}));
-    window.__p2={spotsByDay,days,intent};
+  const tpl=intent.tpl;
+  if(!window.__p2 || window.__p2.key!==intent.key || window.__p2.days!==days){
+    const spotsByDay=[null]; const dayMeta=[null];
+    for(let d=1;d<=days;d++){ spotsByDay[d]=[]; dayMeta[d]={dest:'',date:'',theme:'',stay:''}; }
+    if(tpl.schedule && tpl.schedule.length){
+      tpl.schedule.forEach(day=>{
+        const d=day.day; if(d<1||d>days) return;
+        dayMeta[d]={dest:day.dest||'',date:day.date||'',theme:day.theme||tpl.themes[d-1]||'自由安排',stay:day.stay||''};
+        (day.spots||[]).forEach(s=> spotsByDay[d].push(Object.assign({ico:spotIco(s.name),time:s.time||''}, s)));
+      });
+    } else {
+      tpl.spots.forEach((s,i)=>{ const d=(i%days)+1; spotsByDay[d].push({name:s,ico:spotIco(s),time:spotTime(i)}); });
+    }
+    window.__p2={spotsByDay,dayMeta,days,intent,key:intent.key};
   }
   return `
   <div class="flow-head2">
     <div class="fh-top">总行程流水</div>
-    <div class="fh-sub">${intent.tpl.title} · ${days}天 · 确认每日导航顺序</div>
+    <div class="fh-sub">${intent.tpl.title} · ${days}天${window.__chatDone?' · 已与小艺确认偏好':''} · 确认每日导航顺序（含食住行与交通）</div>
   </div>
   <div class="flow-scroll" style="padding-bottom:80px">
     <div class="tl-flow" id="tlFlow"></div>
@@ -965,6 +1048,8 @@ function p2HTML(){
   </div>`;
 }
 function spotIco(name){
+  if(/动车|高铁/.test(name)) return '🚄';
+  if(/返程/.test(name)) return '✈️';
   if(/雪山/.test(name)) return '🏔️';
   if(/洱海|海/.test(name)) return '🌊';
   if(/古城/.test(name)) return '🏮';
@@ -980,20 +1065,23 @@ function renderP2(){
   const st=window.__p2; if(!st) return;
   const box=document.getElementById('tlFlow'); if(!box) return;
   box.innerHTML=Array.from({length:st.days},(_,i)=>i+1).map(d=>{
-    const arr=st.spotsByDay[d]||[];
+    const arr=st.spotsByDay[d]||[]; const dm=st.dayMeta[d]||{};
     return `<div class="tl-day-card">
       <div class="tdc-h">
         <span class="tdc-badge">Day ${d}</span>
-        <span class="tdc-date">5/${d} · ${d<=2?'大理':'丽江'}</span>
-        <span class="tdc-theme">${st.intent.tpl.themes[d-1]||'自由安排'}</span>
+        <span class="tdc-date">${dm.date||('5/'+d)} · ${dm.dest||(d<=2?'大理':'丽江')}</span>
+        <span class="tdc-theme">${dm.theme||st.intent.tpl.themes[d-1]||'自由安排'}</span>
       </div>
       ${arr.length?arr.map((s,i)=>`<div class="tl-spot-row" data-d="${d}" data-i="${i}">
         <span class="tsr-ico">${s.ico}</span>
-        <span class="tsr-name">${s.name}</span>
-        <span class="tsr-time">${s.time}</span>
+        <div class="tsr-main">
+          <div class="tsr-line1"><span class="tsr-name">${s.name}</span><span class="tsr-time">${s.time}</span></div>
+          ${s.eat?`<span class="tsr-eat">🍜 ${s.eat}</span>`:''}
+        </div>
         <button type="button" class="tsr-up" onclick="moveSpot(${d},${i},-1)" ${i===0?'disabled':''}>▲</button>
         <button type="button" class="tsr-dn" onclick="moveSpot(${d},${i},1)" ${i===arr.length-1?'disabled':''}>▼</button>
-      </div>`).join(''):'<div class="mini" style="color:#aaa;padding:8px">（空）</div>'}
+      </div>${s.go?`<div class="tl-go"><span class="tl-go-ico">${goIcon(s.go)}</span>${s.go}</div>`:''}`).join(''):'<div class="mini" style="color:#aaa;padding:8px">（空）</div>'}
+      ${dm.stay?`<div class="tl-day-foot"><span class="tl-stay">🏨 宿·${dm.stay}</span></div>`:''}
     </div>`;
   }).join('');
 }
@@ -1005,7 +1093,7 @@ function moveSpot(d,i,dir){
   renderP2();
   setTimeout(()=>{ const rows=document.querySelectorAll('.tl-spot-row[data-d="'+d+'"]'); const row=rows[j]; if(row){ row.classList.add('moving'); setTimeout(()=>row.classList.remove('moving'),600);} },20);
 }
-function confirmFlow(){ goStep(3); }
+function confirmFlow(){ goStep(4); }
 /* P7 复盘沉淀（星标可点选 + 分享成功态） */
 let starVal=0;
 function p7HTML(){
