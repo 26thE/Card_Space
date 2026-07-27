@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旅游 · 卡片空间 · 行程时间线驱动的多卡桌面</title>
+<style>
+  :root{
+    --card-bg:#FFFFFF; --card-text:#1A1A1A; --card-sub:#8A8A8A; --card-line:#F0F0F0;
+    --page-bg:#F5F6FA; --panel-bg:#FFFFFF; --panel-text:#1A1A1A; --panel-sub:#6B6B6B;
+    --accent:#0A59F7; --wall1:#DCE7FF; --wall2:#ECE3FF; --wall3:#E6F4FF;
+  }
+  [data-theme="dark"]{
+    --card-bg:#2E3033; --card-text:#E8E8E8; --card-sub:#9A9A9A; --card-line:#3A3D42;
+    --page-bg:#1A1B1E; --panel-bg:#26282B; --panel-text:#E8E8E8; --panel-sub:#9A9A9A;
+    --wall1:#1B2440; --wall2:#2A1F40; --wall3:#10283A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:"HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--page-bg);color:var(--panel-text);display:flex;justify-content:center;
+    gap:28px;padding:28px;flex-wrap:wrap;align-items:flex-start}
+  /* ---- 控制台 ---- */
+  .console{width:340px;background:var(--panel-bg);border-radius:20px;padding:20px;
+    box-shadow:0 8px 30px rgba(0,0,0,.08)}
+  .console h1{font-size:18px;font-weight:700;margin-bottom:2px}
+  .console .sub{font-size:12px;color:var(--panel-sub);margin-bottom:14px;line-height:1.5}
+  .trip{background:linear-gradient(135deg,#0A59F7,#8A5CF6);color:#fff;border-radius:14px;
+    padding:13px 15px;margin-bottom:16px;line-height:1.5}
+  .trip .t1{font-size:15px;font-weight:700}
+  .trip .t2{font-size:11px;opacity:.92;margin-top:3px}
+  .trip .t3{font-size:11px;opacity:.92;margin-top:2px}
+  .seg-label{font-size:12px;color:var(--panel-sub);margin:14px 0 8px;font-weight:600}
+  .scn-btns{display:flex;flex-wrap:wrap;gap:8px}
+  .scn-btns button{border:1px solid var(--card-line);background:transparent;color:var(--panel-text);
+    padding:8px 12px;border-radius:12px;font-size:13px;cursor:pointer;transition:.2s;font-family:inherit}
+  .scn-btns button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .signals{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .chip{font-size:11px;background:var(--card-line);color:var(--panel-sub);padding:4px 9px;border-radius:20px}
+  .recipe{background:var(--card-line);border-radius:12px;padding:12px;font-size:12px;
+    color:var(--panel-sub);line-height:1.7;margin-top:6px}
+  .recipe b{color:var(--panel-text)}
+  .compliance{margin-top:16px;font-size:11px;color:var(--panel-sub);line-height:1.7;
+    border-top:1px dashed var(--card-line);padding-top:12px}
+  .compliance b{color:#0A7A4A}
+  .toggle{margin-top:14px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--panel-sub)}
+  /* ---- 手机 ---- */
+  .phone{width:384px;height:832px;background:#1c1c1e;border-radius:46px;padding:11px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;flex-shrink:0}
+  .screen{width:362px;height:810px;border-radius:36px;overflow:hidden;position:relative;
+    background:linear-gradient(165deg,var(--wall1),var(--wall2) 55%,var(--wall3));
+    display:flex;flex-direction:column}
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:10px;height:10px;
+    border-radius:50%;background:#000;z-index:30}
+  .statusbar{height:40px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;font-size:14px;font-weight:600;color:#fff;z-index:20;flex-shrink:0}
+  .statusbar .right{display:flex;align-items:center;gap:6px;font-size:12px}
+  .capsule{display:none;height:24px;background:rgba(0,0,0,.78);color:#fff;border-radius:12px;
+    align-items:center;gap:6px;padding:0 12px;font-size:11px;margin:0 14px 4px;flex-shrink:0}
+  .capsule.show{display:flex;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  /* 桌面：4 列、固定方格 74px、7 行上限、绝不溢出 */
+  .desktop{flex:1;display:grid;grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:74px;gap:9px;padding:14px;align-content:start;overflow:hidden}
+  .dock{height:64px;margin:4px 14px 14px;border-radius:24px;background:rgba(255,255,255,.25);
+    backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;flex-shrink:0}
+  .dock .d{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;
+    justify-content:center;font-size:22px;background:rgba(255,255,255,.85)}
+  /* ---- 卡片 ---- */
+  .card{background:var(--card-bg);border-radius:22px;padding:12px;color:var(--card-text);
+    box-shadow:0 4px 14px rgba(0,0,0,.10);display:flex;flex-direction:column;overflow:hidden;
+    cursor:pointer;transition:transform .15s,box-shadow .15s;animation:pop .35s ease;position:relative}
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.14)}
+  .card.s2x2{grid-column:span 2;grid-row:span 2;border-radius:18px;padding:10px}
+  .card.s2x4{grid-column:span 4;grid-row:span 2}
+  @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+  .head{display:flex;align-items:center;gap:8px}
+  .app-ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
+  .s2x2 .app-ico{width:22px;height:22px;font-size:13px;border-radius:7px}
+  .htext .svc{font-size:11px;color:var(--card-sub);line-height:1.1}
+  .htext .nm{font-size:13px;font-weight:600;line-height:1.2}
+  .s2x2 .htext .nm{font-size:12px}
+  .body{flex:1;margin-top:8px;display:flex;flex-direction:column;gap:6px;min-height:0}
+  /* 通用行 */
+  .row{display:flex;align-items:center;gap:8px;font-size:12px}
+  .dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+  .row .act{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .mt{color:var(--card-sub);font-size:11px;flex-shrink:0}
+  .pbar{height:6px;border-radius:3px;background:var(--card-line);overflow:hidden;margin-top:2px}
+  .pbar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#FF7A1A,#FFB02E)}
+  .big{font-size:30px;font-weight:700;line-height:1}
+  .cta{margin-top:auto;background:var(--card-text);color:var(--card-bg);border:none;
+    border-radius:12px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+  .mini{font-size:11px;color:var(--card-sub)}
+  .li{display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--card-line)}
+  .li:last-child{border-bottom:none}
+  .li .t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .li .v{color:var(--card-sub);font-size:11px;flex-shrink:0}
+  .tag{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--card-line);color:var(--card-sub)}
+  /* 时间线卡（hero）专属 */
+  .tl-ov{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+  .tl-day{display:flex;align-items:center;gap:8px;font-size:12px}
+  .tl-badge{width:34px;height:22px;border-radius:7px;background:var(--card-line);color:var(--card-text);
+    font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .tl-day.cur .tl-badge{background:#0A59F7;color:#fff}
+  .tl-day .dst{font-weight:600}
+  .tl-day .th{font-size:11px;color:var(--card-sub);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tl-day .cnt{font-size:11px;color:var(--card-sub)}
+  .tl-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:2px}
+  .tl-strip::-webkit-scrollbar{height:0}
+  .tl-spot{flex:0 0 auto;width:74px;background:var(--card-line);border-radius:10px;padding:7px 8px}
+  .tl-spot .tt{font-size:11px;font-weight:700;color:var(--accent)}
+  .tl-spot .ti{font-size:14px;margin:2px 0}
+  .tl-spot .ts{font-size:10px;color:var(--card-sub);line-height:1.25;overflow:hidden;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  /* 详情页 */
+  .page{position:absolute;inset:0;background:var(--card-bg);z-index:40;display:none;
+    flex-direction:column;animation:slide .3s ease}
+  .page.show{display:flex}
+  @keyframes slide{from{transform:translateY(20px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  .pbar-top{height:44px;display:flex;align-items:center;gap:10px;padding:0 16px;flex-shrink:0}
+  .back{border:none;background:var(--card-line);width:30px;height:30px;border-radius:50%;
+    font-size:15px;cursor:pointer;color:var(--card-text)}
+  .pbody{flex:1;padding:16px;overflow:auto}
+  .ptitle{font-size:20px;font-weight:700;margin-bottom:4px}
+  .pedit-hint{font-size:12px;color:var(--card-sub);margin:14px 0 8px}
+  .pedit-row{display:flex;gap:8px;margin-bottom:8px}
+  .pedit-row input{flex:1;border:1px solid var(--card-line);border-radius:10px;padding:8px;
+    font-size:13px;font-family:inherit;background:transparent;color:var(--card-text)}
+  .pedit-row button{border:none;background:var(--accent);color:#fff;border-radius:10px;
+    padding:0 14px;font-size:13px;cursor:pointer;font-family:inherit}
+  .plist .pitem{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--card-line);font-size:14px}
+  .chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--card-line);flex-shrink:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+  .chk.on{background:#0A7A4A;border-color:#0A7A4A}
+  .pitem.done .txt{text-decoration:line-through;color:var(--card-sub)}
+  .pitem .del{border:none;background:transparent;color:#d33;font-size:16px;cursor:pointer;margin-left:auto}
+  .pnote{font-size:11px;color:var(--card-sub);margin-top:14px;line-height:1.6}
+  .pday{margin:10px 0 4px;font-weight:700;font-size:15px}
+  .pspot{font-size:13px;padding:6px 0;border-bottom:1px solid var(--card-line);line-height:1.5}
+  .pspot .pt{color:var(--accent);font-weight:600;font-size:12px;margin-right:6px}
+</style>
+</head>
+<body>
+  <!-- ============ 卡片自动组装 Skill 控制台 ============ -->
+  <div class="console">
+    <h1>旅游 · 卡片空间</h1>
+    <div class="sub">行程时间线驱动的<b>多卡空间</b>：以「时间线」为主轴卡片，按旅行阶段（行前/出发/目的地/返程）用意图路由自动拼装当下一屏卡片组合。</div>
+
+    <div class="trip">
+      <div class="t1">🌸 云南 · 大理 + 丽江 · 4天3夜</div>
+      <div class="t2">📅 5/1 周五 — 5/4 周一 · 单人</div>
+      <div class="t3">💰 预算 ¥3000 · 苍山雪，洱海月</div>
+    </div>
+
+    <div class="seg-label">① 选择旅行阶段（演示意图路由）</div>
+    <div class="scn-btns" id="scnBtns"></div>
+
+    <div class="seg-label">② 当前信号（系统实时读取）</div>
+    <div class="signals" id="signals"></div>
+
+    <div class="seg-label">③ 组装配方（Skill 输出）</div>
+    <div class="recipe" id="recipe"></div>
+
+    <div class="toggle"><input type="checkbox" id="themeTgl"> 深色模式（卡片需适配 Dark #2E3033）</div>
+
+    <div class="compliance">
+      <b>✓ 合规要点</b><br>
+      · 时间线卡为整卡热区，点击一步拉起「行程详情页」<br>
+      · 卡片内无长按/二级菜单，编辑（行李勾选）在「详情页」完成<br>
+      · 卡片为独立沙箱，实时数据由 FormExtensionAbility 推送<br>
+      · 刷新以 30 分钟为单位；时间线整卡即「路线示意」<br>
+      · <b>每屏严格落在 7 行网格内，零溢出</b>
+    </div>
+  </div>
+
+  <!-- ============ 鸿蒙直板机 ============ -->
+  <div class="phone">
+    <div class="screen">
+      <div class="notch"></div>
+      <div class="statusbar">
+        <span id="clk">9:41</span>
+        <span class="right">5G ▪ ▪ ▪ 100%</span>
+      </div>
+      <div class="capsule" id="capsule">✈️ 大理 → 丽江 · 动车 D8772</div>
+      <div class="desktop" id="desktop"></div>
+      <div class="dock">
+        <div class="d">🗺️</div><div class="d">📷</div><div class="d">🧳</div><div class="d">💬</div>
+      </div>
+
+      <div class="page" id="page">
+        <div class="pbar-top">
+          <button class="back" onclick="closePage()">‹</button>
+          <div>
+            <div class="svc" id="pSvc" style="font-size:11px;color:var(--card-sub)"></div>
+            <div id="pName" style="font-size:15px;font-weight:600"></div>
+          </div>
+        </div>
+        <div class="pbody" id="pBody"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===== 行程数据（参考 travel-planner-demo，云南大理+丽江 4天3夜）===== */
+const TRIP = {
+  title:"云南·大理+丽江 4天3夜",
+  days:[
+    {day:1,date:"5/1 周五",dst:"大理",theme:"初见大理 · 古城慢逛",spots:6},
+    {day:2,date:"5/2 周六",dst:"大理",theme:"洱海环海 · 喜洲田园",spots:5},
+    {day:3,date:"5/3 周日",dst:"丽江",theme:"奔赴丽江 · 雪山圣境",spots:6},
+    {day:4,date:"5/4 周一",dst:"丽江",theme:"古城漫步 · 返程",spots:5}
+  ],
+  // 当日逐小时时间线（目的地阶段用，还原原仓库横向「路线示意」卡）
+  today:[
+    {time:"08:00",ico:"🚄",t:"大理→丽江 动车",s:"D8772 09:15开"},
+    {time:"11:30",ico:"🏨",t:"入住古城客栈",s:"束河·纳西庭院"},
+    {time:"13:00",ico:"🍲",t:"纳西风味午餐",s:"腊排骨火锅"},
+    {time:"14:30",ico:"🏔️",t:"玉龙雪山",s:"大索道4680m"},
+    {time:"18:00",ico:"💎",t:"蓝月谷",s:"Tiffany蓝"},
+    {time:"20:00",ico:"🌃",t:"古城夜景",s:"四方街"}
+  ]
+};
+
+/* ===== 卡片数据模型（鸿蒙 NEXT 规范：留白/左对齐/大数字）===== */
+const C = {
+  timeline:{svc:"行程助手",nm:"行程时间线",ico:"🗺️",ac:"#0A59F7",
+    body:(size,variant)=>{
+      if(variant==='today'){            // 目的地：当日逐小时横向时间线（路线示意卡）
+        const strip=TRIP.today.map(s=>`<div class="tl-spot"><div class="tt">${s.time}</div>
+          <div class="ti">${s.ico}</div><div class="ts">${s.t}</div></div>`).join('');
+        return `<div class="mini">Day 3 · 丽江 · 今日 6 站</div><div class="tl-strip">${strip}</div>`;
+      }
+      if(variant==='summary'){          // 出发/返程：2x2 概览
+        return `<div class="big" style="font-size:22px">Day 3/4</div>
+          <div class="mini">雪山圣境 · 6 个行程点</div>
+          <button class="cta" onclick="event.stopPropagation();openPage('timeline')">看全程</button>`;
+      }
+      // 行前：4 天纵向总览
+      const rows=TRIP.days.map(d=>`<div class="tl-day ${d.day===3?'cur':''}">
+        <span class="tl-badge">D${d.day}</span>
+        <span class="dst">${d.dst}</span>
+        <span class="th">${d.theme}</span>
+        <span class="cnt">${d.spots}站</span></div>`).join('');
+      return `<div class="mini">4 天行程总览（D3 当前）</div><div class="tl-ov">${rows}</div>`;
+    }},
+  flight:{svc:"出行",nm:"大交通",ico:"✈️",ac:"#0091FF",
+    body:(size)=> size==='s2x4'
+      ? `<div class="li"><span>🛫</span><span class="t">去程 · 5/1 直飞大理</span><span class="v">已订</span></div>
+         <div class="li"><span>🚄</span><span class="t">大理→丽江 D8772</span><span class="v">09:15</span></div>
+         <div class="li"><span>🛬</span><span class="t">返程 · 5/4 三义机场</span><span class="v">15:00</span></div>
+         <div class="mini">值机开放 · 提前 2h 到机场 ›</div>`
+      : `<div class="big" style="font-size:20px">D8772</div>
+         <div class="mini">大理 09:15 → 丽江 11:05</div>
+         <div class="mini">动车 80元 · 2h ›</div>`},
+  hotel:{svc:"住宿",nm:"客栈",ico:"🏨",ac:"#8A5CF6",
+    body:()=>`<div class="row"><span class="dot" style="background:#00B578"></span><span class="act">今日入住</span><span class="mt">已确认</span></div>
+      <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">丽江·束河庭院</span><span class="mt">150/晚</span></div>
+      <div class="mini">白族/纳西庭院 · 天台观景</div>`},
+  spots:{svc:"玩乐",nm:"今日景点",ico:"📸",ac:"#FF7A1A",
+    body:()=>`<div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">洱海生态廊道</span><span class="mt">骑行</span></div>
+      <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">喜洲古镇</span><span class="mt">转角楼</span></div>
+      <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">双廊·太阳宫</span><span class="mt">海景</span></div>`},
+  ticket:{svc:"门票",nm:"雪山索道",ico:"🏔️",ac:"#0A59F7",
+    body:()=>`<div class="row"><span class="dot" style="background:#FF4D6A"></span><span class="act">大索道票</span><span class="mt">抢票!</span></div>
+      <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">蓝月谷</span><span class="mt">含门票</span></div>
+      <div class="mini">¥280 · 提前1天20:00抢</div>`},
+  weather:{svc:"天气",nm:"目的地",ico:"⛅",ac:"#0A59F7",
+    body:()=>`<div class="big" style="font-size:26px">22°</div>
+      <div class="mini">大理/丽江 · 白天20-25°</div>
+      <div class="mini">早晚10° · 紫外线强 防晒</div>`},
+  map:{svc:"导航",nm:"地图",ico:"🧭",ac:"#0091FF",
+    body:()=>`<div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">古城内导航</span><span class="mt">步行</span></div>
+      <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">101路雪山专线</span><span class="mt">15元</span></div>
+      <div class="mini">出发地→玉龙雪山 30km</div>`},
+  food:{svc:"美食",nm:"今日推荐",ico:"🍜",ac:"#FF4D6A",
+    body:()=>`<div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">石板烧</span><span class="mt">晚餐</span></div>
+      <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">菌菇火锅</span><span class="mt">野生菌</span></div>
+      <div class="mini">喜洲粑粑 · 烤乳扇 · 鲜花饼</div>`},
+  packing:{svc:"行李",nm:"行李清单",ico:"🧳",ac:"#8A5CF6",
+    body:(size)=>{
+      const items=editState.packing;
+      const done=items.filter(x=>x[1]).length;
+      return `<div class="mini">已备 ${done}/${items.length}</div>
+        <div class="pbar"><i style="width:${Math.round(done/items.length*100)}%"></i></div>
+        <div class="mini" style="margin-top:4px">防晒·外套·氧气瓶… ›</div>`;
+    }},
+  budget:{svc:"预算",nm:"花费",ico:"💰",ac:"#00B578",
+    body:()=>`<div class="big" style="font-size:22px">¥3000</div>
+      <div class="mini">住宿600 · 餐饮700</div>
+      <div class="mini">门票400 · 交通1100 ›</div>`},
+  notes:{svc:"攻略",nm:"小红书Tips",ico:"📒",ac:"#FF4D6A",
+    body:()=>`<div class="li"><span>☀️</span><span class="t">防晒 SPF50+</span><span class="v">必带</span></div>
+      <div class="li"><span>🪨</span><span class="t">石板路拖箱难</span><span class="v">背包</span></div>
+      <div class="li"><span>🎫</span><span class="t">索道票提前抢</span><span class="v">20:00</span></div>`}
+};
+
+/* ===== 旅行阶段 → 卡片组合（意图路由）=====
+   每张卡显式声明 [id, 尺寸, 变体]，确保整屏 ≤7 行、不溢出。
+   结构恒为：1 张 2x4 主轴卡 + 4 张 2x2 环绕卡 = 6 行。 */
+const SCEN = {
+  "行前·准备":{sig:["📅 5/1-5/4","📍 大理·丽江","💰 ¥3000"],cap:false,
+    cards:[["timeline","s2x4","overview"],["flight","s2x2"],["hotel","s2x2"],["packing","s2x2"],["weather","s2x2"]],
+    recipe:"出发前 → 顶部 4 天时间线总览（主轴），下接大交通/客栈/行李/天气四小张（共 6 行）"},
+  "出发·途中":{sig:["🛫 去程日","🕗 07:30","🛄 值机"],cap:false,
+    cards:[["flight","s2x4"],["timeline","s2x2","summary"],["map","s2x2"],["budget","s2x2"],["notes","s2x2"]],
+    recipe:"出发日 → 大交通 2×4 实时航班，时间线 2×2 概览，导航/预算/攻略三小张（共 6 行）"},
+  "目的地·大理":{sig:["📍 大理","🌤 22°","🚲 环海"],cap:false,
+    cards:[["timeline","s2x4","today"],["spots","s2x2"],["food","s2x2"],["weather","s2x2"],["map","s2x2"]],
+    recipe:"在大理 → 时间线 2×4 当日逐小时（路线示意），景点/美食/天气/地图四小张（共 6 行）"},
+  "目的地·丽江":{sig:["📍 丽江","🏔 雪山","🌡 10-20°"],cap:true,
+    cards:[["timeline","s2x4","today"],["ticket","s2x2"],["food","s2x2"],["weather","s2x2"],["map","s2x2"]],
+    recipe:"在丽江 → 时间线 2×4 当日（含雪山站），索道票/美食/天气/地图四小张 + 实况窗（共 6 行）"},
+  "返程":{sig:["🛬 返程","🕒 15:00","🧳 收拾"],cap:false,
+    cards:[["flight","s2x4"],["timeline","s2x2","summary"],["packing","s2x2"],["budget","s2x2"],["notes","s2x2"]],
+    recipe:"返程日 → 大交通 2×4 返程航班，时间线/行李/预算/攻略四小张（共 6 行）"}
+};
+
+/* ===== 渲染 ===== */
+const desk = document.getElementById('desktop');
+function assemble(key){
+  const s = SCEN[key];
+  desk.innerHTML='';
+  s.cards.forEach(([id,size,variant])=>{
+    const c=C[id];
+    const el=document.createElement('div');
+    el.className='card '+size;
+    el.style.animationDelay=Math.random()*.12+'s';
+    el.onclick=()=>openPage(id);
+    el.innerHTML=`<div class="head"><div class="app-ico" style="background:${c.ac}">${c.ico}</div>
+      <div class="htext"><div class="svc">${c.svc}</div><div class="nm">${c.nm}</div></div></div>
+      <div class="body">${c.body(size,variant)}</div>`;
+    desk.appendChild(el);
+  });
+  document.getElementById('signals').innerHTML=s.sig.map(x=>`<span class="chip">${x}</span>`).join('');
+  document.getElementById('recipe').innerHTML=`<b>${key}</b><br>${s.recipe}`;
+  document.getElementById('capsule').classList.toggle('show',s.cap);
+  [...document.querySelectorAll('#scnBtns button')].forEach(b=>b.classList.toggle('on',b.textContent===key));
+}
+
+document.getElementById('scnBtns').innerHTML=Object.keys(SCEN).map(k=>`<button onclick="assemble('${k}')">${k}</button>`).join('');
+assemble('行前·准备');
+
+/* ===== 详情页（合规：编辑在 Page，不在卡片内）===== */
+let editState={packing:[['防晒 SPF50+',true],['薄外套',false],['羽绒服(雪山)',false],['氧气瓶',false],['充电宝',true],['背包(石板路)',false]]};
+function openPage(id){
+  const c=C[id];
+  document.getElementById('pSvc').textContent=c.svc;
+  document.getElementById('pName').textContent=c.nm;
+  let h='';
+  if(id==='packing'){
+    h+=`<div class="ptitle">行李清单</div><div class="mini" style="color:var(--card-sub)">编辑在详情页（合规位），非卡片长按</div>`;
+    h+=`<div class="pedit-hint">勾选已备物品 / 添加</div>
+      <div class="pedit-row"><input id="ei" placeholder="如 拖鞋、常用药"><button onclick="addRow()">添加</button></div>
+      <div class="plist" id="plist"></div>
+      <div class="pnote">鸿蒙规范禁止卡片内长按/二级菜单，编辑能力统一收口在元服务详情页，保证跨设备一致体验。</div>`;
+    renderList();
+  } else if(id==='timeline'){
+    h+=`<div class="ptitle">4 天行程总览</div><div class="mini" style="color:var(--card-sub);margin-bottom:6px">苍山雪，洱海月 · 数据由行程助手经 FormExtensionAbility 推送</div>`;
+    TRIP.days.forEach(d=>{
+      h+=`<div class="pday">Day ${d.day} · ${d.dst} · ${d.date} — ${d.theme}</div>`;
+      // 用当日时间线（第3天用真实数据，其余用概览文本）
+      const list = d.day===3 ? TRIP.today : [
+        {time:"09:00",t:"抵达/"+d.dst+"入住"},{time:"12:30",t:"午餐·当地小吃"},
+        {time:"14:00",t:"古城/景点漫步"},{time:"17:30",t:"日落机位"},{time:"19:30",t:"特色晚餐"}];
+      h+=list.map(s=>`<div class="pspot"><span class="pt">${s.time}</span>${s.t}</div>`).join('');
+    });
+    h+=`<div class="pnote">点击桌面「行程时间线」卡即拉起此页，整卡为热区。</div>`;
+  } else {
+    h+=`<div class="ptitle">${c.nm}</div><div class="mini" style="color:var(--card-sub);margin-bottom:12px">来自 ${c.svc} · 一步直达</div>
+      <div style="font-size:14px;line-height:1.8">${c.body('s2x2').replace(/<button[^>]*>.*?<\/button>/g,'').replace(/<div class="pbar">.*?<\/div>/g,'')}</div>
+      <div class="pnote">该卡片内容由系统聚合推送，点击卡片任意处即拉起此页（整卡热区）。</div>`;
+  }
+  document.getElementById('pBody').innerHTML=h;
+  document.getElementById('page').classList.add('show');
+}
+function renderList(){
+  document.getElementById('plist').innerHTML=editState.packing.map((r,i)=>
+    `<div class="pitem ${r[1]?'done':''}"><div class="chk ${r[1]?'on':''}" onclick="toggleRow(${i})">${r[1]?'✓':''}</div>
+     <span class="txt">${r[0]}</span>
+     <button class="del" onclick="delRow(${i})">✕</button></div>`).join('');
+}
+function toggleRow(i){editState.packing[i][1]=!editState.packing[i][1];renderList();}
+function delRow(i){editState.packing.splice(i,1);renderList();}
+function addRow(){const v=document.getElementById('ei').value.trim();if(!v)return;
+  editState.packing.push([v,false]);document.getElementById('ei').value='';renderList();}
+function closePage(){document.getElementById('page').classList.remove('show');}
+
+document.getElementById('themeTgl').onchange=e=>{
+  document.documentElement.setAttribute('data-theme',e.target.checked?'dark':'light');
+};
+</script>
+</body>
+</html>
