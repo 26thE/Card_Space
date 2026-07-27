@@ -247,6 +247,51 @@
   @keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
   @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .bubble{animation:msgIn .35s ease}
+  /* === S1 真实交互增强 === */
+  .xy-bar{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.95);
+    border-radius:14px;padding:8px 10px;margin-bottom:10px}
+  .xy-bar input{flex:1;border:none;background:transparent;font-size:13px;font-family:inherit;
+    color:#1A1A1A;outline:none}
+  .xy-bar .mic{width:34px;height:34px;border-radius:50%;border:none;background:var(--card-line);
+    font-size:15px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .xy-bar .mic.on{background:#FF4D6A;color:#fff;animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,106,.5)}50%{box-shadow:0 0 0 8px rgba(255,77,106,0)}}
+  .xy-bar .send{border:none;background:var(--accent);color:#fff;border-radius:10px;
+    padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;flex-shrink:0}
+  .xy-bar .send:disabled{opacity:.4;cursor:not-allowed}
+  .xy-hint{font-size:11px;color:var(--panel-sub);margin:-4px 0 10px;line-height:1.5}
+  .xy-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .xy-chip{font-size:11px;background:rgba(255,255,255,.7);color:#444;padding:5px 10px;
+    border-radius:12px;cursor:pointer;border:1px solid transparent}
+  .xy-chip:hover{border-color:var(--accent);color:var(--accent)}
+  .xhs-paste{background:rgba(255,255,255,.95);border-radius:14px;padding:12px;margin-bottom:12px}
+  .xhs-paste textarea{width:100%;border:1px solid var(--card-line);border-radius:10px;
+    padding:9px;font-size:12px;font-family:inherit;background:transparent;color:var(--card-text);
+    resize:vertical;min-height:96px;outline:none;line-height:1.6}
+  .xhs-paste .xhs-tools{display:flex;gap:8px;margin-top:8px;align-items:center}
+  .xhs-paste .xhs-tools button{border:none;background:var(--card-line);color:var(--panel-text);
+    border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;font-family:inherit}
+  .xhs-paste .xhs-tools .parse{background:var(--accent);color:#fff;margin-left:auto}
+  .parse-out{background:rgba(255,255,255,.95);border-radius:14px;padding:12px;margin-bottom:12px;animation:fade .3s}
+  .parse-out .po-h{font-size:12px;color:var(--accent);font-weight:700;margin-bottom:8px}
+  .parse-out .po-row{font-size:12px;color:#333;padding:4px 0;display:flex;gap:8px;line-height:1.5}
+  .parse-out .po-row b{color:var(--accent);min-width:48px;flex-shrink:0}
+  .p4-tl{background:rgba(255,255,255,.95);border-radius:14px;padding:12px;margin-bottom:12px}
+  .p4-day{border-bottom:1px solid var(--card-line);padding:8px 0}
+  .p4-day:last-child{border-bottom:none}
+  .p4-day-h{font-size:12px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .p4-day-h .dnum{background:var(--accent);color:#fff;border-radius:6px;padding:1px 6px;font-size:10px}
+  .p4-spots{display:flex;flex-wrap:wrap;gap:5px;min-height:26px;align-items:center}
+  .p4-spot{font-size:11px;background:var(--card-line);color:#333;padding:4px 9px;border-radius:8px;transition:all .3s}
+  .p4-spot.moved{background:#0A7A4A;color:#fff;animation:pop .3s}
+  .p4-cmd-log{font-size:11px;margin-top:8px;line-height:1.6;min-height:16px;color:#0A7A4A}
+  .stars-pick{font-size:22px;letter-spacing:4px;cursor:pointer;user-select:none}
+  .stars-pick .s{color:#ccc;transition:color .15s}
+  .stars-pick .s.on{color:#FF9F0A}
+  .share-panel{background:rgba(10,122,74,.14);border:1px solid rgba(10,122,74,.4);
+    border-radius:14px;padding:14px;margin-bottom:12px;animation:fade .3s}
+  .share-panel .sp-h{font-size:14px;font-weight:700;color:#0A5A38;margin-bottom:4px}
+  .share-panel .sp-b{font-size:12px;color:#0A5A38;line-height:1.6}
 </style>
 </head>
 <body>
@@ -519,7 +564,7 @@ let mode='flow', fStep=0, fImport=null, fPhase='行前·准备';
 const FLOW=[
   {title:'① 统一导入入口',hint:'打开「我的行程」。系统已被动识别你在筹备旅行，顶部亮出提示位。点「自规划识别」进入确认；也可试小艺 / 小红书两条路径，或点提示位旁看「弱信号示例」(P2)。'},
   {title:'② 强信号·确认生成',hint:'系统把"看到"的证据摊开给你确认（日历 / 地图 / 短信）。点「确认生成」进入组装——也可点「这次不准」让系统 14 天冷却并回灌误触发样本。'},
-  {title:'③ 构建画布·组装预览',hint:'时间线主轴 + 环绕卡实时拼装。可拖拽排序或用小艺自然语言（演示：点「把雪山放到第二天」发送）。点「生成并完成」。'},
+  {title:'③ 构建画布·组装预览',hint:'时间线主轴 + 环绕卡实时拼装。用小艺自然语言改行程（如输入「把玉龙雪山放到第2天」发送，画布会真实重排）。点「生成并完成」。'},
   {title:'④ 使用态·多卡桌面',hint:'进入旅行期，桌面按阶段自动路由。点下方「阶段标签」切换（行前→出发→大理→丽江→返程），看卡片组合如何随阶段变化。'},
   {title:'⑤ 点击卡片·详情页',hint:'点桌面任意卡片拉起详情页（整卡热区）。重点试「行程时间线」卡看 4 天总览；行李卡可在页内勾选编辑（合规：编辑在页不在卡）。'},
   {title:'⑥ 复盘·沉淀偏好',hint:'返程后系统生成行程回眸与花费小结，邀请你打分沉淀，反哺下次识别权重。'}
@@ -550,7 +595,7 @@ function renderStep(i){
     flowEl.classList.add('show');
     if(k===0) flowBody.innerHTML=p1HTML();
     else if(k===1) flowBody.innerHTML=p3HTML();
-    else if(k===2) flowBody.innerHTML=p4HTML();
+    else if(k===2){ flowBody.innerHTML=p4HTML(); renderP4(); }
     else if(k===5) flowBody.innerHTML=p7HTML();
   }
 }
@@ -596,58 +641,170 @@ function showWeak(){
   if(!slot) return;
   slot.innerHTML=`<div class="weak-toast">💡 弱信号示例：若系统只看到"搜过地图 / 刷过视频"等探索期信号，<b>只会轻提示</b>"帮你整理行程？"，不弹确认页、也不生成卡片，避免打扰。<span onclick="this.parentNode.remove()">✕</span></div>`;
 }
+/* === S1 真实交互：意图解析 + 模板 + 小红书解析 === */
+const XHS_SAMPLE=`大理丽江4天保姆级攻略｜附每日路线
+Day1 大理古城慢逛，傍晚洱海生态廊道看日落
+Day2 喜洲古镇+双廊，环海骑行
+Day3 动车赴丽江，下午玉龙雪山大索道，蓝月谷
+Day4 丽江古城四方街，束河古镇，返程
+美食：腊排骨火锅、鲜花饼、喜洲粑粑、石板烧
+住宿：大理住洱海边客栈，丽江住束河庭院民宿`;
+const TRIP_TEMPLATES={
+  "大理,丽江":{title:"云南·大理+丽江",themes:["古城慢逛·洱海日落","环海骑行·喜洲田园","动车赴丽江·玉龙雪山","古城漫步·返程"],spots:["古城","洱海","喜洲","双廊","玉龙雪山","蓝月谷","束河","四方街"]},
+  "三亚":{title:"海南·三亚海岛",themes:["抵达·椰梦长廊日落","蜈支洲岛一日游","亚龙湾热带天堂","南山文化旅游区","返程"],spots:["亚龙湾","蜈支洲岛","天涯海角","南山寺","椰梦长廊","热带天堂"]},
+  "_generic":{title:"自定义行程",themes:["抵达·入住","深度游览","返程"],spots:["核心景区","当地美食","特色体验"]}
+};
+function parseIntent(text){
+  const t=(text||'').trim();
+  let dests=[];
+  if(/大理|洱海|丽江|玉龙/.test(t)) dests.push('大理','丽江');
+  if(/三亚|海南|蜈支洲|亚龙湾/.test(t)) dests.push('三亚');
+  if(/成都|熊猫|宽窄/.test(t)) dests.push('成都');
+  if(/北京|故宫|长城/.test(t)) dests.push('北京');
+  if(/西藏|拉萨|林芝/.test(t)) dests.push('西藏');
+  if(/西安|兵马俑|大唐/.test(t)) dests.push('西安');
+  if(dests.length===0) dests=['自定义'];
+  let days=4;
+  const m1=t.match(/(\d)\s*天/); if(m1) days=parseInt(m1[1]);
+  else if(/三天/.test(t)) days=3; else if(/五天/.test(t)) days=5; else if(/两天/.test(t)) days=2;
+  days=Math.min(Math.max(days,2),8);
+  let prefs=[];
+  if(/亲子|带娃|小孩/.test(t)) prefs.push('亲子');
+  if(/穷游|省钱|低价/.test(t)) prefs.push('穷游');
+  if(/自由行|自由/.test(t)) prefs.push('自由行');
+  if(/慢|休闲|度假|放松/.test(t)) prefs.push('慢旅行');
+  if(prefs.length===0) prefs=['慢旅行'];
+  const key=dests.includes('大理')&&dests.includes('丽江')?'大理,丽江':dests.includes('三亚')?'三亚':'_generic';
+  const tpl=TRIP_TEMPLATES[key];
+  return {dests,days,prefs,key,tpl,text:t};
+}
+function parseXhs(text){
+  const r={dests:[],days:0,spots:[],foods:[],stay:[]};
+  if(/大理/.test(text)) r.dests.push('大理'); if(/丽江/.test(text)) r.dests.push('丽江');
+  if(/三亚/.test(text)) r.dests.push('三亚'); if(/成都/.test(text)) r.dests.push('成都');
+  const dm=text.match(/(\d)\s*天/); if(dm) r.days=parseInt(dm[1]);
+  const SPOTS=['洱海','玉龙雪山','蓝月谷','喜洲','双廊','古城','束河','苍山','四方街','亚龙湾','蜈支洲岛','天涯海角','南山寺'];
+  r.spots=SPOTS.filter(s=>text.includes(s));
+  const FOODS=['腊排骨','鲜花饼','喜洲粑粑','石板烧','菌菇火锅','烤乳扇','过桥米线'];
+  r.foods=FOODS.filter(s=>text.includes(s));
+  if(/客栈/.test(text)) r.stay.push('客栈'); if(/民宿/.test(text)) r.stay.push('民宿'); if(/酒店/.test(text)) r.stay.push('酒店');
+  return r;
+}
 function pickImport(m){
   fImport=m;
-  if(m==='self'){ goStep(1); return; }
+  if(m==='self'){ window.__intent=parseIntent('大理丽江4天'); goStep(1); return; }
   if(m==='xiaoyi'){
     flowBody.innerHTML=`
       <div class="flow-head"><div class="fh-top">🤖 小艺</div></div>
       <div class="flow-scroll">
+        <div class="xy-bar">
+          <button class="mic" id="micBtn" type="button" onclick="toggleMic()" title="语音输入">🎤</button>
+          <input id="xyInput" placeholder='如 帮我规划五一去大理丽江4天 / 三亚5天亲子' onkeydown="if(event.key==='Enter')startXiaoyi()">
+          <button class="send" id="xySend" type="button" onclick="startXiaoyi()">发送</button>
+        </div>
+        <div class="xy-hint">💡 可打字，也可点麦克风说话（需浏览器授权）。识别后小艺会逐步生成行程。</div>
+        <div class="xy-chips">
+          <span class="xy-chip" onclick="quickSay('帮我规划五一去大理丽江4天慢旅行')">大理丽江4天</span>
+          <span class="xy-chip" onclick="quickSay('三亚5天亲子游')">三亚5天亲子</span>
+          <span class="xy-chip" onclick="quickSay('去成都玩3天')">成都3天</span>
+        </div>
         <div class="xflow-lbl"><span>了解需求</span><span>检索攻略</span><span>生成草稿</span><span>生成空间</span></div>
-        <div class="xflow" id="xFlow">
-          <div class="xs"></div><div class="xs"></div><div class="xs"></div><div class="xs"></div>
-        </div>
-        <div class="chat-wrap" id="xChat">
-          <div class="bubble me">帮我规划五一去大理丽江 4 天</div>
-        </div>
+        <div class="xflow" id="xFlow"><div class="xs"></div><div class="xs"></div><div class="xs"></div><div class="xs"></div></div>
+        <div class="chat-wrap" id="xChat"></div>
         <div id="xAfter"></div>
       </div>`;
-    runXiaoyi();
     return;
   }
-  flowBody.innerHTML=`<div class="flow-head"><div class="fh-top">小红书</div></div>
+  if(m==='xhs'){
+    flowBody.innerHTML=`
+      <div class="flow-head"><div class="fh-top">📕 小红书导入</div></div>
       <div class="flow-scroll">
-        <div class="xhs-card">📕 博文《大理丽江 4 天保姆级攻略》<div class="mini">收藏 2.3w · 含每日路线 / 美食 / 住宿</div></div>
-        <div class="gen-btn" onclick="goStep(1)">导入博文 + skill →</div>
+        <div class="xhs-paste">
+          <div class="mini" style="margin-bottom:6px;color:var(--panel-sub)">粘贴小红书博文中的一段，系统会自动识别目的地/天数/景点/美食/住宿：</div>
+          <textarea id="xhsText" placeholder="粘贴博文文本..."></textarea>
+          <div class="xhs-tools">
+            <button type="button" onclick="fillSample()">填入示例</button>
+            <button type="button" onclick="document.getElementById('xhsText').value=''">清空</button>
+            <button type="button" class="parse" onclick="doParseXhs()">解析 →</button>
+          </div>
+        </div>
+        <div id="xhsOut"></div>
       </div>`;
+    return;
+  }
 }
-/* 小艺规划：v1 风格逐步生成对话（打字机 + 4 步流程条） */
-function runXiaoyi(){
+function quickSay(s){ const i=document.getElementById('xyInput'); if(i){ i.value=s; startXiaoyi(); } }
+function fillSample(){ const t=document.getElementById('xhsText'); if(t) t.value=XHS_SAMPLE; }
+/* 麦克风：Web Speech API（不支持则降级为纯文本输入） */
+let __rec=null, __micOn=false;
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const btn=document.getElementById('micBtn');
+  if(!SR){ const i=document.getElementById('xyInput'); if(i){ i.placeholder='⚠ 当前浏览器不支持语音，请直接打字'; i.focus(); } return; }
+  if(__micOn){ try{__rec.stop();}catch(e){} return; }
+  __rec=new SR(); __rec.lang='zh-CN'; __rec.interimResults=false; __rec.maxAlternatives=1;
+  __rec.onstart=()=>{ __micOn=true; if(btn){btn.classList.add('on');btn.textContent='●';} };
+  __rec.onerror=()=>{ __micOn=false; if(btn){btn.classList.remove('on');btn.textContent='🎤';} };
+  __rec.onend=()=>{ __micOn=false; if(btn){btn.classList.remove('on');btn.textContent='🎤';} };
+  __rec.onresult=e=>{ const txt=e.results[0][0].transcript; const i=document.getElementById('xyInput'); if(i){ i.value=txt; startXiaoyi(); } };
+  try{ __rec.start(); }catch(e){}
+}
+/* 小艺规划：基于用户真实输入动态生成（打字机 + 4 步流程条） */
+function startXiaoyi(){
+  const inp=document.getElementById('xyInput');
+  const userText=inp?inp.value.trim():'';
+  if(!userText){ if(inp) inp.focus(); return; }
+  const sendBtn=document.getElementById('xySend'); if(sendBtn) sendBtn.disabled=true;
   const chat=document.getElementById('xChat');
   const xs=document.querySelectorAll('#xFlow .xs');
+  chat.innerHTML=''; xs.forEach(x=>x.classList.remove('active'));
+  const after=document.getElementById('xAfter'); if(after) after.innerHTML='';
+  appendBubble(chat,userText,'me');
+  const intent=parseIntent(userText); window.__intent=intent;
+  let themes=intent.tpl.themes.slice();
+  while(themes.length<intent.days) themes.push('自由安排·深度探索');
+  themes=themes.slice(0,intent.days);
+  const destStr=intent.dests.join('+');
+  const dayLines=themes.map((th,i)=>`Day${i+1} ${th}`).join(' / ');
   const seq=[
-    {t:650,  step:0, ai:'好的，已了解：4 天 3 夜 · 大理 2 天 + 丽江 2 天，主打"慢旅行"。'},
-    {t:2400, step:1, typing:'正在检索小红书攻略、实时机票与天气…'},
-    {t:5400, step:2, ai:'生成时间线草稿：Day1 古城慢逛·洱海日落 / Day2 环海骑行 / Day3 动车赴丽江·玉龙雪山 / Day4 古城漫步·返程。'},
-    {t:8300, step:3, ai:'行程已就绪 ✦ 已为你生成卡片空间（行程时间线为主轴 + 大交通/客栈/天气/地图环绕卡）。'}
+    {t:600, step:0, ai:`好的，已了解：${intent.days}天 · ${destStr}，主打"${intent.prefs.join('/')}"。`},
+    {t:2200, step:1, typing:`正在检索${destStr}攻略、实时机票与天气…`},
+    {t:4800, step:2, ai:`生成时间线草稿：${dayLines}。`},
+    {t:7800, step:3, ai:`行程已就绪 ✦ 已生成卡片空间（行程时间线为主轴 + 大交通/客栈/天气/地图环绕卡）。`}
   ];
   seq.forEach(item=>{
     setTimeout(()=>{
       if(item.step!=null && xs[item.step]) xs[item.step].classList.add('active');
       if(item.typing){
         const t=document.createElement('div'); t.className='typing'; t.innerHTML='<i></i><i></i><i></i>';
-        chat.appendChild(t);
-        const box=chat.parentElement; box.scrollTop=box.scrollHeight;
+        chat.appendChild(t); const box=chat.parentElement; box.scrollTop=box.scrollHeight;
         setTimeout(()=>{ t.remove(); appendBubble(chat,item.typing,'ai'); }, 1100);
-      } else if(item.ai){
-        appendBubble(chat,item.ai,'ai');
-      }
-      if(item.step===3){
-        const after=document.getElementById('xAfter');
-        if(after) after.innerHTML=`<div class="gen-btn primary" onclick="goStep(1)">查看行程草稿 →</div>`;
-      }
+      } else if(item.ai){ appendBubble(chat,item.ai,'ai'); }
+      if(item.step===3){ const a=document.getElementById('xAfter'); if(a) a.innerHTML=`<div class="gen-btn primary" onclick="goStep(1)">查看行程草稿 →</div>`; if(sendBtn) sendBtn.disabled=false; }
     }, item.t);
   });
+}
+/* 小红书解析渲染 */
+function doParseXhs(){
+  const t=document.getElementById('xhsText'); if(!t) return;
+  const text=t.value.trim(); if(!text) return;
+  const r=parseXhs(text);
+  const out=document.getElementById('xhsOut'); if(!out) return;
+  if(r.dests.length===0 && r.spots.length===0){
+    out.innerHTML=`<div class="parse-out"><div class="po-h">⚠ 未识别到旅行实体</div><div class="po-row">请粘贴包含目的地/景点/天数的博文文本</div></div>`;
+    return;
+  }
+  window.__intent=parseIntent(text||'大理丽江4天');
+  out.innerHTML=`<div class="parse-out">
+    <div class="po-h">✓ 已解析博文实体</div>
+    ${r.dests.length?`<div class="po-row"><b>目的地</b>${r.dests.join('、')}</div>`:''}
+    ${r.days?`<div class="po-row"><b>天数</b>${r.days}天</div>`:''}
+    ${r.spots.length?`<div class="po-row"><b>景点</b>${r.spots.join('、')}</div>`:''}
+    ${r.foods.length?`<div class="po-row"><b>美食</b>${r.foods.join('、')}</div>`:''}
+    ${r.stay.length?`<div class="po-row"><b>住宿</b>${r.stay.join('、')}</div>`:''}
+    <div class="po-row" style="color:var(--panel-sub);font-size:11px;margin-top:6px">skill 已将博文结构化为统一「行程草稿」</div>
+  </div>
+  <div class="gen-btn primary" onclick="goStep(1)">导入并确认 →</div>`;
 }
 function appendBubble(box, text, role){
   const b=document.createElement('div'); b.className='bubble '+role; b.textContent=text;
@@ -682,42 +839,100 @@ function markWrong(){
     <div class="flow-scroll"><div class="bubble ai">已标记为误触发 ✓ 该目的地 14 天内不再主动提示，并回灌校准样本优化阈值。</div>
     <div class="gen-btn" onclick="goStep(0)">返回入口</div></div>`;
 }
-/* P4 构建画布 */
+/* P4 构建画布（可重排时间线 + 自然语言改行程） */
 function p4HTML(){
+  const intent=window.__intent||parseIntent('大理丽江4天');
+  const days=intent.days;
+  const spotsByDay=[null]; for(let d=1;d<=days;d++) spotsByDay[d]=[];
+  intent.tpl.spots.forEach((s,i)=> spotsByDay[(i%days)+1].push(s));
+  window.__p4={spotsByDay,days,intent};
   return `
   <div class="flow-head"><div class="fh-top">构建画布</div></div>
   <div class="flow-scroll">
-    <div class="canvas">
-      <div class="cv-hero">🗺️ 行程时间线（主轴）</div>
-      <div class="cv-grid">${['✈️ 大交通','🏨 客栈','🧳 行李','📸 景点','⛅ 天气','🍜 美食','🧭 地图','💰 预算'].map((x,i)=>`<div class="cv-item" ${i===2?'style="outline:2px dashed var(--accent);outline-offset:2px"':''}>${x}</div>`).join('')}</div>
-    </div>
-    <div class="xiao-input">🤖 小艺：<span id="xiaoCmd">把雪山放到第二天</span> <button onclick="aiEdit()">发送</button></div>
+    <div class="p4-tl" id="p4TL"></div>
+    <div class="xiao-input">🤖 小艺：<input id="xiaoCmd" placeholder='如 "把玉龙雪山放到第2天" / "删除蓝月谷" / "添加丽江千古情到第3天"' style="flex:1;border:none;background:transparent;font-size:13px;outline:none;color:#333" onkeydown="if(event.key==='Enter')aiEdit()"> <button type="button" onclick="aiEdit()">发送</button></div>
+    <div class="p4-cmd-log" id="p4Log">💡 试试：把玉龙雪山放到第2天</div>
     <div class="gen-btn primary" onclick="goStep(3)">生成并完成 →</div>
   </div>`;
 }
-function aiEdit(){
-  const b=document.getElementById('xiaoCmd');
-  if(b){ b.innerHTML='✓ 已调整：Day3 雪山 → 已重排'; b.style.color='#0A7A4A'; }
+function renderP4(){
+  const st=window.__p4; if(!st) return;
+  const tl=document.getElementById('p4TL'); if(!tl) return;
+  tl.innerHTML=`<div class="cv-hero">🗺️ 行程时间线（主轴）· ${st.intent.tpl.title} · ${st.days}天</div>`+
+    Array.from({length:st.days},(_,i)=>i+1).map(d=>{
+      const arr=st.spotsByDay[d]||[];
+      return `<div class="p4-day"><div class="p4-day-h"><span class="dnum">D${d}</span> Day ${d}</div>
+        <div class="p4-spots">${arr.length?arr.map(s=>`<span class="p4-spot" data-spot="${s}">${s}</span>`).join(''):'<span class="mini" style="color:#aaa">（空）</span>'}</div></div>`;
+    }).join('');
 }
-/* P7 复盘沉淀 */
+function aiEdit(){
+  const inp=document.getElementById('xiaoCmd'); if(!inp) return;
+  const cmd=inp.value.trim(); if(!cmd) return;
+  const st=window.__p4; const log=document.getElementById('p4Log');
+  let msg='';
+  const m1=cmd.match(/把(.+?)放到第?(\d)\s*天/);
+  if(m1){
+    const spot=m1[1].trim(), day=parseInt(m1[2]);
+    let found=false;
+    for(let d=1;d<=st.days;d++){
+      const before=st.spotsByDay[d].length;
+      st.spotsByDay[d]=st.spotsByDay[d].filter(s=>!(s.includes(spot)||spot.includes(s)));
+      if(st.spotsByDay[d].length<before) found=true;
+    }
+    if(day>=1&&day<=st.days){ st.spotsByDay[day].push(spot); msg=found?`✓ 已将「${spot}」移动到 Day${day}`:`✓ 已添加「${spot}」到 Day${day}`; }
+    else msg=`⚠ 第${day}天无效（共${st.days}天）`;
+  } else if(/删除|去掉|移除/.test(cmd)){
+    const m2=cmd.match(/(?:删除|去掉|移除)(.+)/);
+    if(m2){ const spot=m2[1].trim(); let n=0; for(let d=1;d<=st.days;d++){ const b=st.spotsByDay[d].length; st.spotsByDay[d]=st.spotsByDay[d].filter(s=>!(s.includes(spot)||spot.includes(s))); n+=b-st.spotsByDay[d].length; } msg=n?`✓ 已删除「${spot}」（${n}处）`:`⚠ 未找到「${spot}」`; }
+  } else if(/添加|加/.test(cmd)){
+    const m3=cmd.match(/(?:添加|加)(.+?)(?:到|至)?\s*第?(\d)?\s*天?$/);
+    if(m3){ const spot=m3[1].trim(); const day=m3[2]?parseInt(m3[2]):1; if(day>=1&&day<=st.days){ st.spotsByDay[day].push(spot); msg=`✓ 已添加「${spot}」到 Day${day}`; } else msg=`⚠ 第${day}天无效`; }
+  } else { msg=`⚠ 暂不支持，试试"把X放到第Y天" / "删除X" / "添加X到第Y天"`; }
+  inp.value=''; renderP4();
+  setTimeout(()=>{ document.querySelectorAll('.p4-spot').forEach(s=>{ if(s.dataset.spot&&cmd.includes(s.dataset.spot)) s.classList.add('moved'); }); },40);
+  if(log){ log.textContent=msg; log.style.color=msg.startsWith('⚠')?'#d33':'#0A7A4A'; }
+}
+/* P7 复盘沉淀（星标可点选 + 分享成功态） */
+let starVal=0;
 function p7HTML(){
+  const intent=window.__intent||parseIntent('大理丽江4天');
+  const dests=intent.dests.join('+');
   return `
   <div class="flow-head"><div class="fh-top">行程回眸</div></div>
   <div class="flow-scroll">
     <div class="review">
-      <div class="rv-h">📸 4 天 · 大理 + 丽江</div>
-      <div class="rv-strip">${['🏔️雪山','🌊洱海','🏮古城','🌿喜洲'].map(x=>`<div class="rv-ph">${x}</div>`).join('')}</div>
+      <div class="rv-h">📸 ${intent.days} 天 · ${dests}</div>
+      <div class="rv-strip">${['🏔️','🌊','🏮','🌿'].map(x=>`<div class="rv-ph">${x}</div>`).join('')}</div>
       <div class="rv-row">💰 总花费 <b>¥2870</b> / 预算 ¥3000</div>
-      <div class="rv-row">⭐ 你给这次识别打分： <span class="stars">★★★☆☆</span></div>
-      <div class="rv-tags">#喜欢雪山 #洱海骑行 #下次想自由行</div>
+      <div class="rv-row">⭐ 你给这次识别打分：<span class="stars-pick" id="starsPick">${[1,2,3,4,5].map(i=>`<span class="s" data-v="${i}" onclick="pickStar(${i})" onmouseover="hoverStar(${i})" onmouseout="hoverStar(0)">★</span>`).join('')}</span> <span id="starTxt" style="font-size:12px;color:var(--panel-sub)"></span></div>
+      <div class="rv-tags" id="rvTags">#${dests} #${intent.days}天 #${intent.prefs.join(' #')}</div>
     </div>
-    <div class="gen-btn" onclick="shareTrip()">分享行程 →</div>
+    <div class="gen-btn primary" id="shareBtn" onclick="shareTrip()">分享行程 →</div>
     <div class="weak-link" onclick="goStep(0)">↺ 回到入口，重走一遍</div>
   </div>`;
 }
+function hoverStar(v){
+  document.querySelectorAll('#starsPick .s').forEach(s=>{ s.classList.toggle('on', v>0 && parseInt(s.dataset.v)<=v); });
+}
+function pickStar(v){
+  starVal=v;
+  document.querySelectorAll('#starsPick .s').forEach(s=>s.classList.toggle('on',parseInt(s.dataset.v)<=v));
+  const txt=document.getElementById('starTxt');
+  const labels=['','需要改进','一般','还行','满意','超赞'];
+  if(txt) txt.textContent=labels[v]||'';
+  const tags=document.getElementById('rvTags');
+  if(tags){ const dl=(window.__intent||parseIntent('大理丽江4天')).dests.join('+'); tags.innerHTML=`#${dl} #本次识别${v>=4?'很准':'待优化'} #${v}星反馈已沉淀反哺识别权重`; }
+}
 function shareTrip(){
-  const b=document.querySelector('#flowBody .gen-btn');
-  if(b){ b.textContent='✓ 已生成分享卡片'; b.classList.remove('primary'); }
+  const btn=document.getElementById('shareBtn'); if(btn) btn.style.display='none';
+  const sc=document.getElementById('flowBody'); if(!sc) return;
+  if(sc.querySelector('.share-panel')) return;
+  const panel=document.createElement('div'); panel.className='share-panel';
+  panel.innerHTML=`<div class="sp-h">✓ 分享卡片已生成${starVal?` · ${starVal}星偏好已沉淀`:''}</div>
+    <div class="sp-b">行程回眸已生成精美长图，可分享至微信/朋友圈。<br>${starVal?`你的打分与标签作为偏好样本反哺识别权重，下次规划更懂你。`:'点上方星标给识别打分，可沉淀偏好反哺下次规划。'}</div>`;
+  const review=sc.querySelector('.review');
+  if(review) review.after(panel); else sc.prepend(panel);
+  sc.scrollTop=sc.scrollHeight;
 }
 
 /* 初始：进入全流程体验（默认推荐） */
