@@ -17,8 +17,15 @@
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{font-family:"HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-    background:var(--page-bg);color:var(--panel-text);display:flex;justify-content:center;
-    gap:28px;padding:28px;flex-wrap:wrap;align-items:flex-start}
+    background:var(--page-bg);color:var(--panel-text);padding:18px;display:block}
+  .topbar{display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+  .tab{border:1px solid var(--card-line);background:transparent;color:var(--panel-sub);
+    padding:9px 18px;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;
+    transition:.2s;font-family:inherit;outline:none}
+  .tab:hover{border-color:var(--accent);color:var(--accent)}
+  .tab.on,.tab.on:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .stage{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
   /* ---- 控制台 ---- */
   .console{width:340px;background:var(--panel-bg);border-radius:20px;padding:20px;
     box-shadow:0 8px 30px rgba(0,0,0,.08)}
@@ -58,14 +65,14 @@
     padding:0 22px;font-size:14px;font-weight:600;color:#fff;z-index:20;flex-shrink:0}
   .statusbar .right{display:flex;align-items:center;gap:6px;font-size:12px}
   .capsule{display:none;height:24px;background:rgba(0,0,0,.78);color:#fff;border-radius:12px;
-    align-items:center;gap:6px;padding:0 12px;font-size:11px;margin:0 14px 4px;flex-shrink:0}
+    align-items:center;gap:6px;padding:0 12px;font-size:11px;margin:0 14px 4px;flex-shrink:0;z-index:21}
   .capsule.show{display:flex;animation:fade .3s ease}
   @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
   /* 桌面：4 列、固定方格 74px、7 行上限、绝不溢出 */
   .desktop{flex:1;display:grid;grid-template-columns:repeat(4,1fr);
     grid-auto-rows:74px;gap:9px;padding:14px;align-content:start;overflow:hidden}
   .dock{height:64px;margin:4px 14px 14px;border-radius:24px;background:rgba(255,255,255,.25);
-    backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;flex-shrink:0}
+    backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;flex-shrink:0;z-index:21}
   .dock .d{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;
     justify-content:center;font-size:22px;background:rgba(255,255,255,.85)}
   /* ---- 卡片 ---- */
@@ -84,7 +91,6 @@
   .htext .nm{font-size:13px;font-weight:600;line-height:1.2}
   .s2x2 .htext .nm{font-size:12px}
   .body{flex:1;margin-top:8px;display:flex;flex-direction:column;gap:6px;min-height:0}
-  /* 通用行 */
   .row{display:flex;align-items:center;gap:8px;font-size:12px}
   .dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
   .row .act{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -142,64 +148,163 @@
   .pday{margin:10px 0 4px;font-weight:700;font-size:15px}
   .pspot{font-size:13px;padding:6px 0;border-bottom:1px solid var(--card-line);line-height:1.5}
   .pspot .pt{color:var(--accent);font-weight:600;font-size:12px;margin-right:6px}
+  /* ====== 全流程体验：flow 全屏层 ====== */
+  .flow{position:absolute;inset:0;z-index:35;display:none;flex-direction:column;
+    background:linear-gradient(165deg,var(--wall1),var(--wall2) 55%,var(--wall3));
+    animation:fade .25s ease}
+  .flow.show{display:flex}
+  .flow-head{padding:46px 18px 10px;flex-shrink:0}
+  .fh-top{font-size:20px;font-weight:700;color:#1A1A1A}
+  .detect-tip{margin-top:12px;background:rgba(10,122,74,.14);border:1px solid rgba(10,122,74,.35);
+    color:#0A5A38;border-radius:14px;padding:10px 12px;font-size:12px;font-weight:600;cursor:pointer;line-height:1.5}
+  .detect-tip small{display:block;font-weight:400;font-size:10px;margin-top:3px;opacity:.8;cursor:pointer}
+  .flow-scroll{flex:1;overflow:auto;padding:10px 18px 24px}
+  .flow-scroll::-webkit-scrollbar{width:0}
+  .imp-title{font-size:13px;color:#444;font-weight:600;margin:8px 0 10px}
+  .imp-card{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.92);border-radius:16px;
+    padding:14px;margin-bottom:10px;cursor:pointer;transition:.15s;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+  .imp-card:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+  .imp-card.rec{border:2px solid var(--accent)}
+  .imp-ico{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#0A59F7,#8A5CF6);
+    display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .imp-card b{font-size:15px}
+  .imp-card .mini{margin-top:2px}
+  .bubble{max-width:84%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;margin-bottom:10px}
+  .bubble.me{background:var(--accent);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+  .bubble.ai{background:rgba(255,255,255,.95);color:#1A1A1A;border-bottom-left-radius:4px}
+  .xhs-card{background:rgba(255,255,255,.95);border-radius:16px;padding:16px;font-size:15px;font-weight:600;margin-bottom:12px}
+  .xhs-card .mini{margin-top:4px}
+  .evidence{background:rgba(255,255,255,.9);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+  .ev-h{font-size:12px;color:var(--accent);font-weight:700;margin-bottom:8px}
+  .ev-row{font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+  .ev-row:last-child{border-bottom:none}
+  .draft-card{background:rgba(255,255,255,.95);border-radius:16px;padding:14px;margin-bottom:14px}
+  .dc-h{font-size:13px;font-weight:700;margin-bottom:8px}
+  .dc-line{font-size:13px;color:#333;margin-bottom:10px}
+  .dc-grid{display:flex;flex-wrap:wrap;gap:6px}
+  .dc-chip{font-size:11px;background:var(--card-line);color:var(--panel-sub);padding:4px 9px;border-radius:10px}
+  .gen-btn{background:var(--panel-text);color:var(--card-bg);border:none;border-radius:14px;
+    padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;margin-bottom:8px}
+  .gen-btn.primary{background:var(--accent);color:#fff}
+  .weak-link{text-align:center;font-size:12px;color:var(--panel-sub);cursor:pointer;padding:8px;
+    text-decoration:underline}
+  .weak-toast{position:absolute;left:14px;right:14px;bottom:18px;background:rgba(0,0,0,.82);color:#fff;
+    font-size:12px;padding:12px 14px;border-radius:14px;line-height:1.5;animation:fade .3s}
+  .weak-toast span{float:right;cursor:pointer;opacity:.7}
+  .canvas{background:rgba(255,255,255,.95);border-radius:16px;padding:14px;margin-bottom:12px}
+  .cv-hero{font-size:14px;font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--card-line)}
+  .cv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .cv-item{background:var(--card-line);border-radius:10px;padding:14px 4px;text-align:center;font-size:11px;color:#333}
+  .xiao-input{background:rgba(255,255,255,.9);border-radius:14px;padding:12px;font-size:13px;
+    display:flex;align-items:center;gap:8px;margin-bottom:14px;color:#333}
+  .xiao-input button{margin-left:auto;border:none;background:var(--accent);color:#fff;border-radius:10px;
+    padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+  .review{background:rgba(255,255,255,.95);border-radius:16px;padding:14px;margin-bottom:14px}
+  .rv-h{font-size:15px;font-weight:700;margin-bottom:10px}
+  .rv-strip{display:flex;gap:8px;margin-bottom:12px}
+  .rv-ph{flex:1;height:64px;border-radius:12px;background:linear-gradient(135deg,#DCE7FF,#ECE3FF);
+    display:flex;align-items:center;justify-content:center;font-size:26px}
+  .rv-row{font-size:13px;color:#333;padding:6px 0;border-bottom:1px solid var(--card-line)}
+  .rv-row b{color:var(--accent)}
+  .rv-tags{font-size:11px;color:var(--panel-sub);margin-top:8px}
+  .stars{color:#FF9F0A;letter-spacing:2px}
+  /* 向导（左栏第二套） */
+  .wiz-steps{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+  .wiz-steps::-webkit-scrollbar{height:0}
+  .ws{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.45;transition:.2s}
+  .ws.on{opacity:1}
+  .ws.done{opacity:.7}
+  .ws-n{width:26px;height:26px;border-radius:50%;background:var(--card-line);color:var(--panel-sub);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .ws.on .ws-n{background:var(--accent);color:#fff}
+  .ws.done .ws-n{background:#0A7A4A;color:#fff}
+  .ws-t{font-size:9px;color:var(--panel-sub);white-space:nowrap}
+  .wiz-cur{font-size:15px;font-weight:700;margin:12px 0 6px}
+  .wiz-hint{font-size:12px;color:var(--panel-sub);line-height:1.7;background:var(--card-line);
+    border-radius:12px;padding:12px}
+  .wiz-nav{display:flex;gap:8px;margin-top:14px}
+  .wiz-nav button{flex:1;border:1px solid var(--card-line);background:transparent;color:var(--panel-text);
+    padding:10px;border-radius:12px;font-size:13px;cursor:pointer;font-family:inherit;outline:none}
+  .wiz-nav button.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .wiz-nav button:disabled{opacity:.4;cursor:not-allowed}
+  /* 浮层提示（p6 点卡片） */
+  .float-tip{display:none;position:absolute;left:14px;right:14px;bottom:86px;z-index:36;
+    background:rgba(10,89,247,.95);color:#fff;font-size:12px;padding:10px 14px;border-radius:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,.3);line-height:1.5}
+  .float-tip.show{display:block;animation:fade .3s}
+  .float-tip b{font-weight:700}
 </style>
 </head>
 <body>
-  <!-- ============ 卡片自动组装 Skill 控制台 ============ -->
-  <div class="console">
-    <h1>旅游 · 卡片空间</h1>
-    <div class="sub">行程时间线驱动的<b>多卡空间</b>：以「时间线」为主轴卡片，按旅行阶段（行前/出发/目的地/返程）用意图路由自动拼装当下一屏卡片组合。</div>
-
-    <div class="trip">
-      <div class="t1">🌸 云南 · 大理 + 丽江 · 4天3夜</div>
-      <div class="t2">📅 5/1 周五 — 5/4 周一 · 单人</div>
-      <div class="t3">💰 预算 ¥3000 · 苍山雪，洱海月</div>
-    </div>
-
-    <div class="seg-label">① 选择旅行阶段（演示意图路由）</div>
-    <div class="scn-btns" id="scnBtns"></div>
-
-    <div class="seg-label">② 当前信号（系统实时读取）</div>
-    <div class="signals" id="signals"></div>
-
-    <div class="seg-label">③ 组装配方（Skill 输出）</div>
-    <div class="recipe" id="recipe"></div>
-
-    <div class="toggle"><input type="checkbox" id="themeTgl"> 深色模式（卡片需适配 Dark #2E3033）</div>
-
-    <div class="compliance">
-      <b>✓ 合规要点</b><br>
-      · 时间线卡为整卡热区，点击一步拉起「行程详情页」<br>
-      · 卡片内无长按/二级菜单，编辑（行李勾选）在「详情页」完成<br>
-      · 卡片为独立沙箱，实时数据由 FormExtensionAbility 推送<br>
-      · 刷新以 30 分钟为单位；时间线整卡即「路线示意」<br>
-      · <b>每屏严格落在 7 行网格内，零溢出</b>
-    </div>
+  <div class="topbar">
+    <button type="button" class="tab" data-mode="demo" onclick="setMode('demo')">① 空间演示（阶段）</button>
+    <button type="button" class="tab on" data-mode="flow" onclick="setMode('flow')">② 全流程体验（推荐）</button>
   </div>
 
-  <!-- ============ 鸿蒙直板机 ============ -->
-  <div class="phone">
-    <div class="screen">
-      <div class="notch"></div>
-      <div class="statusbar">
-        <span id="clk">9:41</span>
-        <span class="right">5G ▪ ▪ ▪ 100%</span>
+  <div class="stage">
+    <!-- ============ 视图A：空间演示控制台 ============ -->
+    <div class="console" id="consoleA">
+      <h1>旅游 · 卡片空间</h1>
+      <div class="sub">行程时间线驱动的<b>多卡空间</b>：以「时间线」为主轴卡片，按旅行阶段用意图路由自动拼装当下一屏卡片组合。</div>
+      <div class="trip">
+        <div class="t1">🌸 云南 · 大理 + 丽江 · 4天3夜</div>
+        <div class="t2">📅 5/1 周五 — 5/4 周一 · 单人</div>
+        <div class="t3">💰 预算 ¥3000 · 苍山雪，洱海月</div>
       </div>
-      <div class="capsule" id="capsule">✈️ 大理 → 丽江 · 动车 D8772</div>
-      <div class="desktop" id="desktop"></div>
-      <div class="dock">
-        <div class="d">🗺️</div><div class="d">📷</div><div class="d">🧳</div><div class="d">💬</div>
+      <div class="seg-label">① 选择旅行阶段（演示意图路由）</div>
+      <div class="scn-btns" id="scnBtns"></div>
+      <div class="seg-label">② 当前信号（系统实时读取）</div>
+      <div class="signals" id="signals"></div>
+      <div class="seg-label">③ 组装配方（Skill 输出）</div>
+      <div class="recipe" id="recipe"></div>
+      <div class="toggle"><input type="checkbox" id="themeTgl"> 深色模式（卡片需适配 Dark #2E3033）</div>
+      <div class="compliance">
+        <b>✓ 合规要点</b><br>
+        · 时间线卡为整卡热区，点击一步拉起「行程详情页」<br>
+        · 卡片内无长按/二级菜单，编辑（行李勾选）在「详情页」完成<br>
+        · 卡片为独立沙箱，实时数据由 FormExtensionAbility 推送<br>
+        · 刷新以 30 分钟为单位；时间线整卡即「路线示意」<br>
+        · <b>每屏严格落在 7 行网格内，零溢出</b>
       </div>
+    </div>
 
-      <div class="page" id="page">
-        <div class="pbar-top">
-          <button class="back" onclick="closePage()">‹</button>
-          <div>
-            <div class="svc" id="pSvc" style="font-size:11px;color:var(--card-sub)"></div>
-            <div id="pName" style="font-size:15px;font-weight:600"></div>
-          </div>
+    <!-- ============ 视图B：全流程体验向导 ============ -->
+    <div class="console" id="consoleB" style="display:none">
+      <h1>全流程体验向导</h1>
+      <div class="sub">从「准备出行」到「出行结束」，完整走查用户在手机里的每一步操作：导入 → 识别 → 确认 → 构建 → 使用 → 点击 → 复盘。</div>
+      <div id="wiz"></div>
+    </div>
+
+    <!-- ============ 鸿蒙直板机 ============ -->
+    <div class="phone">
+      <div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span id="clk">9:41</span>
+          <span class="right">5G ▪ ▪ ▪ 100%</span>
         </div>
-        <div class="pbody" id="pBody"></div>
+        <div class="capsule" id="capsule">✈️ 大理 → 丽江 · 动车 D8772</div>
+        <div class="desktop" id="desktop"></div>
+        <div class="dock">
+          <div class="d">🗺️</div><div class="d">📷</div><div class="d">🧳</div><div class="d">💬</div>
+        </div>
+
+        <div class="page" id="page">
+          <div class="pbar-top">
+            <button class="back" onclick="closePage()">‹</button>
+            <div>
+              <div class="svc" id="pSvc" style="font-size:11px;color:var(--card-sub)"></div>
+              <div id="pName" style="font-size:15px;font-weight:600"></div>
+            </div>
+          </div>
+          <div class="pbody" id="pBody"></div>
+        </div>
+
+        <div class="flow" id="flow">
+          <div class="flow-scroll" id="flowBody"></div>
+        </div>
+
+        <div class="float-tip" id="floatTip"></div>
       </div>
     </div>
   </div>
@@ -214,7 +319,6 @@ const TRIP = {
     {day:3,date:"5/3 周日",dst:"丽江",theme:"奔赴丽江 · 雪山圣境",spots:6},
     {day:4,date:"5/4 周一",dst:"丽江",theme:"古城漫步 · 返程",spots:5}
   ],
-  // 当日逐小时时间线（目的地阶段用，还原原仓库横向「路线示意」卡）
   today:[
     {time:"08:00",ico:"🚄",t:"大理→丽江 动车",s:"D8772 09:15开"},
     {time:"11:30",ico:"🏨",t:"入住古城客栈",s:"束河·纳西庭院"},
@@ -229,17 +333,16 @@ const TRIP = {
 const C = {
   timeline:{svc:"行程助手",nm:"行程时间线",ico:"🗺️",ac:"#0A59F7",
     body:(size,variant)=>{
-      if(variant==='today'){            // 目的地：当日逐小时横向时间线（路线示意卡）
+      if(variant==='today'){
         const strip=TRIP.today.map(s=>`<div class="tl-spot"><div class="tt">${s.time}</div>
           <div class="ti">${s.ico}</div><div class="ts">${s.t}</div></div>`).join('');
         return `<div class="mini">Day 3 · 丽江 · 今日 6 站</div><div class="tl-strip">${strip}</div>`;
       }
-      if(variant==='summary'){          // 出发/返程：2x2 概览
+      if(variant==='summary'){
         return `<div class="big" style="font-size:22px">Day 3/4</div>
           <div class="mini">雪山圣境 · 6 个行程点</div>
           <button class="cta" onclick="event.stopPropagation();openPage('timeline')">看全程</button>`;
       }
-      // 行前：4 天纵向总览
       const rows=TRIP.days.map(d=>`<div class="tl-day ${d.day===3?'cur':''}">
         <span class="tl-badge">D${d.day}</span>
         <span class="dst">${d.dst}</span>
@@ -298,9 +401,7 @@ const C = {
       <div class="li"><span>🎫</span><span class="t">索道票提前抢</span><span class="v">20:00</span></div>`}
 };
 
-/* ===== 旅行阶段 → 卡片组合（意图路由）=====
-   每张卡显式声明 [id, 尺寸, 变体]，确保整屏 ≤7 行、不溢出。
-   结构恒为：1 张 2x4 主轴卡 + 4 张 2x2 环绕卡 = 6 行。 */
+/* ===== 旅行阶段 → 卡片组合（意图路由）===== */
 const SCEN = {
   "行前·准备":{sig:["📅 5/1-5/4","📍 大理·丽江","💰 ¥3000"],cap:false,
     cards:[["timeline","s2x4","overview"],["flight","s2x2"],["hotel","s2x2"],["packing","s2x2"],["weather","s2x2"]],
@@ -319,9 +420,10 @@ const SCEN = {
     recipe:"返程日 → 大交通 2×4 返程航班，时间线/行李/预算/攻略四小张（共 6 行）"}
 };
 
-/* ===== 渲染 ===== */
+/* ===== 渲染（空间演示视图） ===== */
 const desk = document.getElementById('desktop');
 function assemble(key){
+  if(!SCEN[key]) key='行前·准备';
   const s = SCEN[key];
   desk.innerHTML='';
   s.cards.forEach(([id,size,variant])=>{
@@ -338,11 +440,10 @@ function assemble(key){
   document.getElementById('signals').innerHTML=s.sig.map(x=>`<span class="chip">${x}</span>`).join('');
   document.getElementById('recipe').innerHTML=`<b>${key}</b><br>${s.recipe}`;
   document.getElementById('capsule').classList.toggle('show',s.cap);
-  [...document.querySelectorAll('#scnBtns button')].forEach(b=>b.classList.toggle('on',b.dataset.key===key));
+  const btns=document.querySelectorAll('#scnBtns button');
+  btns.forEach(b=>b.classList.toggle('on',b.dataset.key===key));
 }
-
 document.getElementById('scnBtns').innerHTML=Object.keys(SCEN).map(k=>`<button type="button" data-key="${k}" onclick="assemble('${k}')">${k}</button>`).join('');
-assemble('行前·准备');
 
 /* ===== 详情页（合规：编辑在 Page，不在卡片内）===== */
 let editState={packing:[['防晒 SPF50+',true],['薄外套',false],['羽绒服(雪山)',false],['氧气瓶',false],['充电宝',true],['背包(石板路)',false]]};
@@ -362,7 +463,6 @@ function openPage(id){
     h+=`<div class="ptitle">4 天行程总览</div><div class="mini" style="color:var(--card-sub);margin-bottom:6px">苍山雪，洱海月 · 数据由行程助手经 FormExtensionAbility 推送</div>`;
     TRIP.days.forEach(d=>{
       h+=`<div class="pday">Day ${d.day} · ${d.dst} · ${d.date} — ${d.theme}</div>`;
-      // 用当日时间线（第3天用真实数据，其余用概览文本）
       const list = d.day===3 ? TRIP.today : [
         {time:"09:00",t:"抵达/"+d.dst+"入住"},{time:"12:30",t:"午餐·当地小吃"},
         {time:"14:00",t:"古城/景点漫步"},{time:"17:30",t:"日落机位"},{time:"19:30",t:"特色晚餐"}];
@@ -392,6 +492,182 @@ function closePage(){document.getElementById('page').classList.remove('show');}
 document.getElementById('themeTgl').onchange=e=>{
   document.documentElement.setAttribute('data-theme',e.target.checked?'dark':'light');
 };
+
+/* =========================================================
+   全流程体验（视图B）：从准备出行到出行结束的可点击走查
+   P1 导入 → P3 确认 → P4 构建 → P5 使用桌面 → P6 详情 → P7 复盘
+   ========================================================= */
+const flowEl=document.getElementById('flow');
+const flowBody=document.getElementById('flowBody');
+const floatTip=document.getElementById('floatTip');
+let mode='flow', fStep=0, fImport=null, fPhase='行前·准备';
+
+const FLOW=[
+  {title:'① 统一导入入口',hint:'打开「我的行程」。系统已被动识别你在筹备旅行，顶部亮出提示位。点「自规划识别」进入确认；也可试小艺 / 小红书两条路径，或点提示位旁看「弱信号示例」(P2)。'},
+  {title:'② 强信号·确认生成',hint:'系统把"看到"的证据摊开给你确认（日历 / 地图 / 短信）。点「确认生成」进入组装——也可点「这次不准」让系统 14 天冷却并回灌误触发样本。'},
+  {title:'③ 构建画布·组装预览',hint:'时间线主轴 + 环绕卡实时拼装。可拖拽排序或用小艺自然语言（演示：点「把雪山放到第二天」发送）。点「生成并完成」。'},
+  {title:'④ 使用态·多卡桌面',hint:'进入旅行期，桌面按阶段自动路由。点下方「阶段标签」切换（行前→出发→大理→丽江→返程），看卡片组合如何随阶段变化。'},
+  {title:'⑤ 点击卡片·详情页',hint:'点桌面任意卡片拉起详情页（整卡热区）。重点试「行程时间线」卡看 4 天总览；行李卡可在页内勾选编辑（合规：编辑在页不在卡）。'},
+  {title:'⑥ 复盘·沉淀偏好',hint:'返程后系统生成行程回眸与花费小结，邀请你打分沉淀，反哺下次识别权重。'}
+];
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.mode===m));
+  document.getElementById('consoleA').style.display = m==='demo'?'block':'none';
+  document.getElementById('consoleB').style.display = m==='flow'?'block':'none';
+  if(m==='demo'){ flowEl.classList.remove('show'); closePage(); floatTip.classList.remove('show'); assemble('行前·准备'); }
+  else { renderStep(0); }
+}
+function goStep(n){ if(n<0||n>=FLOW.length) return; renderStep(n); }
+
+function renderStep(i){
+  fStep=i;
+  renderWiz();
+  const k=i;
+  floatTip.classList.remove('show');
+  if(k===3 || k===4){            // P5/P6：使用态桌面
+    flowEl.classList.remove('show');
+    closePage();
+    assemble(fPhase);
+    if(k===4) floatTip.classList.add('show');
+  } else {
+    closePage();
+    flowEl.classList.add('show');
+    if(k===0) flowBody.innerHTML=p1HTML();
+    else if(k===1) flowBody.innerHTML=p3HTML();
+    else if(k===2) flowBody.innerHTML=p4HTML();
+    else if(k===5) flowBody.innerHTML=p7HTML();
+  }
+}
+function renderWiz(){
+  const steps=FLOW.map((s,i)=>`<div class="ws ${i===fStep?'on':''} ${i<fStep?'done':''}">
+    <span class="ws-n">${i+1}</span><span class="ws-t">${s.title.split(' ')[1]||s.title}</span></div>`).join('');
+  let html=`<div class="seg-label">旅程进度</div>
+    <div class="wiz-steps">${steps}</div>
+    <div class="wiz-cur">${FLOW[fStep].title}</div>
+    <div class="wiz-hint">📱 用户在手机中操作：<br>${FLOW[fStep].hint}</div>
+    <div class="wiz-nav">
+      <button type="button" onclick="goStep(${fStep-1})" ${fStep===0?'disabled':''}>← 上一步</button>
+      <button type="button" class="pri" onclick="goStep(${fStep+1})" ${fStep===FLOW.length-1?'disabled':''}>下一步 →</button>
+    </div>`;
+  if(fStep===3){
+    html+=`<div class="seg-label">阶段切换（意图路由）</div>
+      <div class="scn-btns" id="wizPhases">${Object.keys(SCEN).map(p=>`<button type="button" data-key="${p}" onclick="setPhase('${p}')">${p}</button>`).join('')}</div>`;
+  }
+  document.getElementById('wiz').innerHTML=html;
+  if(fStep===3){
+    document.querySelectorAll('#wizPhases button').forEach(b=>b.classList.toggle('on',b.dataset.key===fPhase));
+  }
+}
+function setPhase(p){ fPhase=p; assemble(p); document.querySelectorAll('#wizPhases button').forEach(b=>b.classList.toggle('on',b.dataset.key===p)); }
+
+/* P1 统一导入入口 */
+function p1HTML(){
+  return `
+  <div class="flow-head">
+    <div class="fh-top">我的行程</div>
+    <div class="detect-tip" onclick="showWeak()">🟢 已识别你在筹备 · 大理+丽江 5/1–5/4<small>强信号 · 点我看「弱信号」示例场景</small></div>
+  </div>
+  <div class="flow-scroll">
+    <div class="imp-title">选择导入方式</div>
+    <div class="imp-card" onclick="pickImport('xiaoyi')"><div class="imp-ico">🤖</div><div><b>小艺语音规划</b><div class="mini">直接告诉小艺"帮我规划五一去大理丽江"</div></div></div>
+    <div class="imp-card" onclick="pickImport('xhs')"><div class="imp-ico">📕</div><div><b>小红书导入</b><div class="mini">导入博文 + skill 一键生成</div></div></div>
+    <div class="imp-card rec" onclick="pickImport('self')"><div class="imp-ico">🧭</div><div><b>自规划识别 · 推荐</b><div class="mini">系统已发现你的行程，无需手动</div></div></div>
+    <div id="weakSlot" style="position:relative"></div>
+  </div>`;
+}
+function showWeak(){
+  const slot=document.getElementById('weakSlot');
+  if(!slot) return;
+  slot.innerHTML=`<div class="weak-toast">💡 弱信号示例：若系统只看到"搜过地图 / 刷过视频"等探索期信号，<b>只会轻提示</b>"帮你整理行程？"，不弹确认页、也不生成卡片，避免打扰。<span onclick="this.parentNode.remove()">✕</span></div>`;
+}
+function pickImport(m){
+  fImport=m;
+  if(m==='self'){ goStep(1); return; }
+  const h = m==='xiaoyi'
+   ? `<div class="flow-head"><div class="fh-top">小艺</div></div>
+      <div class="flow-scroll">
+        <div class="bubble me">帮我规划五一去大理丽江 4 天</div>
+        <div class="bubble ai">好的，已为你整理 4 天行程：大理 2 天 + 丽江 2 天，含洱海环海、玉龙雪山、古城漫步…</div>
+        <div class="gen-btn" onclick="goStep(1)">生成行程草稿 →</div>
+      </div>`
+   : `<div class="flow-head"><div class="fh-top">小红书</div></div>
+      <div class="flow-scroll">
+        <div class="xhs-card">📕 博文《大理丽江 4 天保姆级攻略》<div class="mini">收藏 2.3w · 含每日路线 / 美食 / 住宿</div></div>
+        <div class="gen-btn" onclick="goStep(1)">导入博文 + skill →</div>
+      </div>`;
+  flowBody.innerHTML=h;
+}
+/* P3 强信号确认 */
+function p3HTML(){
+  const ev = fImport==='self'
+   ? `<div class="evidence"><div class="ev-h">📡 我们从这些地方发现你的行程</div>
+        <div class="ev-row">📅 日历：5/1–5/4 多日跨城日程</div>
+        <div class="ev-row">🗺️ 地图：近期高频搜索"大理 / 丽江"并收藏 POI</div>
+        <div class="ev-row">✉️ 短信：含东航航班号 + 客栈确认短信</div></div>`
+   : `<div class="evidence"><div class="ev-h">📥 导入来源</div>
+        <div class="ev-row">${fImport==='xiaoyi'?'🤖 小艺语音规划结果':'📕 小红书博文 + skill'}</div>
+        <div class="ev-row">已转换为统一「行程草稿」结构</div></div>`;
+  return `
+  <div class="flow-head"><div class="fh-top">确认行程</div></div>
+  <div class="flow-scroll">
+    ${ev}
+    <div class="draft-card">
+      <div class="dc-h">草稿预览</div>
+      <div class="dc-line">🗺️ 行程时间线（主轴）· 4 天 大理 + 丽江</div>
+      <div class="dc-grid">${['✈️大交通','🏨客栈','🧳行李','📸景点','⛅天气','🍜美食','🧭地图','💰预算'].map(x=>`<span class="dc-chip">${x}</span>`).join('')}</div>
+    </div>
+    <div class="gen-btn primary" onclick="goStep(2)">确认生成 →</div>
+    <div class="weak-link" onclick="markWrong()">这次不准（14 天冷却 + 回灌误触发）</div>
+  </div>`;
+}
+function markWrong(){
+  flowBody.innerHTML=`<div class="flow-head"><div class="fh-top">已记录</div></div>
+    <div class="flow-scroll"><div class="bubble ai">已标记为误触发 ✓ 该目的地 14 天内不再主动提示，并回灌校准样本优化阈值。</div>
+    <div class="gen-btn" onclick="goStep(0)">返回入口</div></div>`;
+}
+/* P4 构建画布 */
+function p4HTML(){
+  return `
+  <div class="flow-head"><div class="fh-top">构建画布</div></div>
+  <div class="flow-scroll">
+    <div class="canvas">
+      <div class="cv-hero">🗺️ 行程时间线（主轴）</div>
+      <div class="cv-grid">${['✈️ 大交通','🏨 客栈','🧳 行李','📸 景点','⛅ 天气','🍜 美食','🧭 地图','💰 预算'].map((x,i)=>`<div class="cv-item" ${i===2?'style="outline:2px dashed var(--accent);outline-offset:2px"':''}>${x}</div>`).join('')}</div>
+    </div>
+    <div class="xiao-input">🤖 小艺：<span id="xiaoCmd">把雪山放到第二天</span> <button onclick="aiEdit()">发送</button></div>
+    <div class="gen-btn primary" onclick="goStep(3)">生成并完成 →</div>
+  </div>`;
+}
+function aiEdit(){
+  const b=document.getElementById('xiaoCmd');
+  if(b){ b.innerHTML='✓ 已调整：Day3 雪山 → 已重排'; b.style.color='#0A7A4A'; }
+}
+/* P7 复盘沉淀 */
+function p7HTML(){
+  return `
+  <div class="flow-head"><div class="fh-top">行程回眸</div></div>
+  <div class="flow-scroll">
+    <div class="review">
+      <div class="rv-h">📸 4 天 · 大理 + 丽江</div>
+      <div class="rv-strip">${['🏔️雪山','🌊洱海','🏮古城','🌿喜洲'].map(x=>`<div class="rv-ph">${x}</div>`).join('')}</div>
+      <div class="rv-row">💰 总花费 <b>¥2870</b> / 预算 ¥3000</div>
+      <div class="rv-row">⭐ 你给这次识别打分： <span class="stars">★★★☆☆</span></div>
+      <div class="rv-tags">#喜欢雪山 #洱海骑行 #下次想自由行</div>
+    </div>
+    <div class="gen-btn" onclick="shareTrip()">分享行程 →</div>
+    <div class="weak-link" onclick="goStep(0)">↺ 回到入口，重走一遍</div>
+  </div>`;
+}
+function shareTrip(){
+  const b=document.querySelector('#flowBody .gen-btn');
+  if(b){ b.textContent='✓ 已生成分享卡片'; b.classList.remove('primary'); }
+}
+
+/* 初始：进入全流程体验（默认推荐） */
+assemble('行前·准备');
+setMode('flow');
 </script>
 </body>
 </html>
