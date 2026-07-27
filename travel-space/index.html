@@ -233,6 +233,20 @@
     box-shadow:0 6px 20px rgba(0,0,0,.3);line-height:1.5}
   .float-tip.show{display:block;animation:fade .3s}
   .float-tip b{font-weight:700}
+  /* 小艺规划·v1 风格逐步生成对话 */
+  .xflow{display:flex;gap:6px;margin:8px 0 16px}
+  .xflow .xs{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.22);transition:background .35s}
+  .xflow .xs.active{background:var(--accent)}
+  .xflow-lbl{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.6);margin-bottom:3px}
+  .chat-wrap{display:flex;flex-direction:column}
+  .typing{display:inline-flex;gap:4px;align-items:center;padding:11px 15px;background:rgba(255,255,255,.95);
+    border-radius:16px;border-bottom-left-radius:4px;margin-bottom:10px;align-self:flex-start}
+  .typing i{width:6px;height:6px;border-radius:50%;background:#bbb;animation:blink 1s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}
+  .typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+  @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .bubble{animation:msgIn .35s ease}
 </style>
 </head>
 <body>
@@ -585,19 +599,60 @@ function showWeak(){
 function pickImport(m){
   fImport=m;
   if(m==='self'){ goStep(1); return; }
-  const h = m==='xiaoyi'
-   ? `<div class="flow-head"><div class="fh-top">小艺</div></div>
+  if(m==='xiaoyi'){
+    flowBody.innerHTML=`
+      <div class="flow-head"><div class="fh-top">🤖 小艺</div></div>
       <div class="flow-scroll">
-        <div class="bubble me">帮我规划五一去大理丽江 4 天</div>
-        <div class="bubble ai">好的，已为你整理 4 天行程：大理 2 天 + 丽江 2 天，含洱海环海、玉龙雪山、古城漫步…</div>
-        <div class="gen-btn" onclick="goStep(1)">生成行程草稿 →</div>
-      </div>`
-   : `<div class="flow-head"><div class="fh-top">小红书</div></div>
+        <div class="xflow-lbl"><span>了解需求</span><span>检索攻略</span><span>生成草稿</span><span>生成空间</span></div>
+        <div class="xflow" id="xFlow">
+          <div class="xs"></div><div class="xs"></div><div class="xs"></div><div class="xs"></div>
+        </div>
+        <div class="chat-wrap" id="xChat">
+          <div class="bubble me">帮我规划五一去大理丽江 4 天</div>
+        </div>
+        <div id="xAfter"></div>
+      </div>`;
+    runXiaoyi();
+    return;
+  }
+  flowBody.innerHTML=`<div class="flow-head"><div class="fh-top">小红书</div></div>
       <div class="flow-scroll">
         <div class="xhs-card">📕 博文《大理丽江 4 天保姆级攻略》<div class="mini">收藏 2.3w · 含每日路线 / 美食 / 住宿</div></div>
         <div class="gen-btn" onclick="goStep(1)">导入博文 + skill →</div>
       </div>`;
-  flowBody.innerHTML=h;
+}
+/* 小艺规划：v1 风格逐步生成对话（打字机 + 4 步流程条） */
+function runXiaoyi(){
+  const chat=document.getElementById('xChat');
+  const xs=document.querySelectorAll('#xFlow .xs');
+  const seq=[
+    {t:650,  step:0, ai:'好的，已了解：4 天 3 夜 · 大理 2 天 + 丽江 2 天，主打"慢旅行"。'},
+    {t:2400, step:1, typing:'正在检索小红书攻略、实时机票与天气…'},
+    {t:5400, step:2, ai:'生成时间线草稿：Day1 古城慢逛·洱海日落 / Day2 环海骑行 / Day3 动车赴丽江·玉龙雪山 / Day4 古城漫步·返程。'},
+    {t:8300, step:3, ai:'行程已就绪 ✦ 已为你生成卡片空间（行程时间线为主轴 + 大交通/客栈/天气/地图环绕卡）。'}
+  ];
+  seq.forEach(item=>{
+    setTimeout(()=>{
+      if(item.step!=null && xs[item.step]) xs[item.step].classList.add('active');
+      if(item.typing){
+        const t=document.createElement('div'); t.className='typing'; t.innerHTML='<i></i><i></i><i></i>';
+        chat.appendChild(t);
+        const box=chat.parentElement; box.scrollTop=box.scrollHeight;
+        setTimeout(()=>{ t.remove(); appendBubble(chat,item.typing,'ai'); }, 1100);
+      } else if(item.ai){
+        appendBubble(chat,item.ai,'ai');
+      }
+      if(item.step===3){
+        const after=document.getElementById('xAfter');
+        if(after) after.innerHTML=`<div class="gen-btn primary" onclick="goStep(1)">查看行程草稿 →</div>`;
+      }
+    }, item.t);
+  });
+}
+function appendBubble(box, text, role){
+  const b=document.createElement('div'); b.className='bubble '+role; b.textContent=text;
+  box.appendChild(b);
+  const sc=box.parentElement; sc.scrollTop=sc.scrollHeight;
 }
 /* P3 强信号确认 */
 function p3HTML(){
