@@ -378,6 +378,8 @@
   .tl-day-foot .tl-stay{background:#F1F6FF;color:#0A59F7;border-radius:6px;padding:2px 8px;font-weight:600}
   .xy-chips .cp.used{opacity:.4;pointer-events:none;text-decoration:line-through}
   .chat-empty{font-size:12px;color:var(--panel-sub);text-align:center;padding:18px 0}
+  .ab-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .ab-cell{aspect-ratio:1;border-radius:8px;background:var(--card-line);display:flex;align-items:center;justify-content:center;font-size:20px}
 </style>
 </head>
 <body>
@@ -488,6 +490,18 @@ const C = {
           <div class="mini">雪山圣境 · 6 个行程点</div>
           <button class="cta" onclick="event.stopPropagation();openPage('timeline')">看全程</button>`;
       }
+      if(variant==='departure'){
+        return `<div class="mini">Day 1 · 出发日 · 去程</div>
+          <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">CZ6389 大理 10:25到</span><span class="mt">值机中</span></div>
+          <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">14:00 入住大理客栈</span><span class="mt">导航</span></div>
+          <div class="mini">今日 3 个行程点 · 点击看全程 ›</div>`;
+      }
+      if(variant==='return'){
+        return `<div class="mini">Day 4 · 返程日 · 回眸</div>
+          <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">15:00 三义→北京</span><span class="mt">值机开放</span></div>
+          <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">4天 86张照片</span><span class="mt">回忆</span></div>
+          <div class="mini">行程圆满 · 花费¥3000 · 点击看全程 ›</div>`;
+      }
       const rows=TRIP.days.map(d=>`<div class="tl-day ${d.day===3?'cur':''}">
         <span class="tl-badge">D${d.day}</span>
         <span class="dst">${d.dst}</span>
@@ -496,18 +510,30 @@ const C = {
       return `<div class="mini">4 天行程总览（D3 当前）</div><div class="tl-ov">${rows}</div>`;
     }},
   flight:{svc:"出行",nm:"大交通",ico:"✈️",ac:"#0091FF",
-    body:(size)=> size==='s2x4'
-      ? `<div class="li"><span>🛫</span><span class="t">去程 · 5/1 直飞大理</span><span class="v">已订</span></div>
+    body:(size,variant)=>{
+      if(variant==='go') return `<div class="big" style="font-size:18px">CZ6389</div>
+        <div class="mini">北京→大理 10:25 抵达</div>
+        <div class="mini">值机中 · 座位32A ›</div>`;
+      if(variant==='return') return `<div class="big" style="font-size:18px">MU5781</div>
+        <div class="mini">三义→北京 15:00 起</div>
+        <div class="mini">值机开放 · 提前2h ›</div>`;
+      if(size==='s2x4')
+        return `<div class="li"><span>🛫</span><span class="t">去程 · 5/1 直飞大理</span><span class="v">已订</span></div>
          <div class="li"><span>🚄</span><span class="t">大理→丽江 D8772</span><span class="v">09:15</span></div>
          <div class="li"><span>🛬</span><span class="t">返程 · 5/4 三义机场</span><span class="v">15:00</span></div>
-         <div class="mini">值机开放 · 提前 2h 到机场 ›</div>`
-      : `<div class="big" style="font-size:20px">D8772</div>
-         <div class="mini">大理 09:15 → 丽江 11:05</div>
-         <div class="mini">动车 80元 · 2h ›</div>`},
+         <div class="mini">值机开放 · 提前 2h 到机场 ›</div>`;
+      return `<div class="li"><span>🛫</span><span class="t">去程 5/1 北京→大理</span><span class="v">已订</span></div>
+        <div class="li"><span>🚄</span><span class="t">城际 D8772</span><span class="v">09:15</span></div>
+        <div class="mini">返程 5/4 待出票 ›</div>`;
+    }},
   hotel:{svc:"住宿",nm:"客栈",ico:"🏨",ac:"#8A5CF6",
-    body:()=>`<div class="row"><span class="dot" style="background:#00B578"></span><span class="act">今日入住</span><span class="mt">已确认</span></div>
-      <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">丽江·束河庭院</span><span class="mt">150/晚</span></div>
-      <div class="mini">白族/纳西庭院 · 天台观景</div>`},
+    body:(size,variant)=>{
+      if(variant==='today') return `<div class="row"><span class="dot" style="background:#00B578"></span><span class="act">今日入住·大理客栈</span><span class="mt">14:00</span></div>
+        <div class="mini">洱海边 · 导航前往 ›</div>`;
+      return `<div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">大理·洱海客栈</span><span class="mt">2晚</span></div>
+        <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">丽江·束河庭院</span><span class="mt">2晚</span></div>
+        <div class="mini">4晚 · ¥150/晚 · 已确认 ›</div>`;
+    }},
   spots:{svc:"玩乐",nm:"今日景点",ico:"📸",ac:"#FF7A1A",
     body:()=>`<div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">洱海生态廊道</span><span class="mt">骑行</span></div>
       <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">喜洲古镇</span><span class="mt">转角楼</span></div>
@@ -516,10 +542,15 @@ const C = {
     body:()=>`<div class="row"><span class="dot" style="background:#FF4D6A"></span><span class="act">大索道票</span><span class="mt">抢票!</span></div>
       <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">蓝月谷</span><span class="mt">含门票</span></div>
       <div class="mini">¥280 · 提前1天20:00抢</div>`},
-  weather:{svc:"天气",nm:"目的地",ico:"⛅",ac:"#0A59F7",
-    body:()=>`<div class="big" style="font-size:26px">22°</div>
-      <div class="mini">大理/丽江 · 白天20-25°</div>
-      <div class="mini">早晚10° · 紫外线强 防晒</div>`},
+  weather:{svc:"天气",nm:"天气",ico:"⛅",ac:"#0A59F7",
+    body:(size,variant)=>{
+      if(variant==='home') return `<div class="big" style="font-size:26px">28°</div>
+        <div class="mini">北京 · 白天30° 早晚22°</div>
+        <div class="mini">到家晴热 · 注意补水</div>`;
+      return `<div class="big" style="font-size:26px">22°</div>
+        <div class="mini">大理/丽江 · 白天20-25°</div>
+        <div class="mini">早晚10° · 紫外线强 防晒</div>`;
+    }},
   map:{svc:"导航",nm:"地图",ico:"🧭",ac:"#0091FF",
     body:()=>`<div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">古城内导航</span><span class="mt">步行</span></div>
       <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">101路雪山专线</span><span class="mt">15元</span></div>
@@ -543,26 +574,41 @@ const C = {
   notes:{svc:"攻略",nm:"小红书Tips",ico:"📒",ac:"#FF4D6A",
     body:()=>`<div class="li"><span>☀️</span><span class="t">防晒 SPF50+</span><span class="v">必带</span></div>
       <div class="li"><span>🪨</span><span class="t">石板路拖箱难</span><span class="v">背包</span></div>
-      <div class="li"><span>🎫</span><span class="t">索道票提前抢</span><span class="v">20:00</span></div>`}
+      <div class="li"><span>🎫</span><span class="t">索道票提前抢</span><span class="v">20:00</span></div>`},
+  checklist:{svc:"行前",nm:"准备清单",ico:"📋",ac:"#FF4D6A",
+    body:()=>{
+      const items=TRIP.prep||[['订机票 5/1去+5/4返',true],['订客栈 大理2晚+丽江2晚',true],['抢玉龙雪山索道票',false],['查小红书攻略',true],['换现金/备零钱',false],['买防晒SPF50+',true]];
+      if(!TRIP.prep){TRIP.prep=items;}
+      const done=items.filter(x=>x[1]).length;
+      return `<div class="mini">已办 ${done}/${items.length}</div>
+        <div class="pbar"><i style="width:${Math.round(done/items.length*100)}%"></i></div>
+        <div class="mini" style="margin-top:4px">机票·客栈·索道票·攻略… ›</div>`;
+    }},
+  album:{svc:"回忆",nm:"行程相册",ico:"📷",ac:"#FF4D6A",
+    body:()=>{
+      return `<div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">洱海日出</span><span class="mt">D1</span></div>
+        <div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">玉龙雪山</span><span class="mt">D3</span></div>
+        <div class="mini">4天 · 86张精选 · 一键生成Vlog ›</div>`;
+    }}
 };
 
 /* ===== 旅行阶段 → 卡片组合（意图路由）===== */
 const SCEN = {
-  "行前·准备":{sig:["📅 5/1-5/4","📍 大理·丽江","💰 ¥3000"],cap:false,
-    cards:[["timeline","s2x4","overview"],["flight","s2x2"],["hotel","s2x2"],["packing","s2x2"],["weather","s2x2"]],
-    recipe:"出发前 → 顶部 4 天时间线总览（主轴），下接大交通/客栈/行李/天气四小张（共 6 行）"},
-  "出发·途中":{sig:["🛫 去程日","🕗 07:30","🛄 值机"],cap:false,
-    cards:[["timeline","s2x4","overview"],["flight","s2x2"],["hotel","s2x2"],["packing","s2x2"],["weather","s2x2"]],
-    recipe:"出发日 → 顶部行程助手 4 天总览，第二行首位出行，下接住宿/行李/天气（共 6 行）"},
+  "行前·准备":{sig:["📅 5/1-5/4","📍 大理·丽江","📋 待办3/6"],cap:false,
+    cards:[["timeline","s2x4","overview"],["checklist","s2x2"],["flight","s2x2","all"],["hotel","s2x2","all"],["weather","s2x2","dest"]],
+    recipe:"行前 → 行程助手4天总览，行前准备清单(订票/订房/索道)，大交通/住宿/目的地天气（共6行）"},
+  "出发·途中":{sig:["🛫 去程日","🕗 07:30","🛄 值机中"],cap:false,
+    cards:[["timeline","s2x4","departure"],["flight","s2x2","go"],["hotel","s2x2","today"],["packing","s2x2"],["weather","s2x2","dest"]],
+    recipe:"出发日 → 行程助手今日去程，实时航班，今日入住客栈，行李临行确认，目的地天气（共6行）"},
   "目的地·大理":{sig:["📍 大理","🌤 22°","🚲 环海"],cap:false,
-    cards:[["timeline","s2x4","today"],["spots","s2x2"],["food","s2x2"],["weather","s2x2"],["map","s2x2"]],
+    cards:[["timeline","s2x4","today"],["spots","s2x2"],["food","s2x2"],["weather","s2x2","dest"],["map","s2x2"]],
     recipe:"在大理 → 时间线 2×4 当日逐小时（路线示意），景点/美食/天气/地图四小张（共 6 行）"},
   "目的地·丽江":{sig:["📍 丽江","🏔 雪山","🌡 10-20°"],cap:true,
-    cards:[["timeline","s2x4","today"],["ticket","s2x2"],["food","s2x2"],["weather","s2x2"],["map","s2x2"]],
+    cards:[["timeline","s2x4","today"],["ticket","s2x2"],["food","s2x2"],["weather","s2x2","dest"],["map","s2x2"]],
     recipe:"在丽江 → 时间线 2×4 当日（含雪山站），索道票/美食/天气/地图四小张 + 实况窗（共 6 行）"},
-  "返程":{sig:["🛬 返程","🕒 15:00","🧳 收拾"],cap:false,
-    cards:[["timeline","s2x4","overview"],["flight","s2x2"],["hotel","s2x2"],["packing","s2x2"],["weather","s2x2"]],
-    recipe:"返程日 → 顶部行程助手 4 天总览，第二行首位出行，下接住宿/行李/天气（共 6 行）"}
+  "返程":{sig:["🛬 返程","🕒 15:00","📷 86张"],cap:false,
+    cards:[["timeline","s2x4","return"],["flight","s2x2","return"],["album","s2x2"],["budget","s2x2"],["weather","s2x2","home"]],
+    recipe:"返程日 → 行程助手回眸，返程航班，相册回忆，花费小结，北京天气（共6行）"}
 };
 
 /* ===== 渲染（空间演示视图） ===== */
@@ -614,6 +660,18 @@ function openPage(id){
       h+=list.map(s=>`<div class="pspot"><span class="pt">${s.time}</span>${s.t}</div>`).join('');
     });
     h+=`<div class="pnote">点击桌面「行程时间线」卡即拉起此页，整卡为热区。</div>`;
+  } else if(id==='checklist'){
+    h+=`<div class="ptitle">行前准备清单</div><div class="mini" style="color:var(--card-sub);margin-bottom:6px">出发前需办事项 · 由行程助手聚合提醒</div>`;
+    const items=TRIP.prep||[['订机票 5/1去+5/4返',true],['订客栈 大理2晚+丽江2晚',true],['抢玉龙雪山索道票',false],['查小红书攻略',true],['换现金/备零钱',false],['买防晒SPF50+',true]];
+    const done=items.filter(x=>x[1]).length;
+    h+=`<div class="mini" style="margin-bottom:8px">已办 ${done}/${items.length}</div><div class="pbar" style="margin-bottom:12px"><i style="width:${Math.round(done/items.length*100)}%"></i></div>`;
+    h+=`<div class="plist">${items.map(x=>`<div class="pitem ${x[1]?'done':''}"><div class="chk ${x[1]?'on':''}">${x[1]?'✓':''}</div><span class="txt">${x[0]}</span></div>`).join('')}</div>`;
+    h+=`<div class="pnote">索道票需提前1天20:00抢 · 现金备零钱（古城扫码覆盖不全）。</div>`;
+  } else if(id==='album'){
+    h+=`<div class="ptitle">行程相册</div><div class="mini" style="color:var(--card-sub);margin-bottom:12px">4天 · 86张精选 · 由相册服务自动聚合</div>`;
+    h+=`<div class="mini" style="margin-bottom:6px">D1 · 大理</div><div class="ab-grid"><div class="ab-cell">🌅</div><div class="ab-cell">洱海</div><div class="ab-cell">古城</div><div class="ab-cell">骑行</div></div>`;
+    h+=`<div class="mini" style="margin:8px 0 6px">D3 · 丽江</div><div class="ab-grid"><div class="ab-cell">🏔️</div><div class="ab-cell">雪山</div><div class="ab-cell">蓝月谷</div><div class="ab-cell">索道</div></div>`;
+    h+=`<div class="pnote">点击「一键生成Vlog」可自动剪辑配乐短片。</div>`;
   } else {
     h+=`<div class="ptitle">${c.nm}</div><div class="mini" style="color:var(--card-sub);margin-bottom:12px">来自 ${c.svc} · 一步直达</div>
       <div style="font-size:14px;line-height:1.8">${c.body('s2x2').replace(/<button[^>]*>.*?<\/button>/g,'').replace(/<div class="pbar">.*?<\/div>/g,'')}</div>
