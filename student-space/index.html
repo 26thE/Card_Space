@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学生 · 学习空间卡片生成器 · 选择兴趣 → 自动组装桌面</title>
+<style>
+  :root{
+    --card-bg:#FFFFFF; --card-text:#1A1A1A; --card-sub:#8A8A8A; --card-line:#F0F0F0;
+    --page-bg:#EEF1F8; --panel-bg:#FFFFFF; --panel-text:#1A1A1A; --panel-sub:#6B6B6B;
+    --accent:#0A59F7; --wall1:#DCE7FF; --wall2:#ECE3FF; --wall3:#E6F4FF;
+  }
+  [data-theme="dark"]{
+    --card-bg:#2E3033; --card-text:#E8E8E8; --card-sub:#9A9A9A; --card-line:#3A3D42;
+    --page-bg:#1A1B1E; --panel-bg:#26282B; --panel-text:#E8E8E8; --panel-sub:#9A9A9A;
+    --wall1:#1B2440; --wall2:#2A1F40; --wall3:#10283A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:"HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--page-bg);color:var(--panel-text);display:flex;justify-content:center;
+    gap:30px;padding:30px;flex-wrap:wrap;align-items:flex-start}
+
+  /* ===================== 左侧控制台（过程演示） ===================== */
+  .console{width:330px;background:var(--panel-bg);border-radius:20px;padding:22px;
+    box-shadow:0 8px 30px rgba(0,0,0,.08);align-self:stretch}
+  .console h1{font-size:18px;font-weight:700;margin-bottom:2px}
+  .console .sub{font-size:12px;color:var(--panel-sub);margin-bottom:18px;line-height:1.6}
+  .steps{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+  .step{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;
+    background:var(--card-line);opacity:.5;transition:.3s}
+  .step.on{opacity:1;background:linear-gradient(135deg,#E8F0FF,#F3ECFF)}
+  .step .num{width:26px;height:26px;border-radius:50%;background:#fff;color:var(--accent);
+    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    box-shadow:0 2px 6px rgba(0,0,0,.08)}
+  .step b{font-size:14px}
+  .step .sd{font-size:11px;color:var(--panel-sub);margin-top:2px;line-height:1.4}
+  .stats{display:flex;gap:10px;margin-bottom:16px}
+  .stat{flex:1;background:var(--card-line);border-radius:14px;padding:12px 8px;text-align:center}
+  .stat .sv{font-size:24px;font-weight:700;line-height:1;color:var(--accent)}
+  .stat .sl{font-size:11px;color:var(--panel-sub);margin-top:4px}
+  .seg-label{font-size:12px;color:var(--panel-sub);margin:6px 0 8px;font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;min-height:28px}
+  .chips .c{font-size:11px;background:var(--card-line);color:var(--panel-text);padding:5px 10px;border-radius:20px}
+  .chips .empty{font-size:11px;color:var(--card-sub)}
+  .compliance{margin-top:18px;font-size:11px;color:var(--panel-sub);line-height:1.7;
+    border-top:1px dashed var(--card-line);padding-top:14px}
+  .compliance b{color:#0A7A4A}
+  .reset{margin-top:12px;font-size:12px;color:var(--accent);cursor:pointer;display:inline-block}
+
+  /* ===================== 手机 ===================== */
+  .phone{width:384px;height:832px;background:#1c1c1e;border-radius:46px;padding:11px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;flex-shrink:0}
+  .screen{width:362px;height:810px;border-radius:36px;overflow:hidden;position:relative;
+    background:linear-gradient(165deg,var(--wall1),var(--wall2) 55%,var(--wall3));
+    display:flex;flex-direction:column}
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:10px;height:10px;
+    border-radius:50%;background:#000;z-index:30}
+  .statusbar{height:40px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;font-size:14px;font-weight:600;color:#fff;z-index:20;flex-shrink:0}
+  .statusbar .right{display:flex;align-items:center;gap:6px;font-size:12px}
+  .stage{flex:1;position:relative;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+  .view{flex:1;display:none;flex-direction:column;min-height:0}
+  .view.active{display:flex}
+
+  /* ---- 选择页 ---- */
+  .sel-scroll{flex:1;overflow-y:auto;padding:6px 16px 14px}
+  .sel-scroll::-webkit-scrollbar{width:0}
+  .sel-head h2{font-size:21px;font-weight:700;color:#fff;margin-top:10px;text-shadow:0 1px 4px rgba(0,0,0,.18)}
+  .sel-head p{font-size:12px;color:rgba(255,255,255,.92);margin-top:6px;line-height:1.5;text-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .profiler{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.92);
+    border-radius:14px;padding:11px 12px;margin:14px 0 6px;font-size:11.5px;color:#333;line-height:1.5}
+  .profiler .pi{font-size:22px;flex-shrink:0}
+  .profiler b{color:var(--accent)}
+  .opt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+  .opt{position:relative;background:#fff;border-radius:16px;padding:12px 8px 10px;text-align:center;
+    cursor:pointer;transition:.18s;box-shadow:0 3px 10px rgba(0,0,0,.10);border:2px solid transparent}
+  .opt.on{border-color:var(--accent);background:#F2F7FF;transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(10,89,247,.22)}
+  .opt-ico{width:42px;height:42px;border-radius:13px;margin:0 auto 7px;display:flex;align-items:center;
+    justify-content:center;font-size:22px;color:#fff}
+  .opt-nm{font-size:13px;font-weight:600;color:#1A1A1A}
+  .opt-src{font-size:10px;color:#9A9A9A;margin-top:2px}
+  .opt-chk{position:absolute;top:7px;right:7px;width:20px;height:20px;border-radius:50%;
+    background:#ccc;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:.18s}
+  .opt.on .opt-chk{opacity:1;background:var(--accent)}
+  .rec{position:absolute;top:7px;left:7px;font-size:9px;background:#FF7A1A;color:#fff;
+    padding:1px 6px;border-radius:8px;font-weight:600}
+  .sel-foot{flex-shrink:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);
+    padding:11px 16px calc(14px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px}
+  .sel-count{font-size:12px;color:#555;flex:1}
+  .sel-count b{font-size:16px;color:var(--accent)}
+  .mini-acts{display:flex;gap:10px;font-size:11px;color:var(--accent);cursor:pointer}
+  .gen-btn{border:none;background:var(--accent);color:#fff;border-radius:22px;padding:11px 20px;
+    font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;flex-shrink:0;transition:.2s}
+  .gen-btn:disabled{background:#C4C9D4;cursor:not-allowed}
+
+  /* ---- 生成中 ---- */
+  .gen-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;color:#fff}
+  .gen-ico{font-size:54px;animation:bob 1.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .gen-title{font-size:17px;font-weight:600;margin:18px 0 22px;text-shadow:0 1px 4px rgba(0,0,0,.2)}
+  .gen-bar{width:220px;height:8px;border-radius:4px;background:rgba(255,255,255,.3);overflow:hidden}
+  .gen-bar>i{display:block;height:100%;width:0;border-radius:4px;background:#fff;transition:width .5s ease}
+  .gen-step{font-size:12px;color:rgba(255,255,255,.9);margin-top:16px;text-align:center;min-height:16px}
+
+  /* ---- 桌面页 ---- */
+  .desk-top{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+    padding:10px 18px 6px;color:#fff}
+  .desk-title{font-size:16px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.18)}
+  .re-sel{border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.18);color:#fff;
+    border-radius:16px;padding:6px 13px;font-size:12px;cursor:pointer;font-family:inherit}
+  .desk-pages{flex:1;position:relative;min-height:0}
+  .desk-page{position:absolute;inset:0;display:none}
+  .desk-page.active{display:block}
+  .dots{flex-shrink:0;display:flex;justify-content:center;gap:7px;padding:8px 0 14px}
+  .dots .d{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45);cursor:pointer;transition:.2s}
+  .dots .d.on{background:#fff;width:18px;border-radius:4px}
+
+  /* ---- 卡片（绝对定位拼装） ---- */
+  .card{background:var(--card-bg);border-radius:22px;padding:12px;color:var(--card-text);
+    box-shadow:0 4px 14px rgba(0,0,0,.10);display:flex;flex-direction:column;overflow:hidden;
+    cursor:pointer;transition:transform .15s,box-shadow .15s;animation:pop .35s ease}
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.14)}
+  @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+  .head{display:flex;align-items:center;gap:8px}
+  .app-ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
+  .htext .svc{font-size:11px;color:var(--card-sub);line-height:1.1}
+  .htext .nm{font-size:13px;font-weight:600;line-height:1.2}
+  .body{flex:1;margin-top:8px;display:flex;flex-direction:column;gap:6px;min-height:0;justify-content:center}
+  .row{display:flex;align-items:center;gap:8px;font-size:12px}
+  .dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+  .row .act{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .mt{color:var(--card-sub);font-size:11px;flex-shrink:0}
+  .pbar{height:6px;border-radius:3px;background:var(--card-line);overflow:hidden;margin-top:2px}
+  .pbar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#FF7A1A,#FFB02E)}
+  .big{font-size:30px;font-weight:700;line-height:1}
+  .li{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0}
+  .li .t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .li .v{color:var(--card-sub);font-size:11px;flex-shrink:0}
+  .mini{font-size:11px;color:var(--card-sub)}
+</style>
+</head>
+<body>
+  <!-- ============ 左侧：过程演示控制台 ============ -->
+  <div class="console">
+    <h1>学生 · 学习空间 生成器</h1>
+    <div class="sub">演示「选择兴趣 → 系统自动组装桌面」全过程。这是鸿蒙<b>系统级编排</b>：跨应用聚合数据、按 4×7 网格自动拼装，应用自绘做不到。</div>
+
+    <div class="steps">
+      <div class="step on" id="st1"><span class="num">1</span><div><b>兴趣选择</b><div class="sd">从应用统计中挑选你感兴趣的内容</div></div></div>
+      <div class="step" id="st2"><span class="num">2</span><div><b>系统组装</b><div class="sd">读取多应用数据，按网格拼装</div></div></div>
+      <div class="step" id="st3"><span class="num">3</span><div><b>桌面呈现</b><div class="sd">生成专属学习空间桌面</div></div></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="sv" id="stSel">4</div><div class="sl">已选兴趣</div></div>
+      <div class="stat"><div class="sv" id="stCard">4</div><div class="sl">候选卡片</div></div>
+      <div class="stat"><div class="sv" id="stPage">1</div><div class="sl">桌面页数</div></div>
+    </div>
+
+    <div class="seg-label">已选内容</div>
+    <div class="chips" id="consoleChips"></div>
+
+    <span class="reset" onclick="resetRec()">↺ 恢复推荐项</span>
+
+    <div class="compliance">
+      <b>✓ 鸿蒙 NEXT 合规要点</b><br>
+      · 卡片内无长按/二级菜单，编辑收口在「详情页」<br>
+      · 卡片为独立沙箱，实时数据由 FormExtensionAbility 经 updateForm() 推送<br>
+      · 刷新以 30 分钟为单位；点击整卡一步直达元服务<br>
+      · 每屏严格落在 4×7 网格内，超量自动分页（绝不溢出）
+    </div>
+  </div>
+
+  <!-- ============ 鸿蒙直板机 ============ -->
+  <div class="phone">
+    <div class="screen">
+      <div class="notch"></div>
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="right">5G ▪ ▪ ▪ 100%</span>
+      </div>
+
+      <div class="stage">
+        <!-- ① 选择页 -->
+        <div class="view active" id="viewSelect">
+          <div class="sel-scroll">
+            <div class="sel-head">
+              <h2>生成你的学习空间</h2>
+              <p>选择你感兴趣的内容，系统将自动为你组装专属桌面。</p>
+            </div>
+            <div class="profiler">
+              <span class="pi">📊</span>
+              <div>基于你的应用使用情况，<b>我们猜你可能对这些内容感兴趣</b>，也可自由增删。</div>
+            </div>
+            <div class="opt-grid" id="optGrid"></div>
+          </div>
+          <div class="sel-foot">
+            <div class="sel-count">已选 <b id="selN">4</b> 项</div>
+            <div class="mini-acts">
+              <span onclick="selectAll()">全选</span>
+              <span onclick="clearAll()">清空</span>
+            </div>
+            <button class="gen-btn" id="genBtn" onclick="generate()">生成学习空间</button>
+          </div>
+        </div>
+
+        <!-- ② 生成中 -->
+        <div class="view" id="viewGen">
+          <div class="gen-wrap">
+            <div class="gen-ico">🎓</div>
+            <div class="gen-title">正在生成你的学习空间…</div>
+            <div class="gen-bar"><i id="genFill"></i></div>
+            <div class="gen-step" id="genStep">读取兴趣画像…</div>
+          </div>
+        </div>
+
+        <!-- ③ 桌面页 -->
+        <div class="view" id="viewDesk">
+          <div class="desk-top">
+            <div class="desk-title" id="deskTitle">我的学习空间</div>
+            <button class="re-sel" onclick="backToSelect()">重新选择</button>
+          </div>
+          <div class="desk-pages" id="deskPages"></div>
+          <div class="dots" id="dots"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===== 兴趣选项（每个选项来自一个应用，映射一张卡片）===== */
+const INT = [
+  {id:'classTable',nm:'课程表',  ico:'📚',ac:'#0A59F7',src:'教务系统', rec:true, size:'s2x4'},
+  {id:'dorm',      nm:'宿舍生活',ico:'🛏️',ac:'#8A5CF6',src:'智慧校园', rec:true, size:'s2x2'},
+  {id:'english',   nm:'英语学习',ico:'🇬🇧',ac:'#00B578',src:'百词斩',   rec:true, size:'s2x2'},
+  {id:'library',   nm:'图书馆',  ico:'📖',ac:'#0A59F7',src:'智慧图书馆',rec:true, size:'s2x2'},
+  {id:'fitness',   nm:'健身打卡',ico:'💪',ac:'#FF7A1A',src:'运动健康', rec:false,size:'s2x2'},
+  {id:'shuttle',   nm:'校车公交',ico:'🚌',ac:'#0091FF',src:'校园出行', rec:false,size:'s2x2'},
+  {id:'canteen',   nm:'食堂餐饮',ico:'🍱',ac:'#FF4D6A',src:'智慧食堂', rec:false,size:'s2x2'},
+  {id:'todo',      nm:'待办清单',ico:'✅',ac:'#0A59F7',src:'备忘录',   rec:false,size:'s2x2'},
+  {id:'express',   nm:'快递代收',ico:'📦',ac:'#0091FF',src:'菜鸟驿站', rec:false,size:'s2x2'},
+  {id:'weather',   nm:'天气',    ico:'⛅',ac:'#0A59F7',src:'天气',     rec:false,size:'s2x2'},
+  {id:'music',     nm:'学习音乐',ico:'🎵',ac:'#FF4D6A',src:'音乐',     rec:false,size:'s2x2'},
+  {id:'habit',     nm:'习惯打卡',ico:'🔥',ac:'#FF7A1A',src:'习惯',     rec:false,size:'s2x2'},
+];
+
+/* ===== 卡片内容（学生主题，按鸿蒙规范：留白/左对齐/大数字）===== */
+const CARD = {
+  classTable:{svc:'教务系统',nm:'今日课程',ico:'📚',ac:'#0A59F7',
+    body:`<div class="li"><span class="dot" style="background:#FF7A1A"></span><span class="t">08:00 高数 · 教三201</span><span class="v">45′</span></div>
+      <div class="li"><span class="dot" style="background:#0091FF"></span><span class="t">10:10 英语 · 教二105</span><span class="v">进行中</span></div>
+      <div class="li"><span class="dot" style="background:#00B578"></span><span class="t">14:00 数据结构 · 机房A</span><span class="v">90′</span></div>
+      <div class="li"><span class="dot" style="background:#8A5CF6"></span><span class="t">16:10 体育 · 操场</span><span class="v">45′</span></div>
+      <div class="mini" style="margin-top:4px">共 4 节 · 第 2 节进行中</div>`},
+  dorm:{svc:'智慧校园',nm:'宿舍助手',ico:'🛏️',ac:'#8A5CF6',
+    body:`<div class="row"><span class="dot" style="background:#00B578"></span><span class="act">吹风机</span><span class="mt">可用</span></div>
+      <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">热水预约</span><span class="mt">18:30</span></div>`},
+  english:{svc:'百词斩',nm:'英语学习',ico:'🇬🇧',ac:'#00B578',
+    body:`<div class="big" style="font-size:22px">20/20</div><div class="mini">今日单词 ✓ · 听力 15′</div>`},
+  library:{svc:'智慧图书馆',nm:'图书馆',ico:'📖',ac:'#0A59F7',
+    body:`<div class="row"><span class="dot" style="background:#0A59F7"></span><span class="act">借阅</span><span class="mt">3 本</span></div>
+      <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">座位</span><span class="mt">三楼已约</span></div>`},
+  fitness:{svc:'运动健康',nm:'运动打卡',ico:'💪',ac:'#FF7A1A',
+    body:`<div class="mini">今日训练</div><div class="big" style="font-size:22px">2/4</div><div class="pbar"><i style="width:50%"></i></div>`},
+  shuttle:{svc:'校园出行',nm:'校车时刻',ico:'🚌',ac:'#0091FF',
+    body:`<div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">下一班</span><span class="mt">12′</span></div>
+      <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">校门→地铁</span><span class="mt">18 分</span></div>`},
+  canteen:{svc:'智慧食堂',nm:'食堂餐饮',ico:'🍱',ac:'#FF4D6A',
+    body:`<div class="row"><span class="dot" style="background:#FF4D6A"></span><span class="act">今日推荐</span><span class="mt">红烧肉</span></div>
+      <div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">排队</span><span class="mt">5 人</span></div>`},
+  todo:{svc:'备忘录',nm:'待办清单',ico:'✅',ac:'#0A59F7',
+    body:`<div class="row"><span class="dot" style="background:#FF4D6A"></span><span class="act">待办</span><span class="mt">3 项</span></div>
+      <div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">紧急</span><span class="mt">2 项</span></div>`},
+  express:{svc:'菜鸟驿站',nm:'快递代收',ico:'📦',ac:'#0091FF',
+    body:`<div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">待取</span><span class="mt">1 个</span></div>
+      <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">今日达</span><span class="mt">顺丰</span></div>`},
+  weather:{svc:'天气',nm:'今日',ico:'⛅',ac:'#0A59F7',
+    body:`<div class="big" style="font-size:26px">26°</div><div class="mini">多云 · 空气良</div>`},
+  music:{svc:'音乐',nm:'学习音乐',ico:'🎵',ac:'#FF4D6A',
+    body:`<div class="mini">▶ 学习轻音乐</div><div class="big" style="font-size:15px;margin-top:6px">雨声白噪音</div>`},
+  habit:{svc:'习惯',nm:'习惯打卡',ico:'🔥',ac:'#FF7A1A',
+    body:`<div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">早起</span><span class="mt">21天</span></div>
+      <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">阅读</span><span class="mt">12天</span></div>`},
+};
+
+/* ===== 网格拼装常量（4 列 × 7 行，绝不溢出）===== */
+const COLS=4, ROWS=7, CELL=76, GAP=9, PAD=14;
+const DIM={s2x2:[2,2], s2x4:[4,2], s4x4:[4,4]};
+const sel=new Set(INT.filter(x=>x.rec).map(x=>x.id)); // 默认预选推荐项
+
+/* ===== 选项渲染 ===== */
+document.getElementById('optGrid').innerHTML=INT.map(it=>`
+  <div class="opt ${sel.has(it.id)?'on':''}" id="opt-${it.id}" onclick="toggle('${it.id}')">
+    ${it.rec?'<span class="rec">推荐</span>':''}
+    <span class="opt-chk">✓</span>
+    <div class="opt-ico" style="background:${it.ac}">${it.ico}</div>
+    <div class="opt-nm">${it.nm}</div>
+    <div class="opt-src">来自 ${it.src}</div>
+  </div>`).join('');
+
+function toggle(id){
+  if(sel.has(id)) sel.delete(id); else sel.add(id);
+  document.getElementById('opt-'+id).classList.toggle('on',sel.has(id));
+  updateSel();
+}
+function selectAll(){INT.forEach(x=>{sel.add(x.id);document.getElementById('opt-'+x.id).classList.add('on');});updateSel();}
+function clearAll(){INT.forEach(x=>{sel.delete(x.id);document.getElementById('opt-'+x.id).classList.remove('on');});updateSel();}
+function resetRec(){INT.forEach(x=>{if(x.rec){sel.add(x.id);document.getElementById('opt-'+x.id).classList.add('on');}else{document.getElementById('opt-'+x.id).classList.remove('on');sel.delete(x.id);}});updateSel();}
+
+function updateSel(){
+  const n=sel.size;
+  document.getElementById('selN').textContent=n;
+  document.getElementById('genBtn').disabled=(n===0);
+  document.getElementById('stSel').textContent=n;
+  document.getElementById('stCard').textContent=n;
+  const chips=document.getElementById('consoleChips');
+  chips.innerHTML=n? INT.filter(x=>sel.has(x.id)).map(x=>`<span class="c">${x.ico} ${x.nm}</span>`).join('')
+                     : '<span class="empty">尚未选择</span>';
+}
+
+/* ===== 视图切换 ===== */
+function showView(v){
+  ['select','gen','desk'].forEach(x=>{
+    document.getElementById('view'+x[0].toUpperCase()+x.slice(1)).classList.toggle('active',x===v);
+  });
+  document.getElementById('st1').classList.toggle('on',v==='select');
+  document.getElementById('st2').classList.toggle('on',v==='gen');
+  document.getElementById('st3').classList.toggle('on',v==='desk');
+}
+
+/* ===== 生成流程 ===== */
+function generate(){
+  if(sel.size===0) return;
+  showView('gen');
+  const fill=document.getElementById('genFill');
+  const step=document.getElementById('genStep');
+  fill.style.width='0%';
+  const seq=[['读取兴趣画像…',25],['从教务 / 智慧校园 / 百词斩 拉取数据…',60],['按鸿蒙 4×7 网格自动拼装…',100]];
+  let i=0;
+  const tick=()=>{
+    const [txt,p]=seq[i]; step.textContent=txt; fill.style.width=p+'%'; i++;
+    if(i<seq.length) setTimeout(tick,520);
+    else setTimeout(()=>{buildDesk();showView('desk');},480);
+  };
+  setTimeout(tick,200);
+}
+function backToSelect(){showView('select');}
+
+/* ===== 网格拼装（贪心放置 + 分页）===== */
+function pack(cards){
+  const ordered=cards.slice().sort((a,b)=>{
+    const da=DIM[a.size][0]*100+DIM[a.size][1], db=DIM[b.size][0]*100+DIM[b.size][1];
+    return db-da; // 宽卡优先，排在最上
+  });
+  const pages=[]; let cur=null, ends=null;
+  const newPage=()=>{cur={cards:[],ends:[0,0,0,0]};pages.push(cur);ends=cur.ends;};
+  const place=card=>{
+    const [w,h]=DIM[card.size];
+    for(let c=0;c<=COLS-w;c++){
+      let top=0; for(let k=0;k<w;k++) top=Math.max(top,ends[c+k]);
+      if(top+h<=ROWS){
+        const pos={c,row:top};
+        for(let k=0;k<w;k++) ends[c+k]=top+h;
+        return pos;
+      }
+    }
+    return null;
+  };
+  for(const card of ordered){
+    if(!cur) newPage();
+    let pos=place(card);
+    if(!pos){ newPage(); pos=place(card); }
+    cur.cards.push({...card,...pos});
+  }
+  return pages;
+}
+
+function cardInner(id){
+  const c=CARD[id];
+  return `<div class="head"><div class="app-ico" style="background:${c.ac}">${c.ico}</div>
+    <div class="htext"><div class="svc">${c.svc}</div><div class="nm">${c.nm}</div></div></div>
+    <div class="body">${c.body}</div>`;
+}
+
+let curPage=0;
+function buildDesk(){
+  const cards=[...sel].map(id=>({id,size:INT.find(x=>x.id===id).size}));
+  const pages=pack(cards);
+  document.getElementById('deskPages').innerHTML=pages.map((pg,pi)=>{
+    const cardsHtml=pg.cards.map((c,ci)=>{
+      const [w,h]=DIM[c.size];
+      const left=PAD+c.c*(CELL+GAP), top=PAD+c.row*(CELL+GAP);
+      const width=w*CELL+(w-1)*GAP, height=h*CELL+(h-1)*GAP;
+      return `<div class="card ${c.size}" style="position:absolute;left:${left}px;top:${top}px;width:${width}px;height:${height}px;animation-delay:${ci*0.05}s" onclick="backToSelect()">${cardInner(c.id)}</div>`;
+    }).join('');
+    return `<div class="desk-page ${pi===0?'active':''}" id="pg-${pi}">${cardsHtml}</div>`;
+  }).join('');
+  document.getElementById('dots').innerHTML=pages.map((p,i)=>`<span class="d ${i===0?'on':''}" onclick="goPage(${i})"></span>`).join('');
+  document.getElementById('deskTitle').textContent=`我的学习空间 · 第 1/${pages.length} 页`;
+  document.getElementById('stPage').textContent=pages.length;
+  curPage=0;
+}
+function goPage(i){
+  document.querySelectorAll('.desk-page').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+  document.querySelectorAll('#dots .d').forEach((el,idx)=>el.classList.toggle('on',idx===i));
+  const total=document.querySelectorAll('.desk-page').length;
+  document.getElementById('deskTitle').textContent=`我的学习空间 · 第 ${i+1}/${total} 页`;
+  curPage=i;
+}
+
+updateSel();
+</script>
+</body>
+</html>
