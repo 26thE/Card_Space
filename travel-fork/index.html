@@ -399,6 +399,31 @@
   .tune-reply.show{max-height:120px}
   .tune-bubble-ai{font-size:12px;line-height:1.5;color:var(--panel-fg);background:var(--panel-bg);border-radius:10px;padding:8px 10px;border-left:3px solid var(--accent)}
   .tune-bubble-ai .tune-src{color:var(--panel-sub);font-size:11px}
+  /* === 美学增强：风景图条 + 缩略图 === */
+  .scenery{height:34px;border-radius:8px;margin-bottom:6px;flex-shrink:0;position:relative;overflow:hidden}
+  .scenery.sky{background:linear-gradient(180deg,#7BB8E0 0%,#A8D0E8 30%,#D4E8F0 50%,#6B9DC4 50%,#3B7AB0 100%)}
+  .scenery.mountain{background:linear-gradient(180deg,#C8D8E8 0%,#8BA5C5 25%,#5A7BA0 25%,#3A5B80 55%,#2A4B70 100%)}
+  .scenery.sunset{background:linear-gradient(180deg,#FF8A65 0%,#FFB070 25%,#FFD080 40%,#8A6CB5 40%,#5A4B8A 100%)}
+  .scenery.courtyard{background:linear-gradient(135deg,#B595C5 0%,#D4B5E0 30%,#9B7BB5 30%,#7B5B95 100%)}
+  .scenery.snow{background:linear-gradient(180deg,#E0E8F5 0%,#B0CCE0 30%,#8AAAC5 30%,#6A8BA5 60%,#4A6B85 100%)}
+  .scenery.lake{background:linear-gradient(180deg,#87CEEB 0%,#6BA5D4 35%,#4A8BC5 35%,#2E6BA5 100%)}
+  .scenery.warm{background:linear-gradient(180deg,#FFB070 0%,#FF8A5A 30%,#E0653B 30%,#C05030 100%)}
+  .scenery .emo{position:absolute;bottom:2px;right:6px;font-size:16px;opacity:.9;text-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .scenery .label{position:absolute;bottom:2px;left:8px;font-size:9px;color:rgba(255,255,255,.9);text-shadow:0 1px 2px rgba(0,0,0,.4);font-weight:600;letter-spacing:.5px}
+  .tl-day-card .scenery{height:28px;margin-bottom:8px;border-radius:8px}
+  .tl-day-card .scenery .emo{font-size:14px}
+  .tl-day-card .scenery .label{font-size:8px}
+  /* 总流水景点缩略图 */
+  .tsr-thumb{width:34px;height:34px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;overflow:hidden;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3);box-shadow:0 2px 6px rgba(0,0,0,.12)}
+  .tsr-thumb.t-erhai{background:linear-gradient(135deg,#4A9BD4,#2E6BA5)}
+  .tsr-thumb.t-oldtown{background:linear-gradient(135deg,#D4A050,#A06530)}
+  .tsr-thumb.t-snow{background:linear-gradient(135deg,#C8E0F0,#6A8BA5)}
+  .tsr-thumb.t-garden{background:linear-gradient(135deg,#8AC599,#4A8A55)}
+  .tsr-thumb.t-lake{background:linear-gradient(135deg,#5AC8E8,#3B9DC9)}
+  .tsr-thumb.t-courtyard{background:linear-gradient(135deg,#C5A5D5,#8B6BA5)}
+  .tsr-thumb.t-food{background:linear-gradient(135deg,#FFA070,#E0653B)}
+  .tsr-thumb.t-default{background:linear-gradient(135deg,#8B9BB5,#5A6B85)}
+  [data-theme="dark"] .tsr-thumb{opacity:.85}
 </style>
 </head>
 <body>
@@ -502,21 +527,21 @@ const C = {
       if(variant==='today'){
         const strip=TRIP.today.map(s=>`<div class="tl-spot"><div class="tt">${s.time}</div>
           <div class="ti">${s.ico}</div><div class="ts">${s.t}</div></div>`).join('');
-        return `<div class="mini">Day 3 · 丽江 · 今日 6 站</div><div class="tl-strip">${strip}</div>`;
+        return `<div class="scenery lake"><span class="emo">🌅</span><span class="label">丽江 · 今日 6 站</span></div><div class="mini">Day 3 · 丽江 · 今日 6 站</div><div class="tl-strip">${strip}</div>`;
       }
       if(variant==='summary'){
-        return `<div class="big" style="font-size:22px">Day 3/4</div>
+        return `<div class="scenery mountain"><span class="emo">🏔️</span><span class="label">Day 3 · 雪山圣境</span></div><div class="big" style="font-size:22px">Day 3/4</div>
           <div class="mini">雪山圣境 · 6 个行程点</div>
           <button class="cta" onclick="event.stopPropagation();openPage('timeline')">看全程</button>`;
       }
       if(variant==='departure'){
-        return `<div class="mini">Day 1 · 出发日 · 去程</div>
+        return `<div class="scenery sky"><span class="emo">✈️</span><span class="label">出发日 · 北京→大理</span></div><div class="mini">Day 1 · 出发日 · 去程</div>
           <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">CZ6389 大理 10:25到</span><span class="mt">值机中</span></div>
           <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">14:00 入住大理客栈</span><span class="mt">导航</span></div>
           <div class="mini">今日 3 个行程点 · 点击看全程 ›</div>`;
       }
       if(variant==='return'){
-        return `<div class="mini">Day 4 · 返程日 · 回眸</div>
+        return `<div class="scenery sunset"><span class="emo">🌇</span><span class="label">满载而归 · 86张回忆</span></div><div class="mini">Day 4 · 返程日 · 回眸</div>
           <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">15:00 三义→北京</span><span class="mt">值机开放</span></div>
           <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">4天 86张照片</span><span class="mt">回忆</span></div>
           <div class="mini">行程圆满 · 花费¥3000 · 点击看全程 ›</div>`;
@@ -526,7 +551,7 @@ const C = {
         <span class="dst">${d.dst}</span>
         <span class="th">${d.theme}</span>
         <span class="cnt">${d.spots}站</span></div>`).join('');
-      return `<div class="mini">4 天行程总览（D3 当前）</div><div class="tl-ov">${rows}</div>`;
+      return `<div class="scenery mountain"><span class="emo">🗺️</span><span class="label">苍山雪 · 洱海月</span></div><div class="mini">4 天行程总览（D3 当前）</div><div class="tl-ov">${rows}</div>`;
     }},
   flight:{svc:"出行",nm:"大交通",ico:"✈️",ac:"#0091FF",
     body:(size,variant)=>{
@@ -547,18 +572,18 @@ const C = {
     }},
   hotel:{svc:"住宿",nm:"客栈",ico:"🏨",ac:"#8A5CF6",
     body:(size,variant)=>{
-      if(variant==='today') return `<div class="row"><span class="dot" style="background:#00B578"></span><span class="act">今日入住·大理客栈</span><span class="mt">14:00</span></div>
+      if(variant==='today') return `<div class="scenery courtyard"><span class="emo">🏨</span><span class="label">洱海边 · 设计师客栈</span></div><div class="row"><span class="dot" style="background:#00B578"></span><span class="act">今日入住·大理客栈</span><span class="mt">14:00</span></div>
         <div class="mini">洱海边 · 导航前往 ›</div>`;
-      return `<div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">大理·洱海客栈</span><span class="mt">2晚</span></div>
+      return `<div class="scenery courtyard"><span class="emo">🏨</span><span class="label">洱海 · 束河庭院</span></div><div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">大理·洱海客栈</span><span class="mt">2晚</span></div>
         <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">丽江·束河庭院</span><span class="mt">2晚</span></div>
         <div class="mini">4晚 · ¥150/晚 · 已确认 ›</div>`;
     }},
   spots:{svc:"玩乐",nm:"今日景点",ico:"📸",ac:"#FF7A1A",
-    body:()=>`<div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">洱海生态廊道</span><span class="mt">骑行</span></div>
+    body:()=>`<div class="scenery lake"><span class="emo">📸</span><span class="label">大理 · 今日3景</span></div><div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">洱海生态廊道</span><span class="mt">骑行</span></div>
       <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">喜洲古镇</span><span class="mt">转角楼</span></div>
       <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">双廊·太阳宫</span><span class="mt">海景</span></div>`},
   ticket:{svc:"门票",nm:"雪山索道",ico:"🏔️",ac:"#0A59F7",
-    body:()=>`<div class="row"><span class="dot" style="background:#FF4D6A"></span><span class="act">大索道票</span><span class="mt">抢票!</span></div>
+    body:()=>`<div class="scenery snow"><span class="emo">🏔️</span><span class="label">玉龙 · 4680m</span></div><div class="row"><span class="dot" style="background:#FF4D6A"></span><span class="act">大索道票</span><span class="mt">抢票!</span></div>
       <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">蓝月谷</span><span class="mt">含门票</span></div>
       <div class="mini">¥280 · 提前1天20:00抢</div>`},
   weather:{svc:"天气",nm:"天气",ico:"⛅",ac:"#0A59F7",
@@ -575,7 +600,7 @@ const C = {
       <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">101路雪山专线</span><span class="mt">15元</span></div>
       <div class="mini">出发地→玉龙雪山 30km</div>`},
   food:{svc:"美食",nm:"今日推荐",ico:"🍜",ac:"#FF4D6A",
-    body:()=>`<div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">石板烧</span><span class="mt">晚餐</span></div>
+    body:()=>`<div class="scenery warm"><span class="emo">🍜</span><span class="label">本地风味</span></div><div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">石板烧</span><span class="mt">晚餐</span></div>
       <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">菌菇火锅</span><span class="mt">野生菌</span></div>
       <div class="mini">喜洲粑粑 · 烤乳扇 · 鲜花饼</div>`},
   packing:{svc:"行李",nm:"行李清单",ico:"🧳",ac:"#8A5CF6",
@@ -605,7 +630,7 @@ const C = {
     }},
   album:{svc:"回忆",nm:"行程相册",ico:"📷",ac:"#FF4D6A",
     body:()=>{
-      return `<div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">洱海日出</span><span class="mt">D1</span></div>
+      return `<div class="scenery sunset"><span class="emo">📷</span><span class="label">86张精选回忆</span></div><div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">洱海日出</span><span class="mt">D1</span></div>
         <div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">玉龙雪山</span><span class="mt">D3</span></div>
         <div class="mini">4天 · 86张精选 · 一键生成Vlog ›</div>`;
     }}
@@ -670,6 +695,7 @@ function openPage(id){
       <div class="pnote">鸿蒙规范禁止卡片内长按/二级菜单，编辑能力统一收口在元服务详情页，保证跨设备一致体验。</div>`;
     renderList();
   } else if(id==='timeline'){
+    h+=`<div class="scenery mountain" style="height:72px;border-radius:14px;margin-bottom:12px"><span class="emo" style="font-size:28px;bottom:8px">🗺️</span><span class="label" style="font-size:12px;bottom:8px">苍山雪 · 洱海月 · 4天3夜</span></div>`;
     h+=`<div class="ptitle">4 天行程总览</div><div class="mini" style="color:var(--card-sub);margin-bottom:6px">苍山雪，洱海月 · 数据由行程助手经 FormExtensionAbility 推送</div>`;
     TRIP.days.forEach(d=>{
       h+=`<div class="pday">Day ${d.day} · ${d.dst} · ${d.date} — ${d.theme}</div>`;
@@ -687,6 +713,7 @@ function openPage(id){
     h+=`<div class="plist">${items.map(x=>`<div class="pitem ${x[1]?'done':''}"><div class="chk ${x[1]?'on':''}">${x[1]?'✓':''}</div><span class="txt">${x[0]}</span></div>`).join('')}</div>`;
     h+=`<div class="pnote">索道票需提前1天20:00抢 · 现金备零钱（古城扫码覆盖不全）。</div>`;
   } else if(id==='album'){
+    h+=`<div class="scenery sunset" style="height:72px;border-radius:14px;margin-bottom:12px"><span class="emo" style="font-size:28px;bottom:8px">📷</span><span class="label" style="font-size:12px;bottom:8px">86张精选回忆</span></div>`;
     h+=`<div class="ptitle">行程相册</div><div class="mini" style="color:var(--card-sub);margin-bottom:12px">4天 · 86张精选 · 由相册服务自动聚合</div>`;
     h+=`<div class="mini" style="margin-bottom:6px">D1 · 大理</div><div class="ab-grid"><div class="ab-cell">🌅</div><div class="ab-cell">洱海</div><div class="ab-cell">古城</div><div class="ab-cell">骑行</div></div>`;
     h+=`<div class="mini" style="margin:8px 0 6px">D3 · 丽江</div><div class="ab-grid"><div class="ab-cell">🏔️</div><div class="ab-cell">雪山</div><div class="ab-cell">蓝月谷</div><div class="ab-cell">索道</div></div>`;
@@ -1169,19 +1196,45 @@ function spotIco(name){
   return '📸';
 }
 function spotTime(i){ const t=['09:00','11:00','14:00','16:00','19:00']; return t[i%t.length]; }
+function spotThumbClass(name){
+  if(/洱海|生态廊道|海舌/.test(name)) return 't-erhai';
+  if(/古城|四方/.test(name)) return 't-oldtown';
+  if(/雪山|雪/.test(name)) return 't-snow';
+  if(/喜洲|田园/.test(name)) return 't-garden';
+  if(/双廊|蓝月/.test(name)) return 't-lake';
+  if(/束河|客栈|民宿|住/.test(name)) return 't-courtyard';
+  if(/餐|吃|腊|粑粑|乳扇|石板|火锅/.test(name)) return 't-food';
+  return 't-default';
+}
+function daySceneryClass(d, dm){
+  const dest = dm.dest || (d<=2?'大理':'丽江');
+  if(/丽江/.test(dest) && d===3) return 'snow';
+  if(/大理/.test(dest)) return 'lake';
+  if(d>=4) return 'sunset';
+  return 'mountain';
+}
+function dayEmoji(d, dm){
+  const dest = dm.dest || (d<=2?'大理':'丽江');
+  if(/丽江/.test(dest) && d===3) return '🏔️';
+  if(/大理/.test(dest)) return '🌊';
+  if(d>=4) return '🌇';
+  return '🗺️';
+}
 function renderP2(){
   const st=window.__p2; if(!st) return;
   const box=document.getElementById('tlFlow'); if(!box) return;
   box.innerHTML=Array.from({length:st.days},(_,i)=>i+1).map(d=>{
     const arr=st.spotsByDay[d]||[]; const dm=st.dayMeta[d]||{};
+    const theme=dm.theme||st.intent.tpl.themes[d-1]||'自由安排';
     return `<div class="tl-day-card">
       <div class="tdc-h">
         <span class="tdc-badge">Day ${d}</span>
         <span class="tdc-date">${dm.date||('5/'+d)} · ${dm.dest||(d<=2?'大理':'丽江')}</span>
-        <span class="tdc-theme">${dm.theme||st.intent.tpl.themes[d-1]||'自由安排'}</span>
+        <span class="tdc-theme">${theme}</span>
       </div>
+      <div class="scenery ${daySceneryClass(d,dm)}"><span class="emo">${dayEmoji(d,dm)}</span><span class="label">${theme}</span></div>
       ${arr.length?arr.map((s,i)=>`<div class="tl-spot-row" data-d="${d}" data-i="${i}">
-        <span class="tsr-ico">${s.ico}</span>
+        <div class="tsr-thumb ${spotThumbClass(s.name)}">${s.ico}</div>
         <div class="tsr-main">
           <div class="tsr-line1"><span class="tsr-name">${s.name}</span><span class="tsr-time">${s.time}</span></div>
           ${s.eat?`<span class="tsr-eat">🍜 ${s.eat}</span>`:''}
