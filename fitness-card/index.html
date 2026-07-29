@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💪 健身管理 · 鸿蒙 4×4 卡片（已接入小艺）</title>
+<style>
+  :root{
+    --primary:#ff6b35; --secondary:#2ecc71;
+    --text:#1a1a1a; --gray:#8a8a8a;
+    --font:-apple-system,BlinkMacSystemFont,"HarmonyOS Sans","Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font);background:#e9edf1;min-height:100vh;
+       display:flex;align-items:center;justify-content:center;padding:24px}
+
+  /* ===== 严格鸿蒙直板机机框：19.5:9 (384 × 832) ===== */
+  .device{
+    width:384px;height:832px;background:#0b0b0c;border-radius:46px;
+    padding:11px;box-shadow:0 30px 70px rgba(0,0,0,.35),inset 0 0 2px 2px #2a2a2c;
+    position:relative;
+  }
+  .screen{
+    width:362px;height:810px;border-radius:36px;overflow:hidden;position:relative;
+    background:linear-gradient(160deg,#cfe3ff 0%,#e7d6ff 45%,#ffd9e8 100%);
+  }
+  .punch{
+    position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    width:13px;height:13px;border-radius:50%;background:#0b0b0c;z-index:5;
+  }
+  .statusbar{
+    position:absolute;top:0;left:0;right:0;height:34px;z-index:4;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;font-size:13px;font-weight:600;color:#1a1a1a;
+  }
+  .sb-right{display:flex;align-items:center;gap:5px;font-size:11px}
+  .sb-right .bat{width:22px;height:11px;border:1.5px solid #1a1a1a;border-radius:3px;position:relative}
+  .sb-right .bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:0 1px 1px 0}
+  .sb-right .bat i{position:absolute;left:1px;top:1px;bottom:1px;width:70%;background:#1a1a1a;border-radius:1px}
+
+  .home{position:absolute;top:34px;left:0;right:0;bottom:74px}
+  /* ===== 4×4 鸿蒙元服务卡片（4列网格全宽 × 4行） ===== */
+  .card4x4{
+    position:absolute;top:18px;left:17px;
+    width:328px;height:328px;
+    background:#fff;border-radius:20px;
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+    padding:15px 15px 12px;display:flex;flex-direction:column;
+  }
+  .c-head{display:flex;align-items:center;justify-content:space-between}
+  .c-title{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+  .c-size{font-size:10px;color:#bdbdbd;border:1px solid #e6e6e6;border-radius:6px;padding:1px 6px;font-weight:600}
+  .c-btn{font-size:12px;color:#fff;background:linear-gradient(135deg,var(--primary),var(--secondary));
+         border-radius:14px;padding:4px 12px;font-weight:600;cursor:pointer;user-select:none;transition:transform .1s}
+  .c-btn:active{transform:scale(.94)}
+  .c-sub{font-size:11px;color:var(--gray);margin-top:3px}
+
+  /* 日期切换条 */
+  .days{display:flex;justify-content:space-between;margin:9px 0 9px}
+  .days span{flex:1;text-align:center;font-size:10px;color:#bdbdbd;padding:4px 0;border-radius:8px;cursor:pointer;transition:.15s;user-select:none}
+  .days span.on{background:#fff;color:#ff6b35;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,.10)}
+
+  /* 当日计划列表（支持滚动） */
+  .plan{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+        user-select:none;touch-action:manipulation;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.18) transparent}
+  .plan::-webkit-scrollbar{width:4px}
+  .plan::-webkit-scrollbar-thumb{background:rgba(0,0,0,.16);border-radius:3px}
+  .plan::-webkit-scrollbar-track{background:transparent}
+  .row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;
+       background:#f6f8f7;margin-bottom:6px;border-left:3px solid #ccc;cursor:pointer;transition:transform .1s,opacity .2s}
+  .row:active{transform:scale(.98)}
+  .row .chk{width:17px;height:17px;border-radius:50%;border:2px solid #cfd3d8;flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;transition:.15s}
+  .row .chk.on{background:var(--secondary);border-color:var(--secondary)}
+  .row .ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;
+           justify-content:center;font-size:14px;color:#fff;flex-shrink:0}
+  .row .tx{flex:1;min-width:0}
+  .row .tx .a{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .tx .a b{font-weight:800}
+  .row .tx .b{font-size:10px;color:var(--gray);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .met{font-size:11px;font-weight:700;color:#ff6b35;flex-shrink:0}
+  .row.done{opacity:.55}
+  .row.done .tx .a,.row.done .tx .b{text-decoration:line-through;color:#bbb}
+  .row.done .met{color:#bbb}
+  .empty{text-align:center;color:var(--gray);font-size:12px;padding:30px 0}
+
+  /* 进度 + 汇总 */
+  .c-foot{margin-top:4px}
+  .pbar{height:6px;background:#eef0f2;border-radius:4px;overflow:hidden;margin-bottom:5px}
+  .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--secondary),var(--primary));border-radius:4px;transition:width .25s}
+  .ftext{font-size:10px;color:var(--gray);text-align:center}
+
+  /* ===== 长按编辑弹出层（鸿蒙底部 sheet） ===== */
+  .editor{position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;
+          align-items:flex-end;justify-content:center;z-index:20}
+  .editor.show{display:flex;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{width:362px;background:#fff;border-radius:22px 22px 0 0;padding:20px 20px 26px;
+         box-shadow:0 -10px 40px rgba(0,0,0,.25);animation:rise .25s ease}
+  @keyframes rise{from{transform:translateY(40px);opacity:.6}to{transform:translateY(0);opacity:1}}
+  .sheet .grip{width:38px;height:4px;border-radius:2px;background:#e0e3e8;margin:0 auto 14px}
+  .e-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .e-title .dot{width:10px;height:10px;border-radius:50%}
+  .sheet label{font-size:11px;color:var(--gray);display:block;margin:14px 0 5px}
+  .sheet input{width:100%;border:1.5px solid #e3e6ea;border-radius:11px;padding:10px 12px;
+               font-size:14px;font-family:var(--font);outline:none;color:var(--text);transition:border-color .15s}
+  .sheet input:focus{border-color:var(--primary)}
+  .e-btns{display:flex;gap:12px;margin-top:20px}
+  .e-btns div{flex:1;text-align:center;padding:12px;border-radius:13px;font-size:15px;font-weight:700;cursor:pointer}
+  .e-cancel{background:#f0f2f4;color:#666}
+  .e-save{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
+  .e-hint{font-size:10px;color:#bcbcbc;text-align:center;margin-top:12px}
+
+  /* 底部 Dock */
+  .dock{
+    position:absolute;left:0;right:0;bottom:0;height:74px;
+    display:flex;align-items:center;justify-content:center;gap:26px;
+    background:rgba(255,255,255,.35);backdrop-filter:blur(8px);
+  }
+  .dock i{width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.9);
+          display:flex;align-items:center;justify-content:center;font-size:24px;
+          box-shadow:0 2px 8px rgba(0,0,0,.1)}
+
+  /* ===== 小艺助手：桌面悬浮球 ===== */
+  .fab{position:absolute;right:16px;bottom:88px;width:54px;height:54px;border-radius:50%;
+       background:linear-gradient(135deg,#ff6b35,#ff3d6e);box-shadow:0 6px 18px rgba(255,61,110,.45);
+       display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800;
+       cursor:pointer;z-index:15;user-select:none;animation:pulse 2.4s ease-in-out infinite}
+  .fab:active{transform:scale(.92)}
+  @keyframes pulse{0%,100%{box-shadow:0 6px 18px rgba(255,61,110,.45)}50%{box-shadow:0 6px 26px rgba(255,61,110,.75)}}
+
+  /* ===== 小艺助手面板 ===== */
+  .assist{position:absolute;inset:0;background:#fff;z-index:30;display:none;flex-direction:column}
+  .assist.show{display:flex;animation:fade .2s ease}
+  .a-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #f0f0f0}
+  .a-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#ff6b35,#ff3d6e);
+            display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;flex-shrink:0}
+  .a-name{font-size:14px;font-weight:800;color:#1a1a1a;line-height:1.2}
+  .a-name small{display:block;font-size:10px;color:#bbb;font-weight:500;margin-top:1px}
+  .a-close{margin-left:auto;font-size:22px;color:#bbb;cursor:pointer;line-height:1;padding:0 4px}
+  .a-chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f7f8fa}
+  .msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+  .msg.user{align-self:flex-end;background:linear-gradient(135deg,#ff6b35,#ff3d6e);color:#fff;border-bottom-right-radius:4px}
+  .msg.bot{align-self:flex-start;background:#fff;color:#1a1a1a;border:1px solid #eee;border-bottom-left-radius:4px}
+  .msg.bot .who{font-size:10px;color:#ff6b35;font-weight:800;margin-bottom:3px}
+  .a-chips{display:flex;gap:8px;padding:8px 12px;overflow-x:auto;flex-wrap:nowrap}
+  .a-chips span{flex-shrink:0;font-size:11px;color:#ff6b35;background:#fff0ea;border:1px solid #ffd9c7;
+               border-radius:14px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+  .a-input{display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid #f0f0f0;background:#fff}
+  .a-input input{flex:1;border:1.5px solid #e3e6ea;border-radius:18px;padding:9px 14px;font-size:13px;outline:none;font-family:var(--font);color:#1a1a1a}
+  .a-input input:focus{border-color:var(--primary)}
+  .a-mic,.a-send{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;flex-shrink:0;user-select:none}
+  .a-mic{background:#f0f2f4}
+  .a-send{background:linear-gradient(135deg,#ff6b35,#ff3d6e);color:#fff}
+</style>
+</head>
+<body>
+  <div class="device">
+    <div class="screen">
+      <div class="punch"></div>
+      <div class="statusbar">
+        <span>10:08</span>
+        <div class="sb-right">
+          <span>5G</span><span>📶</span><span>🔋</span><span class="bat"><i></i></span>
+        </div>
+      </div>
+
+      <div class="home">
+        <!-- ===== 鸿蒙 4×4 元服务卡片：每日训练计划（可互动） ===== -->
+        <div class="card4x4">
+          <div class="c-head">
+            <div class="c-title">💪 健身管理 <span class="c-size">4×4</span></div>
+            <div class="c-btn" id="dbtn" onclick="toggleHide()">仅未完成</div>
+          </div>
+          <div class="c-sub" id="csub">今日训练计划</div>
+
+          <div class="days">
+            <span onclick="render(1)">一</span><span onclick="render(2)">二</span>
+            <span onclick="render(3)">三</span><span onclick="render(4)">四</span>
+            <span onclick="render(5)">五</span><span onclick="render(6)">六</span>
+            <span onclick="render(7)">日</span>
+          </div>
+
+          <div class="plan" id="plan" title="点击打勾完成 · 长按编辑"></div>
+          <div class="c-foot" id="foot"></div>
+        </div>
+      </div>
+
+      <div class="dock"><i>📞</i><i>💬</i><i>🌐</i><i>🎵</i></div>
+
+      <!-- 小艺语音助手悬浮球 -->
+      <div class="fab" id="fab" onclick="openAssist()" title="呼叫小艺">小</div>
+
+      <!-- 小艺助手面板 -->
+      <div class="assist" id="assist">
+        <div class="a-head">
+          <div class="a-avatar">小</div>
+          <div class="a-name">小艺 · 健身助手<small>本地模拟 · 可接端侧大模型</small></div>
+          <div class="a-close" onclick="closeAssist()">×</div>
+        </div>
+        <div class="a-chat" id="achat"></div>
+        <div class="a-chips" id="achips">
+          <span onclick="quick('生成今日计划')">生成今日计划</span>
+          <span onclick="quick('今天加腹部训练20分钟')">今天加腹部</span>
+          <span onclick="quick('有氧打卡')">有氧打卡</span>
+          <span onclick="quick('今天练什么')">今天练什么</span>
+        </div>
+        <div class="a-input">
+          <div class="a-mic" onclick="voice()" title="语音输入">🎙️</div>
+          <input id="ain" type="text" placeholder="对小艺说：今天加个腹部训练…" onkeydown="if(event.key==='Enter')send()">
+          <div class="a-send" onclick="send()">➤</div>
+        </div>
+      </div>
+
+      <!-- ===== 长按编辑弹出层 ===== -->
+      <div class="editor" id="editor" onclick="if(event.target===this)closeEditor()">
+        <div class="sheet">
+          <div class="grip"></div>
+          <div class="e-title"><span class="dot" id="eDot"></span><span id="eTitle">编辑</span></div>
+          <label>动作</label>
+          <input id="eMain" type="text" placeholder="例如：卧推 4×8">
+          <label>时长 / 量化</label>
+          <input id="eMet" type="text" placeholder="例如：45min 或 2200kcal">
+          <div class="e-btns">
+            <div class="e-cancel" onclick="closeEditor()">取消</div>
+            <div class="e-save" onclick="saveEditor()">保存</div>
+          </div>
+          <div class="e-hint">点按某行可切换完成 · 长按可编辑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// 四类训练（对标 V2 的 玩/食/住/行 四板块）
+const CAT={
+  strength:{ic:'🏋️',c:'#ff6b35',n:'力量'},
+  cardio:  {ic:'🏃',c:'#0984e3',n:'有氧'},
+  diet:    {ic:'🥗',c:'#2ecc71',n:'饮食'},
+  recover: {ic:'🧘',c:'#9b59b6',n:'恢复'}
+};
+const DAYS=['周一','周二','周三','周四','周五','周六','周日'];
+// 每日计划：[类别, 主标题, 明细, 量化]
+const PLAN={
+ 1:[['strength','卧推 4×8','胸+三头 · 上斜哑铃','45min'],
+    ['cardio','跑步机 6km','配速 6:00 · 坡度 2','35min'],
+    ['diet','蛋白 160g · 碳水 200g','脂肪 50g · 饮水 2.5L','2200kcal'],
+    ['recover','拉伸 15min','泡沫轴放松','15min']],
+ 2:[['strength','硬拉 4×6','背+二头 · 引体 3×8','50min'],
+    ['cardio','划船机 5000m','中强度稳态','25min'],
+    ['diet','蛋白 170g · 碳水 180g','脂肪 45g','2150kcal'],
+    ['recover','肩颈放松','睡眠目标 7.5h','—']],
+ 3:[['cardio','户外骑行 20km','心率 130-150','60min'],
+    ['strength','核心 4 组','平板 / 卷腹 / 登山','20min'],
+    ['diet','蛋白 150g · 碳水 170g','控盐','2050kcal'],
+    ['recover','全身瑜伽','拉伸放松','20min']],
+ 4:[['strength','深蹲 5×5','腿举 3×10 · 臀桥','55min'],
+    ['cardio','椭圆机','中强度 30min','30min'],
+    ['diet','蛋白 165g · 碳水 190g','脂肪 48g','2180kcal'],
+    ['recover','腿部加压','睡眠目标 8h','—']],
+ 5:[['strength','肩推 4×10','侧平举 · 后束','40min'],
+    ['cardio','HIIT 8 组','冲刺/慢走交替','20min'],
+    ['diet','蛋白 160g · 碳水 175g','脂肪 47g','2100kcal'],
+    ['recover','筋膜枪','热敷肩颈','15min']],
+ 6:[['cardio','长距离慢跑 10km','配速 5:30','70min'],
+    ['strength','核心+臀桥 4 组','强化稳定','25min'],
+    ['diet','蛋白 155g · 碳水 185g','脂肪 46g','2120kcal'],
+    ['recover','泡沫轴','冥想 10min','20min']],
+ 7:[['strength','散步 30min','轻活动 · 不训练','30min'],
+    ['cardio','瑜伽流','舒缓有氧','25min'],
+    ['diet','轻食 · 蛋白 140g','控盐控油','1900kcal'],
+    ['recover','全身拉伸','早睡恢复','—']]
+};
+
+const done={};                 // 完成状态：key = `${day}_${i}`
+let hideDone=false;            // 「仅未完成」筛选
+let curDay=1;
+const key=(d,i)=>d+'_'+i;
+
+function render(day){
+  curDay=day;
+  const items=PLAN[day];
+  let html='',mins=0,kcal=0,doneCnt=0;
+  items.forEach((it,i)=>{
+    const [k,main,detail,met]=it,c=CAT[k];
+    if(met.includes('min'))  mins+=parseInt(met);
+    if(met.includes('kcal')) kcal+=parseInt(met);
+    const isDone=!!done[key(day,i)];
+    if(isDone) doneCnt++;
+    if(hideDone && isDone) return;          // 隐藏已完成
+    html+=`<div class="row ${isDone?'done':''}" data-d="${day}" data-i="${i}">
+      <div class="chk ${isDone?'on':''}">${isDone?'✓':''}</div>
+      <div class="ic" style="background:${c.c}">${c.ic}</div>
+      <div class="tx"><div class="a"><b>${c.n}</b> ${main}</div><div class="b">${detail}</div></div>
+      <div class="met">${met}</div></div>`;
+  });
+  if(html==='') html='<div class="empty">🎉 今日计划全部完成</div>';
+  document.getElementById('plan').innerHTML=html;
+  document.getElementById('csub').textContent=`${DAYS[day-1]} · 训练计划`;
+  const pct=Math.round(doneCnt/items.length*100);
+  document.getElementById('foot').innerHTML=
+    `<div class="pbar"><i style="width:${pct}%"></i></div>
+     <div class="ftext">今日完成 ${doneCnt}/${items.length} · 训练 ${mins}min</div>`;
+  document.querySelectorAll('.days span').forEach((s,i)=>s.classList.toggle('on',i===day-1));
+}
+function toggle(d,i){ done[key(d,i)]=!done[key(d,i)]; render(d); }
+function toggleHide(){
+  hideDone=!hideDone;
+  document.getElementById('dbtn').textContent=hideDone?'显示全部':'仅未完成';
+  render(curDay);
+}
+
+/* ===== 长按编辑 ===== */
+let editD=0,editI=0;
+function openEditor(d,i){
+  editD=d; editI=i;
+  const it=PLAN[d][i], c=CAT[it[0]];
+  document.getElementById('eTitle').textContent='编辑 · '+c.n;
+  document.getElementById('eDot').style.background=c.c;
+  document.getElementById('eMain').value=it[1];
+  document.getElementById('eMet').value=it[3]==='—'?'':it[3];
+  document.getElementById('editor').classList.add('show');
+}
+function closeEditor(){ document.getElementById('editor').classList.remove('show'); }
+function saveEditor(){
+  const main=document.getElementById('eMain').value.trim();
+  let met=document.getElementById('eMet').value.trim();
+  if(!main) return;                 // 动作不能为空
+  if(!met) met='—';
+  PLAN[editD][editI][1]=main;
+  PLAN[editD][editI][3]=met;
+  closeEditor();
+  render(editD);
+}
+
+// 在 #plan 上做「点按=完成 / 长按=编辑」的事件委托
+const planEl=document.getElementById('plan');
+let pressTimer=null, pressD=0, pressI=0, longFired=false;
+planEl.addEventListener('pointerdown',e=>{
+  const row=e.target.closest('.row'); if(!row)return;
+  longFired=false; pressD=+row.dataset.d; pressI=+row.dataset.i;
+  pressTimer=setTimeout(()=>{ longFired=true; openEditor(pressD,pressI); },450);
+});
+function endPress(e){
+  if(pressTimer){clearTimeout(pressTimer);pressTimer=null;}
+  if(e&&e.type==='pointerup'){
+    const row=e.target.closest('.row');
+    if(row && !longFired) toggle(pressD,pressI);
+  }
+}
+planEl.addEventListener('pointerup',endPress);
+planEl.addEventListener('pointermove',e=>{
+  // 滑动/滚动超过阈值则取消长按，避免滚动时误触发"编辑"或"打勾"
+  if(pressTimer && (Math.abs(e.movementX)+Math.abs(e.movementY))>10){
+    clearTimeout(pressTimer);pressTimer=null;
+  }
+});
+planEl.addEventListener('pointerleave',()=>{ if(pressTimer){clearTimeout(pressTimer);pressTimer=null;} });
+planEl.addEventListener('pointercancel',()=>{ if(pressTimer){clearTimeout(pressTimer);pressTimer=null;} });
+
+/* =========================================================
+   小艺接入：本地意图解析（模拟端侧大模型 / 小艺 API）
+   真实环境把 process() 换成调用 小艺 技能即可
+   ========================================================= */
+let assistStarted=false;
+function openAssist(){
+  document.getElementById('assist').classList.add('show');
+  if(!assistStarted){
+    assistStarted=true;
+    botSay('你好，我是小艺 💪\n你可以让我帮你：安排今日计划、加动作、打卡，或问"今天练什么"。');
+  }
+}
+function closeAssist(){ document.getElementById('assist').classList.remove('show'); }
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function userSay(t){const c=document.getElementById('achat');c.innerHTML+=`<div class="msg user">${esc(t)}</div>`;c.scrollTop=c.scrollHeight;}
+function botSay(t){const c=document.getElementById('achat');c.innerHTML+=`<div class="msg bot"><div class="who">小艺</div>${esc(t)}</div>`;c.scrollTop=c.scrollHeight;}
+function quick(t){document.getElementById('ain').value=t;send();}
+function send(){
+  const v=document.getElementById('ain').value.trim();
+  if(!v)return;
+  document.getElementById('ain').value='';
+  userSay(v);
+  setTimeout(()=>process(v),280);          // 模拟"思考"延迟
+}
+
+/* —— 意图解析 —— */
+function resolveDay(t){
+  if(/今天|今日|现在/.test(t)) return curDay;
+  if(/明天/.test(t)) return (curDay%7)+1;
+  const m=t.match(/周([一二三四五六日天])|星期([一二三四五六日天])/);
+  if(m){const w=m[1]||m[2];return {一:1,二:2,三:3,四:4,五:5,六:6,日:7,天:7}[w];}
+  return curDay;
+}
+function resolveCat(t){
+  if(/腹|核心|平板|卷腹|马甲线|腰腹/.test(t)) return 'strength';
+  if(/(胸|背|腿|肩|手臂|上肢|下肢|臀|深蹲|硬拉|卧推|引体)/.test(t)) return 'strength';
+  if(/(有氧|跑|骑|跳绳|hiit|椭圆|划船|游泳|燃脂)/.test(t)) return 'cardio';
+  if(/(吃|餐|蛋白|碳水|饮食|轻食|营养)/.test(t)) return 'diet';
+  if(/(拉伸|瑜伽|恢复|按摩|冥想|泡沫轴|放松|筋膜)/.test(t)) return 'recover';
+  return null;
+}
+function resolveMet(t){
+  let m=t.match(/(\d+)\s*(分钟|min|分)/i); if(m) return m[1]+'min';
+  m=t.match(/(\d+)\s*(kcal|千卡|大卡)/i);   if(m) return m[1]+'kcal';
+  return null;
+}
+function cleanAction(t){
+  let s=t.replace(/今天|今日|明天|现在|周[一二三四五六日天]|星期[一二三四五六日天]/g,'')
+         .replace(/\d+\s*(分钟|min|分|kcal|千卡|大卡)/gi,'')
+         .replace(/加|增加|添加|来个|来一|我要|我想|帮我|请|个|训练计划|计划|一下|做|练|安排|训练/g,'')
+         .trim();
+  return s||'自定义动作';
+}
+function summary(day){
+  return PLAN[day].map(it=>`· ${CAT[it[0]].n}：${it[1]}${it[3]==='—'?'':'（'+it[3]+'）'}`).join('\n');
+}
+function genPlan(day){
+  const pick=arr=>arr[(day-1)%arr.length];
+  PLAN[day]=[
+    ['strength',pick(['卧推 4×8','硬拉 4×6','深蹲 5×5','肩推 4×10','引体 3×8','核心 4 组']),'小艺智能编排','45min'],
+    ['cardio', pick(['跑步机 6km','划船机 5000m','HIIT 8 组','椭圆机 30min','户外骑行 20km','长距离慢跑 10km']),'稳态有氧','35min'],
+    ['diet',   pick(['蛋白160g 碳水200g','蛋白170g 碳水180g','蛋白150g 碳水170g','蛋白165g 碳水190g','蛋白160g 碳水175g','蛋白155g 碳水185g']),'2.5L饮水','2200kcal'],
+    ['recover',pick(['拉伸+泡沫轴','肩颈放松','全身瑜伽','腿部加压','筋膜枪','冥想10min']),'放松恢复','15min']
+  ];
+  render(day);
+}
+function doDone(day,cat){
+  let n=0;
+  PLAN[day].forEach((it,i)=>{ if(!cat||it[0]===cat){done[key(day,i)]=true;n++;} });
+  render(day); return n;
+}
+function doRemove(day,cat){
+  const before=PLAN[day].length;
+  PLAN[day]=PLAN[day].filter(it=>it[0]!==cat);
+  render(day); return before-PLAN[day].length;
+}
+
+function process(t){
+  // 1) 生成 / 安排计划
+  if(/生成|安排|规划|制定|重新/.test(t) && /计划|今日|今天|一周|每日|训练/.test(t)){
+    const day=resolveDay(t); genPlan(day);
+    botSay(`已为${DAYS[day-1]}生成训练计划 💡\n${summary(day)}`);
+    return;
+  }
+  // 2) 打卡 / 完成
+  if(/完成|打卡|做完了|已做|搞定/.test(t)){
+    const day=resolveDay(t), cat=resolveCat(t);
+    if(cat){ const n=doDone(day,cat); botSay(n?`好的，${DAYS[day-1]}的「${CAT[cat].n}」已打卡 ✓`:`${DAYS[day-1]}没有找到「${CAT[cat].n}」`); }
+    else { const n=doDone(day,null); botSay(`好的，${DAYS[day-1]}全部计划已打卡 ✓（${n} 项）`); }
+    return;
+  }
+  // 3) 删除 / 移除
+  if(/删除|去掉|取消|移除/.test(t)){
+    const day=resolveDay(t), cat=resolveCat(t);
+    if(cat){ const n=doRemove(day,cat); botSay(n?`已移除${DAYS[day-1]}的「${CAT[cat].n}」`:`${DAYS[day-1]}没有找到「${CAT[cat].n}」`); }
+    else botSay('想移除哪一类？比如"删除今天的有氧"');
+    return;
+  }
+  // 4) 添加动作
+  if(/加|增加|添加|来个|来一/.test(t)){
+    const day=resolveDay(t), cat=resolveCat(t)||'strength';
+    const met=resolveMet(t), action=cleanAction(t);
+    PLAN[day].push([cat,action,'小艺添加 · '+CAT[cat].n,met||'—']);
+    render(day);
+    botSay(`已在${DAYS[day-1]}加入「${CAT[cat].n} · ${action}」${met?'（'+met+'）':''} ✅`);
+    return;
+  }
+  // 5) 查询今日内容
+  if(/练什么|计划是什么|有什么|安排|内容|今日|今天/.test(t) && /练|计划|有|内容|安排/.test(t)){
+    const day=resolveDay(t);
+    botSay(`${DAYS[day-1]}的训练：\n${summary(day)}`);
+    return;
+  }
+  // 6) 兜底
+  botSay('我可以帮你：\n① 生成今日计划\n② 加动作（如"今天加腹部训练20分钟"）\n③ 打卡（如"有氧打卡"）\n④ 问"今天练什么"\n试试看～');
+}
+
+/* 语音输入：优先调用浏览器 SpeechRecognition，不支持则提示打字 */
+function voice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ botSay('当前环境不支持语音，直接打字也行～'); return; }
+  const r=new SR(); r.lang='zh-CN'; r.interimResults=false; r.maxAlternatives=1;
+  botSay('🎙️ 正在聆听…（请说中文指令）');
+  r.onresult=e=>{ const t=e.results[0][0].transcript; document.getElementById('ain').value=t; send(); };
+  r.onerror=()=>botSay('没听清，换打字试试～');
+  try{ r.start(); }catch(_){ botSay('语音启动失败，直接打字也行～'); }
+}
+
+// 默认打开「今天」
+const today=(new Date().getDay()+6)%7+1;
+render(today);
+</script>
+</body>
+</html>
