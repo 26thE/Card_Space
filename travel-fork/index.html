@@ -127,10 +127,10 @@
     flex-direction:column;animation:slide .3s ease}
   .page.show{display:flex}
   @keyframes slide{from{transform:translateY(20px);opacity:.4}to{transform:translateY(0);opacity:1}}
-  .pbar-top{height:44px;display:flex;align-items:center;gap:10px;padding:0 16px;flex-shrink:0}
+  .pbar-top{height:44px;display:flex;align-items:center;gap:10px;padding:0 16px;flex-shrink:0;position:relative;z-index:2}
   .back{border:none;background:var(--card-line);width:30px;height:30px;border-radius:50%;
     font-size:15px;cursor:pointer;color:var(--card-text)}
-  .pbody{flex:1;padding:16px;overflow:auto}
+  .pbody{flex:1;padding:16px;overflow:auto;position:relative;z-index:1}
   .ptitle{font-size:20px;font-weight:700;margin-bottom:4px}
   .pedit-hint{font-size:12px;color:var(--card-sub);margin:14px 0 8px}
   .pedit-row{display:flex;gap:8px;margin-bottom:8px}
@@ -679,12 +679,15 @@ function assemble(key){
   desk.innerHTML='';
   s.cards.forEach(([id,size,variant])=>{
     const c=C[id];
+    let bodyHTML=c.body(size,variant);
+    let bgLayer='';
+    const bgM=bodyHTML.match(/<div class="card-bg[^"]*"[^>]*><\/div>/);
+    if(bgM){ bgLayer=bgM[0]; bodyHTML=bodyHTML.replace(bgM[0],''); }
     const el=document.createElement('div');
-    const bodyHTML=c.body(size,variant);
-    el.className='card '+size+(bodyHTML.includes('card-bg')?' has-bg':'');
+    el.className='card '+size+(bgLayer?' has-bg':'');
     el.style.animationDelay=Math.random()*.12+'s';
     el.onclick=()=>openPage(id);
-    el.innerHTML=`<div class="head"><div class="app-ico" style="background:${c.ac}">${c.ico}</div>
+    el.innerHTML=`${bgLayer}<div class="head"><div class="app-ico" style="background:${c.ac}">${c.ico}</div>
       <div class="htext"><div class="svc">${c.svc}</div><div class="nm">${c.nm}</div></div></div>
       <div class="body">${bodyHTML}</div>`;
     desk.appendChild(el);
@@ -737,7 +740,7 @@ function openPage(id){
     h+=`<div class="pnote">点击「一键生成Vlog」可自动剪辑配乐短片。</div>`;
   } else {
     h+=`<div class="ptitle">${c.nm}</div><div class="mini" style="color:var(--card-sub);margin-bottom:12px">来自 ${c.svc} · 一步直达</div>
-      <div style="font-size:14px;line-height:1.8">${c.body('s2x2').replace(/<button[^>]*>.*?<\/button>/g,'').replace(/<div class="pbar">.*?<\/div>/g,'')}</div>
+      <div style="font-size:14px;line-height:1.8">${c.body('s2x2').replace(/<div class="card-bg[^"]*"[^>]*><\/div>/g,'').replace(/<button[^>]*>.*?<\/button>/g,'').replace(/<div class="pbar">.*?<\/div>/g,'')}</div>
       <div class="pnote">该卡片内容由系统聚合推送，点击卡片任意处即拉起此页（整卡热区）。</div>`;
   }
   document.getElementById('pBody').innerHTML=h;
