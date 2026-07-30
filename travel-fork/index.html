@@ -1261,15 +1261,15 @@ function renderP2(){
         <span class="tdc-theme">${theme}</span>
       </div>
       <div class="scenery ${daySceneryClass(d,dm)}"><span class="emo">${dayEmoji(d,dm)}</span><span class="label">${theme}</span></div>
-      ${arr.length?arr.map((s,i)=>`<div class="tl-spot-row" data-d="${d}" data-i="${i}">
-        <div class="tsr-thumb ${spotThumbClass(s.name)}"><span>${s.ico}</span></div>
+      ${arr.length?arr.map((s,i)=>{const tc=spotThumbClass(s.name);const ph=/t-erhai|t-oldtown|t-snow|t-lake/.test(tc);return `<div class="tl-spot-row" data-d="${d}" data-i="${i}">
+        <div class="tsr-thumb ${tc}">${ph?'':`<span>${s.ico}</span>`}</div>
         <div class="tsr-main">
           <div class="tsr-line1"><span class="tsr-name">${s.name}</span><span class="tsr-time">${s.time}</span></div>
           ${s.eat?`<span class="tsr-eat">🍜 ${s.eat}</span>`:''}
         </div>
         <button type="button" class="tsr-up" onclick="moveSpot(${d},${i},-1)" ${i===0?'disabled':''}>▲</button>
         <button type="button" class="tsr-dn" onclick="moveSpot(${d},${i},1)" ${i===arr.length-1?'disabled':''}>▼</button>
-      </div>${s.go?`<div class="tl-go"><span class="tl-go-ico">${goIcon(s.go)}</span>${s.go}</div>`:''}`).join(''):'<div class="mini" style="color:#aaa;padding:8px">（空）</div>'}
+      </div>${s.go?`<div class="tl-go"><span class="tl-go-ico">${goIcon(s.go)}</span>${s.go}</div>`:''}`;}).join(''):'<div class="mini" style="color:#aaa;padding:8px">（空）</div>'}
       ${dm.stay?`<div class="tl-day-foot"><span class="tl-stay">🏨 宿·${dm.stay}</span></div>`:''}
     </div>`;
   }).join('');
