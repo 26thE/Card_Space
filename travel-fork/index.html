@@ -399,22 +399,22 @@
   .tune-reply.show{max-height:120px}
   .tune-bubble-ai{font-size:12px;line-height:1.5;color:var(--panel-fg);background:var(--panel-bg);border-radius:10px;padding:8px 10px;border-left:3px solid var(--accent)}
   .tune-bubble-ai .tune-src{color:var(--panel-sub);font-size:11px}
-  /* === 美学增强：风景图条 + 缩略图 === */
-  .scenery{height:34px;border-radius:8px;margin-bottom:6px;flex-shrink:0;position:relative;overflow:hidden}
-  .scenery.sky{background:linear-gradient(180deg,#7BB8E0 0%,#A8D0E8 30%,#D4E8F0 50%,#6B9DC4 50%,#3B7AB0 100%)}
-  .scenery.mountain{background:linear-gradient(180deg,#C8D8E8 0%,#8BA5C5 25%,#5A7BA0 25%,#3A5B80 55%,#2A4B70 100%)}
-  .scenery.sunset{background:linear-gradient(180deg,#FF8A65 0%,#FFB070 25%,#FFD080 40%,#8A6CB5 40%,#5A4B8A 100%)}
-  .scenery.courtyard{background:linear-gradient(135deg,#B595C5 0%,#D4B5E0 30%,#9B7BB5 30%,#7B5B95 100%)}
-  .scenery.snow{background:linear-gradient(180deg,#E0E8F5 0%,#B0CCE0 30%,#8AAAC5 30%,#6A8BA5 60%,#4A6B85 100%)}
-  .scenery.lake{background:linear-gradient(180deg,#87CEEB 0%,#6BA5D4 35%,#4A8BC5 35%,#2E6BA5 100%)}
-  .scenery.warm{background:linear-gradient(180deg,#FFB070 0%,#FF8A5A 30%,#E0653B 30%,#C05030 100%)}
-  .scenery .emo{position:absolute;bottom:2px;right:6px;font-size:16px;opacity:.9;text-shadow:0 1px 3px rgba(0,0,0,.2)}
-  .scenery .label{position:absolute;bottom:2px;left:8px;font-size:9px;color:rgba(255,255,255,.9);text-shadow:0 1px 2px rgba(0,0,0,.4);font-weight:600;letter-spacing:.5px}
-  .tl-day-card .scenery{height:28px;margin-bottom:8px;border-radius:8px}
-  .tl-day-card .scenery .emo{font-size:14px}
-  .tl-day-card .scenery .label{font-size:8px}
+  /* === 美学增强：SVG 风景画 + 缩略图 === */
+  .scenery{height:84px;border-radius:10px;margin-bottom:8px;flex-shrink:0;position:relative;overflow:hidden;background-size:cover;background-position:center;box-shadow:inset 0 -22px 26px -18px rgba(0,0,0,.28)}
+  .scenery.lake{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23FFB088'/><stop offset='.45' stop-color='%23FFD8B8'/><stop offset='.55' stop-color='%23B8D4E8'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><circle cx='236' cy='28' r='13' fill='%23FFD080'/><path d='M0,52 Q50,44 100,49 T200,47 T320,51 L320,60 L0,60Z' fill='%235A6B8A' opacity='.65'/><rect y='60' width='320' height='24' fill='%234A8BC5'/><path d='M0,60 Q50,57 100,60 T200,58 T320,60 L320,66 L0,66Z' fill='%233E7BB5' opacity='.5'/><ellipse cx='150' cy='70' rx='9' ry='1.8' fill='%23000' opacity='.35'/></svg>")}
+  .scenery.mountain{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23A8C8E8'/><stop offset='1' stop-color='%23DCEAF5'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><path d='M0,84 L60,30 L90,50 L140,18 L180,40 L220,24 L260,44 L320,20 L320,84Z' fill='%23fff'/><path d='M60,30 L75,42 L90,50 L140,18 L155,30 L180,40Z' fill='%238BA5C5' opacity='.55'/><ellipse cx='100' cy='20' rx='22' ry='6' fill='%23fff' opacity='.8'/><ellipse cx='240' cy='14' rx='18' ry='5' fill='%23fff' opacity='.7'/></svg>")}
+  .scenery.snow{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23C8DCF0'/><stop offset='1' stop-color='%23EAF2FB'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><path d='M0,84 L80,20 L120,45 L170,10 L220,40 L270,22 L320,45 L320,84Z' fill='%23fff'/><path d='M80,20 L100,34 L120,45 L170,10 L188,26 L220,40Z' fill='%239AB5D0' opacity='.5'/><path d='M0,70 Q80,60 160,66 T320,64 L320,84 L0,84Z' fill='%23fff' opacity='.85'/></svg>")}
+  .scenery.sky{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%237BB8E0'/><stop offset='1' stop-color='%23C8E2F2'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><ellipse cx='70' cy='22' rx='26' ry='8' fill='%23fff' opacity='.85'/><ellipse cx='250' cy='18' rx='22' ry='7' fill='%23fff' opacity='.8'/><path d='M40,44 L200,30' stroke='%23fff' stroke-width='2' opacity='.5' fill='none'/><path d='M195,28 L215,32 L195,36 Z' fill='%23333'/><ellipse cx='206' cy='32' rx='14' ry='3' fill='%23557'/></svg>")}
+  .scenery.sunset{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23FF8A5A'/><stop offset='.35' stop-color='%23FFB070'/><stop offset='.6' stop-color='%23C06BB5'/><stop offset='1' stop-color='%235A3B7A'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><circle cx='160' cy='46' r='18' fill='%23FFD060' opacity='.95'/><path d='M0,62 Q60,55 120,58 T240,56 T320,60 L320,84 L0,84Z' fill='%233A2858' opacity='.8'/><rect y='60' width='320' height='2' fill='%23FFD080' opacity='.6'/></svg>")}
+  .scenery.courtyard{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23F0DDB4'/><stop offset='1' stop-color='%23C8A878'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><path d='M0,40 L40,28 L80,40 L120,28 L160,40 L200,28 L240,40 L280,28 L320,40 L320,50 L0,50Z' fill='%236B4B30'/><rect y='50' width='320' height='34' fill='%23B8956A'/><circle cx='60' cy='64' r='4' fill='%23FF6B4A'/><circle cx='260' cy='64' r='4' fill='%23FF6B4A'/><circle cx='40' cy='74' r='7' fill='%235A8A55'/><circle cx='290' cy='76' r='6' fill='%234A7A45'/></svg>")}
+  .scenery.warm{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23FFB070'/><stop offset='1' stop-color='%23E0653B'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><path d='M120,22 Q115,12 122,5 M140,24 Q135,14 142,7 M160,22 Q155,12 162,5' stroke='%23fff' stroke-width='2.5' fill='none' opacity='.6'/><ellipse cx='160' cy='58' rx='50' ry='12' fill='%235A2A1A'/><path d='M110,58 Q160,40 210,58' stroke='%235A2A1A' stroke-width='3' fill='none'/></svg>")}
+  .scenery .emo{position:absolute;bottom:6px;right:8px;font-size:22px;opacity:.95;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+  .scenery .label{position:absolute;bottom:7px;left:10px;font-size:10px;color:rgba(255,255,255,.95);text-shadow:0 1px 3px rgba(0,0,0,.6);font-weight:600;letter-spacing:.5px}
+  .tl-day-card .scenery{height:64px;margin-bottom:8px;border-radius:8px}
+  .tl-day-card .scenery .emo{font-size:16px;bottom:4px;right:6px}
+  .tl-day-card .scenery .label{font-size:9px;bottom:5px;left:8px}
   /* 总流水景点缩略图 */
-  .tsr-thumb{width:34px;height:34px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;overflow:hidden;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3);box-shadow:0 2px 6px rgba(0,0,0,.12)}
+  .tsr-thumb{width:46px;height:46px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;position:relative;overflow:hidden;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.35);box-shadow:0 2px 8px rgba(0,0,0,.18)}
   .tsr-thumb.t-erhai{background:linear-gradient(135deg,#4A9BD4,#2E6BA5)}
   .tsr-thumb.t-oldtown{background:linear-gradient(135deg,#D4A050,#A06530)}
   .tsr-thumb.t-snow{background:linear-gradient(135deg,#C8E0F0,#6A8BA5)}
@@ -695,7 +695,7 @@ function openPage(id){
       <div class="pnote">鸿蒙规范禁止卡片内长按/二级菜单，编辑能力统一收口在元服务详情页，保证跨设备一致体验。</div>`;
     renderList();
   } else if(id==='timeline'){
-    h+=`<div class="scenery mountain" style="height:72px;border-radius:14px;margin-bottom:12px"><span class="emo" style="font-size:28px;bottom:8px">🗺️</span><span class="label" style="font-size:12px;bottom:8px">苍山雪 · 洱海月 · 4天3夜</span></div>`;
+    h+=`<div class="scenery mountain" style="height:112px;border-radius:14px;margin-bottom:12px"><span class="emo" style="font-size:34px;bottom:10px">🗺️</span><span class="label" style="font-size:13px;bottom:10px">苍山雪 · 洱海月 · 4天3夜</span></div>`;
     h+=`<div class="ptitle">4 天行程总览</div><div class="mini" style="color:var(--card-sub);margin-bottom:6px">苍山雪，洱海月 · 数据由行程助手经 FormExtensionAbility 推送</div>`;
     TRIP.days.forEach(d=>{
       h+=`<div class="pday">Day ${d.day} · ${d.dst} · ${d.date} — ${d.theme}</div>`;
@@ -713,7 +713,7 @@ function openPage(id){
     h+=`<div class="plist">${items.map(x=>`<div class="pitem ${x[1]?'done':''}"><div class="chk ${x[1]?'on':''}">${x[1]?'✓':''}</div><span class="txt">${x[0]}</span></div>`).join('')}</div>`;
     h+=`<div class="pnote">索道票需提前1天20:00抢 · 现金备零钱（古城扫码覆盖不全）。</div>`;
   } else if(id==='album'){
-    h+=`<div class="scenery sunset" style="height:72px;border-radius:14px;margin-bottom:12px"><span class="emo" style="font-size:28px;bottom:8px">📷</span><span class="label" style="font-size:12px;bottom:8px">86张精选回忆</span></div>`;
+    h+=`<div class="scenery sunset" style="height:112px;border-radius:14px;margin-bottom:12px"><span class="emo" style="font-size:34px;bottom:10px">📷</span><span class="label" style="font-size:13px;bottom:10px">86张精选回忆</span></div>`;
     h+=`<div class="ptitle">行程相册</div><div class="mini" style="color:var(--card-sub);margin-bottom:12px">4天 · 86张精选 · 由相册服务自动聚合</div>`;
     h+=`<div class="mini" style="margin-bottom:6px">D1 · 大理</div><div class="ab-grid"><div class="ab-cell">🌅</div><div class="ab-cell">洱海</div><div class="ab-cell">古城</div><div class="ab-cell">骑行</div></div>`;
     h+=`<div class="mini" style="margin:8px 0 6px">D3 · 丽江</div><div class="ab-grid"><div class="ab-cell">🏔️</div><div class="ab-cell">雪山</div><div class="ab-cell">蓝月谷</div><div class="ab-cell">索道</div></div>`;
