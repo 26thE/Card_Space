@@ -400,30 +400,46 @@
   .tune-bubble-ai{font-size:12px;line-height:1.5;color:var(--panel-fg);background:var(--panel-bg);border-radius:10px;padding:8px 10px;border-left:3px solid var(--accent)}
   .tune-bubble-ai .tune-src{color:var(--panel-sub);font-size:11px}
   /* === 美学增强：真实风景照片 + SVG 辅助 === */
-  .scenery{height:84px;border-radius:10px;margin-bottom:8px;flex-shrink:0;position:relative;overflow:hidden;background-size:cover;background-position:center;box-shadow:inset 0 -34px 44px -24px rgba(0,0,0,.55)}
+  .scenery{position:relative;overflow:hidden;background-size:cover;background-position:center;flex-shrink:0}
+  /* 卡片背景通铺层：图片不留边缘，铺满整张卡片 */
+  .card-bg{position:absolute;inset:0;z-index:0;border-radius:inherit}
+  .card-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,0) 32%,rgba(0,0,0,.52) 100%);border-radius:inherit}
+  .card.has-bg{padding:0}
+  .card.has-bg .head{position:relative;z-index:2;padding:10px 12px 0}
+  .card.has-bg .htext .svc,.card.has-bg .htext .nm{color:#fff}
+  .card.has-bg .body{position:relative;z-index:2;padding:0 12px 12px;color:#fff}
+  .card.has-bg .body .mini,.card.has-bg .body .row .mt,.card.has-bg .body .row .act,.card.has-bg .body .big{color:#fff}
+  .card.has-bg .body .dot{box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+  .card.has-bg .body .cta{background:rgba(255,255,255,.95);color:#1a1a1a}
   .scenery.lake{background-image:url('images/erhai.jpg')}
   .scenery.mountain{background-image:url('images/cangshan.jpg')}
   .scenery.snow{background-image:url('images/lijiang.jpg')}
-  .scenery.sky{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%237BB8E0'/><stop offset='1' stop-color='%23C8E2F2'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><ellipse cx='70' cy='22' rx='26' ry='8' fill='%23fff' opacity='.85'/><ellipse cx='250' cy='18' rx='22' ry='7' fill='%23fff' opacity='.8'/><path d='M40,44 L200,30' stroke='%23fff' stroke-width='2' opacity='.5' fill='none'/><path d='M195,28 L215,32 L195,36 Z' fill='%23333'/><ellipse cx='206' cy='32' rx='14' ry='3' fill='%23557'/></svg>")}
+  .scenery.sky{background-image:url('images/sky.jpg')}
   .scenery.sunset{background-image:url('images/sunset.jpg')}
   .scenery.courtyard{background-image:url('images/dali.jpg')}
   .scenery.warm{background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 84'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23FFB070'/><stop offset='1' stop-color='%23E0653B'/></linearGradient></defs><rect width='320' height='84' fill='url(%23a)'/><path d='M120,22 Q115,12 122,5 M140,24 Q135,14 142,7 M160,22 Q155,12 162,5' stroke='%23fff' stroke-width='2.5' fill='none' opacity='.6'/><ellipse cx='160' cy='58' rx='50' ry='12' fill='%235A2A1A'/><path d='M110,58 Q160,40 210,58' stroke='%235A2A1A' stroke-width='3' fill='none'/></svg>")}
   .scenery .emo{position:absolute;bottom:6px;right:8px;font-size:22px;opacity:.95;text-shadow:0 1px 5px rgba(0,0,0,.7)}
   .scenery .label{position:absolute;bottom:7px;left:10px;font-size:10px;color:rgba(255,255,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.75);font-weight:600;letter-spacing:.5px}
-  .tl-day-card .scenery{height:64px;margin-bottom:8px;border-radius:8px}
+  .tl-day-card .scenery{height:64px;margin-bottom:8px;border-radius:8px;box-shadow:inset 0 -22px 26px -18px rgba(0,0,0,.45)}
   .tl-day-card .scenery .emo{font-size:16px;bottom:4px;right:6px}
   .tl-day-card .scenery .label{font-size:9px;bottom:5px;left:8px}
-  /* 总流水景点缩略图（保留 SVG/渐变，小图用真实照片意义不大） */
-  .tsr-thumb{width:46px;height:46px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;position:relative;overflow:hidden;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.35);box-shadow:0 2px 8px rgba(0,0,0,.18)}
-  .tsr-thumb.t-erhai{background:linear-gradient(135deg,#4A9BD4,#2E6BA5)}
-  .tsr-thumb.t-oldtown{background:linear-gradient(135deg,#D4A050,#A06530)}
-  .tsr-thumb.t-snow{background:linear-gradient(135deg,#C8E0F0,#6A8BA5)}
+  /* 详情页大幅风景条 */
+  .page-wrap .scenery{height:112px;border-radius:14px;margin-bottom:12px;box-shadow:inset 0 -30px 36px -22px rgba(0,0,0,.5)}
+  .page-wrap .scenery .emo{font-size:34px;bottom:10px}
+  .page-wrap .scenery .label{font-size:13px;bottom:10px}
+  /* 总流水景点缩略图：具体地点用真实照片，类别用渐变 */
+  .tsr-thumb{width:46px;height:46px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;position:relative;overflow:hidden;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);box-shadow:0 2px 8px rgba(0,0,0,.18);background-size:cover;background-position:center}
+  .tsr-thumb>span{position:relative;z-index:1}
+  .tsr-thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.4) 100%);z-index:0}
+  .tsr-thumb.t-erhai{background-image:url('images/erhai.jpg')}
+  .tsr-thumb.t-oldtown{background-image:url('images/dali.jpg')}
+  .tsr-thumb.t-snow{background-image:url('images/lijiang.jpg')}
+  .tsr-thumb.t-lake{background-image:url('images/sunset.jpg')}
   .tsr-thumb.t-garden{background:linear-gradient(135deg,#8AC599,#4A8A55)}
-  .tsr-thumb.t-lake{background:linear-gradient(135deg,#5AC8E8,#3B9DC9)}
   .tsr-thumb.t-courtyard{background:linear-gradient(135deg,#C5A5D5,#8B6BA5)}
   .tsr-thumb.t-food{background:linear-gradient(135deg,#FFA070,#E0653B)}
   .tsr-thumb.t-default{background:linear-gradient(135deg,#8B9BB5,#5A6B85)}
-  [data-theme="dark"] .tsr-thumb{opacity:.85}
+  [data-theme="dark"] .tsr-thumb{opacity:.9}
 </style>
 </head>
 <body>
@@ -527,21 +543,21 @@ const C = {
       if(variant==='today'){
         const strip=TRIP.today.map(s=>`<div class="tl-spot"><div class="tt">${s.time}</div>
           <div class="ti">${s.ico}</div><div class="ts">${s.t}</div></div>`).join('');
-        return `<div class="scenery lake"><span class="emo">🌅</span><span class="label">丽江 · 今日 6 站</span></div><div class="mini">Day 3 · 丽江 · 今日 6 站</div><div class="tl-strip">${strip}</div>`;
+        return `<div class="card-bg scenery lake"></div><div class="mini">Day 3 · 丽江 · 今日 6 站</div><div class="tl-strip">${strip}</div>`;
       }
       if(variant==='summary'){
-        return `<div class="scenery mountain"><span class="emo">🏔️</span><span class="label">Day 3 · 雪山圣境</span></div><div class="big" style="font-size:22px">Day 3/4</div>
+        return `<div class="card-bg scenery mountain"></div><div class="big" style="font-size:22px">Day 3/4</div>
           <div class="mini">雪山圣境 · 6 个行程点</div>
           <button class="cta" onclick="event.stopPropagation();openPage('timeline')">看全程</button>`;
       }
       if(variant==='departure'){
-        return `<div class="scenery sky"><span class="emo">✈️</span><span class="label">出发日 · 北京→大理</span></div><div class="mini">Day 1 · 出发日 · 去程</div>
+        return `<div class="card-bg scenery sky"></div><div class="mini">Day 1 · 出发日 · 去程</div>
           <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">CZ6389 大理 10:25到</span><span class="mt">值机中</span></div>
           <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">14:00 入住大理客栈</span><span class="mt">导航</span></div>
           <div class="mini">今日 3 个行程点 · 点击看全程 ›</div>`;
       }
       if(variant==='return'){
-        return `<div class="scenery sunset"><span class="emo">🌇</span><span class="label">满载而归 · 86张回忆</span></div><div class="mini">Day 4 · 返程日 · 回眸</div>
+        return `<div class="card-bg scenery sunset"></div><div class="mini">Day 4 · 返程日 · 回眸</div>
           <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">15:00 三义→北京</span><span class="mt">值机开放</span></div>
           <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">4天 86张照片</span><span class="mt">回忆</span></div>
           <div class="mini">行程圆满 · 花费¥3000 · 点击看全程 ›</div>`;
@@ -551,7 +567,7 @@ const C = {
         <span class="dst">${d.dst}</span>
         <span class="th">${d.theme}</span>
         <span class="cnt">${d.spots}站</span></div>`).join('');
-      return `<div class="scenery mountain"><span class="emo">🗺️</span><span class="label">苍山雪 · 洱海月</span></div><div class="mini">4 天行程总览（D3 当前）</div><div class="tl-ov">${rows}</div>`;
+      return `<div class="card-bg scenery mountain"></div><div class="mini">4 天行程总览（D3 当前）</div><div class="tl-ov">${rows}</div>`;
     }},
   flight:{svc:"出行",nm:"大交通",ico:"✈️",ac:"#0091FF",
     body:(size,variant)=>{
@@ -572,26 +588,26 @@ const C = {
     }},
   hotel:{svc:"住宿",nm:"客栈",ico:"🏨",ac:"#8A5CF6",
     body:(size,variant)=>{
-      if(variant==='today') return `<div class="scenery courtyard"><span class="emo">🏨</span><span class="label">洱海边 · 设计师客栈</span></div><div class="row"><span class="dot" style="background:#00B578"></span><span class="act">今日入住·大理客栈</span><span class="mt">14:00</span></div>
+      if(variant==='today') return `<div class="card-bg scenery courtyard"></div><div class="row"><span class="dot" style="background:#00B578"></span><span class="act">今日入住·大理客栈</span><span class="mt">14:00</span></div>
         <div class="mini">洱海边 · 导航前往 ›</div>`;
-      return `<div class="scenery courtyard"><span class="emo">🏨</span><span class="label">洱海 · 束河庭院</span></div><div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">大理·洱海客栈</span><span class="mt">2晚</span></div>
+      return `<div class="card-bg scenery courtyard"></div><div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">大理·洱海客栈</span><span class="mt">2晚</span></div>
         <div class="row"><span class="dot" style="background:#8A5CF6"></span><span class="act">丽江·束河庭院</span><span class="mt">2晚</span></div>
         <div class="mini">4晚 · ¥150/晚 · 已确认 ›</div>`;
     }},
   spots:{svc:"玩乐",nm:"今日景点",ico:"📸",ac:"#FF7A1A",
-    body:()=>`<div class="scenery lake"><span class="emo">📸</span><span class="label">大理 · 今日3景</span></div><div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">洱海生态廊道</span><span class="mt">骑行</span></div>
+    body:()=>`<div class="card-bg scenery lake"></div><div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">洱海生态廊道</span><span class="mt">骑行</span></div>
       <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">喜洲古镇</span><span class="mt">转角楼</span></div>
       <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">双廊·太阳宫</span><span class="mt">海景</span></div>`},
   ticket:{svc:"门票",nm:"雪山索道",ico:"🏔️",ac:"#0A59F7",
-    body:()=>`<div class="scenery snow"><span class="emo">🏔️</span><span class="label">玉龙 · 4680m</span></div><div class="row"><span class="dot" style="background:#FF4D6A"></span><span class="act">大索道票</span><span class="mt">抢票!</span></div>
+    body:()=>`<div class="card-bg scenery snow"></div><div class="row"><span class="dot" style="background:#FF4D6A"></span><span class="act">大索道票</span><span class="mt">抢票!</span></div>
       <div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">蓝月谷</span><span class="mt">含门票</span></div>
       <div class="mini">¥280 · 提前1天20:00抢</div>`},
   weather:{svc:"天气",nm:"天气",ico:"⛅",ac:"#0A59F7",
     body:(size,variant)=>{
-      if(variant==='home') return `<div class="big" style="font-size:26px">28°</div>
+      if(variant==='home') return `<div class="card-bg scenery sky"></div><div class="big" style="font-size:26px">28°</div>
         <div class="mini">北京 · 白天30° 早晚22°</div>
         <div class="mini">到家晴热 · 注意补水</div>`;
-      return `<div class="big" style="font-size:26px">22°</div>
+      return `<div class="card-bg scenery sky"></div><div class="big" style="font-size:26px">22°</div>
         <div class="mini">大理/丽江 · 白天20-25°</div>
         <div class="mini">早晚10° · 紫外线强 防晒</div>`;
     }},
@@ -600,7 +616,7 @@ const C = {
       <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">101路雪山专线</span><span class="mt">15元</span></div>
       <div class="mini">出发地→玉龙雪山 30km</div>`},
   food:{svc:"美食",nm:"今日推荐",ico:"🍜",ac:"#FF4D6A",
-    body:()=>`<div class="scenery warm"><span class="emo">🍜</span><span class="label">本地风味</span></div><div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">石板烧</span><span class="mt">晚餐</span></div>
+    body:()=>`<div class="card-bg scenery warm"></div><div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">石板烧</span><span class="mt">晚餐</span></div>
       <div class="row"><span class="dot" style="background:#00B578"></span><span class="act">菌菇火锅</span><span class="mt">野生菌</span></div>
       <div class="mini">喜洲粑粑 · 烤乳扇 · 鲜花饼</div>`},
   packing:{svc:"行李",nm:"行李清单",ico:"🧳",ac:"#8A5CF6",
@@ -630,7 +646,7 @@ const C = {
     }},
   album:{svc:"回忆",nm:"行程相册",ico:"📷",ac:"#FF4D6A",
     body:()=>{
-      return `<div class="scenery sunset"><span class="emo">📷</span><span class="label">86张精选回忆</span></div><div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">洱海日出</span><span class="mt">D1</span></div>
+      return `<div class="card-bg scenery sunset"></div><div class="row"><span class="dot" style="background:#0091FF"></span><span class="act">洱海日出</span><span class="mt">D1</span></div>
         <div class="row"><span class="dot" style="background:#FF7A1A"></span><span class="act">玉龙雪山</span><span class="mt">D3</span></div>
         <div class="mini">4天 · 86张精选 · 一键生成Vlog ›</div>`;
     }}
@@ -664,12 +680,13 @@ function assemble(key){
   s.cards.forEach(([id,size,variant])=>{
     const c=C[id];
     const el=document.createElement('div');
-    el.className='card '+size;
+    const bodyHTML=c.body(size,variant);
+    el.className='card '+size+(bodyHTML.includes('card-bg')?' has-bg':'');
     el.style.animationDelay=Math.random()*.12+'s';
     el.onclick=()=>openPage(id);
     el.innerHTML=`<div class="head"><div class="app-ico" style="background:${c.ac}">${c.ico}</div>
       <div class="htext"><div class="svc">${c.svc}</div><div class="nm">${c.nm}</div></div></div>
-      <div class="body">${c.body(size,variant)}</div>`;
+      <div class="body">${bodyHTML}</div>`;
     desk.appendChild(el);
   });
   document.getElementById('signals').innerHTML=s.sig.map(x=>`<span class="chip">${x}</span>`).join('');
@@ -1234,7 +1251,7 @@ function renderP2(){
       </div>
       <div class="scenery ${daySceneryClass(d,dm)}"><span class="emo">${dayEmoji(d,dm)}</span><span class="label">${theme}</span></div>
       ${arr.length?arr.map((s,i)=>`<div class="tl-spot-row" data-d="${d}" data-i="${i}">
-        <div class="tsr-thumb ${spotThumbClass(s.name)}">${s.ico}</div>
+        <div class="tsr-thumb ${spotThumbClass(s.name)}"><span>${s.ico}</span></div>
         <div class="tsr-main">
           <div class="tsr-line1"><span class="tsr-name">${s.name}</span><span class="tsr-time">${s.time}</span></div>
           ${s.eat?`<span class="tsr-eat">🍜 ${s.eat}</span>`:''}
