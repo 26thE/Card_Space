@@ -132,18 +132,21 @@
   .spot-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
   .spot-info .spot-name{font-size:18px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .spot-info .spot-meta{font-size:10px;color:rgba(255,255,255,.75)}
-  /* 附近推荐横排 */
+  /* 附近推荐横排（图片铺满 + 文字叠底） */
   .nearby-row{display:flex;gap:6px;flex:1;min-height:0}
   .nearby-row .nb-label{align-self:center;font-size:10px;color:rgba(255,255,255,.6);writing-mode:vertical-rl;
-    letter-spacing:2px;margin-right:2px}
-  .nb-card{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-    background:rgba(255,255,255,.1);border-radius:11px;padding:5px 3px;cursor:pointer;transition:.15s;
-    min-width:0;border:1px solid rgba(255,255,255,.08)}
-  .nb-card:hover{background:rgba(255,255,255,.18)}
-  .nb-card .nb-img{width:34px;height:34px;border-radius:8px;background-size:cover;background-position:center;
-    flex-shrink:0}
-  .nb-card .nb-name{font-size:9px;color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .nb-card .nb-dist{font-size:8px;color:rgba(255,255,255,.65)}
+    letter-spacing:2px;margin-right:2px;flex-shrink:0}
+  .nb-card{flex:1;position:relative;border-radius:11px;cursor:pointer;transition:.15s;
+    min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.12)}
+  .nb-card:hover{transform:scale(1.03)}
+  .nb-card .nb-img{position:absolute;inset:0;background-size:cover;background-position:center}
+  .nb-card .nb-img::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 25%,rgba(0,0,0,.72) 100%)}
+  .nb-card .nb-info{position:absolute;left:0;right:0;bottom:0;padding:4px 6px;
+    display:flex;flex-direction:column;gap:1px;z-index:1}
+  .nb-card .nb-name{font-size:10px;color:#fff;font-weight:600;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .nb-card .nb-dist{font-size:9px;color:rgba(255,255,255,.9)}
   /* 回忆照片横排 */
   .mem-row{display:flex;gap:4px;flex:1;min-height:0;overflow:hidden}
   .mem-row .mem-ph{flex:1;border-radius:8px;background-size:cover;background-position:center;
@@ -458,8 +461,10 @@ function renderCard(){
     nearby.slice(0,3).forEach(n=>{
       nbHTML+=`<div class="nb-card" onclick="event.stopPropagation();alert('${n.name}')">
         <div class="nb-img" style="background-image:url('${n.img}')"></div>
-        <span class="nb-name">${n.name}</span>
-        <span class="nb-dist">${n.dist}</span>
+        <div class="nb-info">
+          <span class="nb-name">${n.name}</span>
+          <span class="nb-dist">${n.dist}</span>
+        </div>
       </div>`;
     });
 
