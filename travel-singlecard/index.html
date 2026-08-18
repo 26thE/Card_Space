@@ -72,13 +72,13 @@
   .tc-bg::after{content:'';position:absolute;inset:0;
     background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,rgba(0,0,0,.08) 25%,rgba(0,0,0,.6) 100%)}
   /* 进度条 */
-  .tc-progress{display:flex;gap:2px;padding:6px 10px 0;position:relative;z-index:2;flex-shrink:0}
+  .tc-progress{display:flex;gap:2px;padding:4px 10px 0;position:relative;z-index:2;flex-shrink:0}
   .tc-progress .seg{flex:1;height:2px;border-radius:1px;background:rgba(255,255,255,.2);transition:.3s}
   .tc-progress .seg.done{background:rgba(255,255,255,.5)}
   .tc-progress .seg.cur{background:#fff;box-shadow:0 0 4px rgba(255,255,255,.6)}
   /* Header */
   .tc-header{position:relative;z-index:2;display:flex;align-items:center;gap:5px;
-    padding:6px 10px 4px;flex-shrink:0}
+    padding:3px 10px 1px;flex-shrink:0}
   .tc-app-ico{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;
     justify-content:center;font-size:12px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.2)}
   .tc-app-name{font-size:10px;font-weight:600;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,.5)}
@@ -88,12 +88,14 @@
     backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
     font-size:11px;color:#fff;cursor:pointer;flex-shrink:0;transition:.2s;border:none}
   .tc-pull:hover{background:rgba(255,255,255,.35)}
-  /* Body - 横向布局 */
-  .tc-body{position:relative;z-index:2;flex:1;padding:2px 12px 8px;display:flex;
-    flex-direction:row;gap:12px;overflow:hidden;align-items:stretch}
-  .tc-body .tc-left{flex:1.1;display:flex;flex-direction:column;gap:3px;min-width:0}
-  .tc-body .tc-right{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;
-    justify-content:center}
+  /* Body - 默认左右分栏，游览阶段用上下 */
+  .tc-body{position:relative;z-index:2;flex:1;padding:0 12px 6px;display:flex;
+    flex-direction:row;gap:10px;overflow:hidden;align-items:stretch}
+  .tc-body .tc-left{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;justify-content:center}
+  .tc-body .tc-right{flex:1.1;display:flex;flex-direction:column;gap:3px;min-width:0;justify-content:center}
+  .tc-body.tc-body-v{flex-direction:column;gap:4px}
+  .tc-body.tc-body-v .tc-left{flex:0 0 auto;gap:1px}
+  .tc-body.tc-body-v .tc-right{flex:1;flex-direction:row;gap:5px;align-items:center}
   /* 通用内容样式 */
   .tc-label{font-size:9px;color:rgba(255,255,255,.7);font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.3)}
   .tc-big{font-size:26px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.3)}
@@ -133,6 +135,11 @@
   .nb-mini .nb-cat{font-size:12px;flex-shrink:0}
   .nb-mini .nb-name{flex:1;color:#fff;font-weight:500;font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .nb-mini .nb-dist{color:rgba(255,255,255,.7);font-size:9px;flex-shrink:0}
+  /* 游览阶段横排 mini 卡 */
+  .tc-body-v .nb-mini{flex-direction:column;gap:2px;flex:1;text-align:center;padding:5px 3px}
+  .tc-body-v .nb-mini .nb-cat{font-size:16px}
+  .tc-body-v .nb-mini .nb-name{font-size:9px;justify-content:center}
+  .tc-body-v .nb-mini .nb-dist{font-size:8px}
   /* 回忆照片网格 */
   .mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
   .mem-ph{aspect-ratio:1;border-radius:6px;background-size:cover;background-position:center;cursor:pointer;transition:.2s}
@@ -406,13 +413,13 @@ function renderCard(){
       <div class="tc-left">
         <div class="tc-label">距出发还有</div>
         <div class="tc-big">3 天</div>
-        <div class="tc-text"><b>8月21日 08:45</b><br>昆明 ✈ 大理</div>
+        <div class="tc-text">8月21日 08:45 · 昆明 ✈ 大理</div>
       </div>
       <div class="tc-right">
         <div class="tc-glass">
           <div class="tc-row"><span class="ico">☀️</span><span class="val">大理 22°C</span><span class="sub">晴</span></div>
         </div>
-        <div class="tc-chips" style="margin-top:2px">
+        <div class="tc-chips">
           <span class="tc-chip done">✓ 机票</span>
           <span class="tc-chip done">✓ 酒店</span>
           <span class="tc-chip todo">✗ 防晒</span>
@@ -430,18 +437,17 @@ function renderCard(){
       <div class="tc-right">
         <div class="tc-glass">
           <div class="tc-row"><span class="ico">⏰</span><span class="val">距登机 1h20m</span></div>
-          <div class="tc-status-flow" style="margin-top:5px">
+          <div class="tc-status-flow" style="margin-top:4px">
             <span class="step done">✓值机</span>
             <span class="step done">✓安检</span>
             <span class="step cur">●登机</span>
             <span class="step">起飞</span>
           </div>
         </div>
-        <button class="tc-cta">🧭 导航到登机口</button>
       </div>`;
   }
   else if(curStage===3){
-    // 同屏展示：下一目的地 + 附近推荐（无 Tab）
+    // 上下布局：上方下一站，下方附近横排
     let nbHTML='';
     nearby.slice(0,3).forEach(n=>{
       nbHTML+=`
@@ -455,12 +461,10 @@ function renderCard(){
     body=`
       <div class="tc-left">
         <div class="tc-label">下一站 · 今日第3站</div>
-        <div class="tc-big sm">崇圣寺三塔</div>
-        <div class="tc-text"><b>14:00</b> · 步行8分钟 · 🎫¥75</div>
-        <button class="tc-cta">🧭 开始导航</button>
+        <div class="tc-big sm">崇圣寺三塔 · 14:00</div>
+        <div class="tc-text">步行8分钟 · 🎫¥75</div>
       </div>
       <div class="tc-right">
-        <div class="tc-label" style="margin-bottom:2px">附近推荐</div>
         ${nbHTML}
       </div>`;
   }
@@ -476,11 +480,10 @@ function renderCard(){
         <div class="tc-glass">
           <div class="tc-row"><span class="ico">⏰</span><span class="val">距返程 23h</span></div>
         </div>
-        <div class="tc-chips" style="margin-top:2px">
+        <div class="tc-chips">
           <span class="tc-chip done">✓ 退房</span>
           <span class="tc-chip todo">✗ 大巴</span>
         </div>
-        <button class="tc-cta">⏰ 设置出发提醒</button>
       </div>`;
   }
   else if(curStage===5){
@@ -496,7 +499,6 @@ function renderCard(){
         <div class="tc-glass">
           <div class="tc-row"><span class="ico">🏆</span><span class="val" style="font-size:11px">Day2 苍山</span></div>
         </div>
-        <button class="tc-cta">📤 分享相册</button>
       </div>
       <div class="tc-right">
         ${grid}
@@ -507,7 +509,7 @@ function renderCard(){
     <div class="tc-bg" style="background-image:url('${s.bg}')"></div>
     ${progress}
     ${header}
-    <div class="tc-body">${body}</div>`;
+    <div class="tc-body ${curStage===3?'tc-body-v':''}">${body}</div>`;
 }
 
 // ====== 渲染时间线 ======
