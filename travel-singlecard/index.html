@@ -51,100 +51,97 @@
   .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:10px;height:10px;
     border-radius:50%;background:#000;z-index:30}
   .statusbar{height:40px;display:flex;align-items:center;justify-content:space-between;
-    padding:0 22px;font-size:14px;font-weight:600;color:#fff;z-index:20;flex-shrink:0}
+    padding:0 22px;font-size:14px;font-weight:600;color:#1a1a1a;z-index:20;flex-shrink:0}
   .statusbar .right{display:flex;align-items:center;gap:6px;font-size:12px}
-  .desktop{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 14px 0;overflow:hidden}
-  /* ====== 单卡 ====== */
-  .travel-card{width:100%;border-radius:22px;overflow:hidden;position:relative;
-    box-shadow:0 6px 20px rgba(0,0,0,.12);transition:opacity .35s,transform .35s;
-    animation:cardIn .4s ease;min-height:540px;display:flex;flex-direction:column}
+  /* ====== 桌面网格 ====== */
+  .desktop{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(7,1fr);
+    gap:8px;padding:4px 12px 0;overflow:hidden;align-content:start}
+  /* app 图标 */
+  .app-icon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+  .app-icon .ico{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;
+    justify-content:center;font-size:24px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .app-icon .name{font-size:9px;color:#1a1a1a;font-weight:500;text-shadow:0 1px 2px rgba(255,255,255,.5);max-width:70px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  /* ====== 单卡 2×4 ====== */
+  .travel-card{grid-column:1/span 2;grid-row:1/span 4;border-radius:20px;overflow:hidden;
+    position:relative;box-shadow:0 6px 20px rgba(0,0,0,.15);
+    transition:opacity .35s,transform .35s;animation:cardIn .4s ease;
+    display:flex;flex-direction:column;cursor:pointer}
   @keyframes cardIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
   .travel-card.fade-out{opacity:0;transform:scale(.96)}
   .tc-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
   .tc-bg::after{content:'';position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,.05) 30%,rgba(0,0,0,.55) 100%)}
-  .tc-header{position:relative;z-index:2;display:flex;align-items:center;gap:8px;
-    padding:14px 16px 10px;flex-shrink:0}
-  .tc-app-ico{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;
-    justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-  .tc-app-name{font-size:13px;font-weight:600;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,.5)}
-  .tc-stage-badge{font-size:10px;font-weight:600;color:#fff;background:rgba(255,255,255,.22);
-    backdrop-filter:blur(6px);padding:3px 10px;border-radius:20px;flex-shrink:0}
-  .tc-pull{width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.22);
-    backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
-    font-size:14px;color:#fff;cursor:pointer;flex-shrink:0;transition:.2s;border:none}
-  .tc-pull:hover{background:rgba(255,255,255,.35)}
-  .tc-body{position:relative;z-index:2;flex:1;padding:6px 16px 16px;display:flex;
-    flex-direction:column;gap:10px;overflow:hidden}
-  /* 阶段进度条 */
-  .tc-progress{display:flex;gap:3px;padding:0 16px;position:relative;z-index:2;flex-shrink:0;margin-bottom:-4px}
-  .tc-progress .seg{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.2);transition:.3s}
+    background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,rgba(0,0,0,.08) 25%,rgba(0,0,0,.6) 100%)}
+  /* 进度条 */
+  .tc-progress{display:flex;gap:2px;padding:6px 10px 0;position:relative;z-index:2;flex-shrink:0}
+  .tc-progress .seg{flex:1;height:2px;border-radius:1px;background:rgba(255,255,255,.2);transition:.3s}
   .tc-progress .seg.done{background:rgba(255,255,255,.5)}
-  .tc-progress .seg.cur{background:#fff;box-shadow:0 0 6px rgba(255,255,255,.6)}
-  /* ====== 通用内容样式 ====== */
-  .tc-label{font-size:11px;color:rgba(255,255,255,.7);font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.3)}
-  .tc-big{font-size:38px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.3)}
-  .tc-big.sm{font-size:28px}
-  .tc-text{font-size:13px;color:rgba(255,255,255,.92);line-height:1.5;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .tc-progress .seg.cur{background:#fff;box-shadow:0 0 4px rgba(255,255,255,.6)}
+  /* Header */
+  .tc-header{position:relative;z-index:2;display:flex;align-items:center;gap:5px;
+    padding:6px 10px 4px;flex-shrink:0}
+  .tc-app-ico{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;
+    justify-content:center;font-size:12px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+  .tc-app-name{font-size:10px;font-weight:600;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+  .tc-stage-badge{font-size:8px;font-weight:600;color:#fff;background:rgba(255,255,255,.22);
+    backdrop-filter:blur(6px);padding:2px 7px;border-radius:16px;flex-shrink:0}
+  .tc-pull{width:22px;height:22px;border-radius:7px;background:rgba(255,255,255,.22);
+    backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
+    font-size:11px;color:#fff;cursor:pointer;flex-shrink:0;transition:.2s;border:none}
+  .tc-pull:hover{background:rgba(255,255,255,.35)}
+  /* Body */
+  .tc-body{position:relative;z-index:2;flex:1;padding:2px 10px 8px;display:flex;
+    flex-direction:column;gap:6px;overflow:hidden}
+  /* 通用内容样式 */
+  .tc-label{font-size:9px;color:rgba(255,255,255,.7);font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .tc-big{font-size:26px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .tc-big.sm{font-size:18px}
+  .tc-text{font-size:10px;color:rgba(255,255,255,.92);line-height:1.4;text-shadow:0 1px 3px rgba(0,0,0,.3)}
   .tc-text b{color:#fff;font-weight:600}
-  .tc-glass{background:rgba(255,255,255,.14);backdrop-filter:blur(10px);border-radius:14px;
-    padding:12px 14px;border:1px solid rgba(255,255,255,.12)}
+  .tc-glass{background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:10px;
+    padding:7px 9px;border:1px solid rgba(255,255,255,.1)}
   .tc-glass .tc-label{color:rgba(255,255,255,.6)}
-  .tc-row{display:flex;align-items:center;gap:8px;font-size:13px;color:#fff}
-  .tc-row .ico{font-size:16px;flex-shrink:0}
+  .tc-row{display:flex;align-items:center;gap:5px;font-size:10px;color:#fff}
+  .tc-row .ico{font-size:12px;flex-shrink:0}
   .tc-row .val{flex:1;font-weight:600}
-  .tc-row .sub{font-size:11px;color:rgba(255,255,255,.65)}
-  .tc-chips{display:flex;gap:6px;flex-wrap:wrap}
-  .tc-chip{font-size:11px;background:rgba(255,255,255,.18);color:#fff;padding:4px 10px;
-    border-radius:16px;backdrop-filter:blur(4px)}
+  .tc-row .sub{font-size:9px;color:rgba(255,255,255,.65)}
+  .tc-chips{display:flex;gap:4px;flex-wrap:wrap}
+  .tc-chip{font-size:9px;background:rgba(255,255,255,.18);color:#fff;padding:3px 7px;
+    border-radius:12px;backdrop-filter:blur(4px)}
   .tc-chip.done{background:rgba(52,199,89,.35)}
   .tc-chip.todo{background:rgba(255,149,0,.3)}
-  .tc-cta{margin-top:auto;background:rgba(255,255,255,.95);color:#1A1A1A;border:none;
-    border-radius:14px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;
+  .tc-cta{margin-top:auto;background:rgba(255,255,255,.92);color:#1A1A1A;border:none;
+    border-radius:10px;padding:7px;font-size:11px;font-weight:600;cursor:pointer;
     font-family:inherit;transition:.2s;width:100%}
-  .tc-cta:hover{background:#fff;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.2)}
-  .tc-status-flow{display:flex;align-items:center;gap:4px;font-size:11px;color:rgba(255,255,255,.85)}
-  .tc-status-flow .step{display:flex;align-items:center;gap:3px}
+  .tc-cta:hover{background:#fff;transform:translateY(-1px)}
+  .tc-status-flow{display:flex;align-items:center;gap:2px;font-size:9px;color:rgba(255,255,255,.85)}
+  .tc-status-flow .step{display:flex;align-items:center;gap:2px}
   .tc-status-flow .step.done{color:rgba(255,255,255,.6)}
   .tc-status-flow .step.cur{color:#fff;font-weight:700}
-  .tc-status-flow .step::after{content:'→';margin:0 2px;opacity:.4}
+  .tc-status-flow .step::after{content:'→';margin:0 1px;opacity:.4}
   .tc-status-flow .step:last-child::after{display:none}
-  /* ====== 双Tab ====== */
-  .tc-tabs{display:flex;gap:0;background:rgba(0,0,0,.2);border-radius:12px;padding:3px;
-    position:relative;z-index:2;flex-shrink:0;margin-bottom:-2px}
-  .tc-tab{flex:1;border:none;background:transparent;color:rgba(255,255,255,.6);font-size:12px;
-    font-weight:600;padding:8px;border-radius:10px;cursor:pointer;transition:.25s;font-family:inherit}
-  .tc-tab.on{background:rgba(255,255,255,.9);color:#1A1A1A;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-  .tc-tab .count{font-size:10px;opacity:.7;margin-left:2px}
-  /* 附近推荐 */
-  .nearby-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:360px}
-  .nearby-list::-webkit-scrollbar{width:0}
-  .nearby-item{display:flex;gap:10px;background:rgba(255,255,255,.92);border-radius:14px;
-    padding:10px;cursor:pointer;transition:.15s}
-  .nearby-item:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
-  .nb-thumb{width:52px;height:52px;border-radius:12px;background-size:cover;background-position:center;
-    flex-shrink:0;position:relative}
-  .nb-info{flex:1;display:flex;flex-direction:column;gap:2px}
-  .nb-name{font-size:14px;font-weight:600;color:#1A1A1A}
-  .nb-meta{font-size:11px;color:#8A8A8A}
-  .nb-meta .star{color:#FF9500}
-  .nb-tag{align-self:flex-start;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:2px}
-  .nb-tag.lu{background:#E3F2FD;color:#1565C0}
-  .nb-tag.hot{background:#FFF3E0;color:#E65100}
-  .nb-tag.rate{background:#E8F5E9;color:#2E7D32}
+  /* 分隔线 */
+  .tc-divider{display:flex;align-items:center;gap:6px;margin:2px 0}
+  .tc-divider::before,.tc-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.2)}
+  .tc-divider span{font-size:9px;color:rgba(255,255,255,.7);font-weight:500}
+  /* 附近 mini 行 */
+  .nb-mini{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.14);
+    backdrop-filter:blur(6px);border-radius:8px;padding:5px 8px;cursor:pointer;transition:.15s}
+  .nb-mini:hover{background:rgba(255,255,255,.22)}
+  .nb-mini .nb-cat{font-size:12px;flex-shrink:0}
+  .nb-mini .nb-name{flex:1;color:#fff;font-weight:500;font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .nb-mini .nb-dist{color:rgba(255,255,255,.7);font-size:9px;flex-shrink:0}
   /* 回忆照片网格 */
-  .mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-  .mem-ph{aspect-ratio:1;border-radius:10px;background-size:cover;background-position:center;
-    cursor:pointer;transition:.2s}
-  .mem-ph:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+  .mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+  .mem-ph{aspect-ratio:1;border-radius:6px;background-size:cover;background-position:center;cursor:pointer;transition:.2s}
+  .mem-ph:hover{transform:scale(1.05)}
   /* ====== Dock ====== */
-  .dock{height:64px;margin:4px 14px 14px;border-radius:24px;background:rgba(255,255,255,.25);
+  .dock{height:60px;margin:4px 12px 12px;border-radius:22px;background:rgba(255,255,255,.3);
     backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;
     flex-shrink:0;z-index:21}
-  .dock .d{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;
-    justify-content:center;font-size:22px;background:rgba(255,255,255,.85);cursor:pointer;transition:.15s}
+  .dock .d{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;
+    justify-content:center;font-size:20px;background:rgba(255,255,255,.85);cursor:pointer;transition:.15s}
   .dock .d:hover{transform:translateY(-3px)}
-  /* ====== 通知 toast（被动识别路径）====== */
+  /* ====== 通知 toast ====== */
   .notif{position:absolute;top:44px;left:10px;right:10px;background:rgba(255,255,255,.96);
     backdrop-filter:blur(16px);border-radius:16px;padding:14px;z-index:50;
     box-shadow:0 8px 30px rgba(0,0,0,.18);transform:translateY(-200%);transition:transform .4s cubic-bezier(.22,1,.36,1)}
@@ -195,7 +192,7 @@
   .tl-stage-name .badge.upcoming{background:#F0F0F0;color:#8A8A8A}
   .tl-stage-date{font-size:12px;color:#8A8A8A;margin-top:3px}
   .tl-stage-detail{font-size:12px;color:#6B6B6B;margin-top:4px;line-height:1.5}
-  /* "通过小艺创建" 徽章 */
+  /* 小艺创建徽章 */
   .xiaoyi-badge{position:absolute;top:48px;left:50%;transform:translateX(-50%);
     background:rgba(10,89,247,.9);color:#fff;font-size:11px;padding:5px 14px;border-radius:16px;
     z-index:55;backdrop-filter:blur(8px);opacity:0;transition:opacity .3s;pointer-events:none}
@@ -212,7 +209,7 @@
 <!-- ====== 控制台 ====== -->
 <div class="console">
   <h1>单卡旅行助手</h1>
-  <p class="sub">五阶段状态机 · 双Tab探索 · 完整体验Demo</p>
+  <p class="sub">2×4 桌面卡片 · 五阶段状态机 · 同屏展示下一站+附近</p>
   <div class="trip-card">
     <div class="t1">大理 3 日游</div>
     <div class="t2">8月21日出发 · 昆明 ✈ 大理 · 3天12景点</div>
@@ -233,21 +230,13 @@
     <button data-stage="5">📸 回忆</button>
   </div>
 
-  <div id="tab-section" style="display:none">
-    <div class="seg-label">游览 Tab</div>
-    <div class="btn-group" id="tab-btns">
-      <button class="on" data-tab="next">📍 下一目的地</button>
-      <button data-tab="nearby">🏛️ 附近</button>
-    </div>
-  </div>
-
   <div class="stage-info" id="stage-info"></div>
 
   <div class="notes">
     <div class="seg-label" style="margin-top:0">设计要点</div>
-    <div class="ni">• <b>卡身=当下行动</b>，右上角↗拉起全程时间线</div>
+    <div class="ni">• <b>2×4 桌面卡片</b>，右上角↗拉起全程时间线</div>
     <div class="ni">• 五阶段<b>自动切换</b>：时间/位置/航班状态触发</div>
-    <div class="ni">• 游览阶段双Tab：<b>下一目的地</b>（计划内）+ <b>附近</b>（计划外发现）</div>
+    <div class="ni">• 游览阶段<b>同屏</b>：下一目的地 + 附近推荐</div>
     <div class="ni">• 被动识别路径：首次<b>轻确认</b>，不直接建卡</div>
     <div class="ni">• 回忆阶段：信息卡→<b>情绪卡</b>（照片+统计+分享）</div>
   </div>
@@ -285,11 +274,11 @@
     <!-- 小艺创建徽章 -->
     <div class="xiaoyi-badge" id="xiaoyi-badge">✨ 通过小艺创建</div>
 
-    <!-- 桌面 + 单卡 -->
-    <div class="desktop">
-      <div class="travel-card" id="travel-card">
-        <!-- 由 JS 渲染 -->
-      </div>
+    <!-- 桌面网格 -->
+    <div class="desktop" id="desktop">
+      <!-- 单卡（JS渲染，占2×4） -->
+      <div class="travel-card" id="travel-card"></div>
+      <!-- 右侧 app 图标（2列×4行=8个，JS填充） -->
     </div>
 
     <!-- Dock -->
@@ -319,7 +308,7 @@
 
 <script>
 const IMG='../travel-fork/images/';
-let curStage=1, curTab='next', curPath='active', tlOpen=false;
+let curStage=1, curPath='active', tlOpen=false;
 
 const stages={
   1:{name:'出行前',icon:'🧳',color:'var(--s1)',bg:IMG+'sky.jpg',
@@ -329,7 +318,7 @@ const stages={
     desc:'航班信息+登机口+实时状态流。单卡黄金场景，信息密度最高。',
     signal:'航班降落 / 到达目的地 → 切换到游览'},
   3:{name:'游览中',icon:'🗺️',color:'var(--s3)',bg:IMG+'dali.jpg',
-    desc:'双Tab：下一目的地（计划内）+附近推荐（计划外发现）。',
+    desc:'同屏展示下一目的地（计划内）+附近推荐（计划外发现）。',
     signal:'最后一天 / 返程前12小时 → 切换到返程'},
   4:{name:'返程',icon:'🛫',color:'var(--s4)',bg:IMG+'sunset.jpg',
     desc:'返程倒计时+出发建议+离店清单。与阶段2镜像但方向反转。',
@@ -348,11 +337,34 @@ const timeline=[
 ];
 
 const nearby=[
-  {name:'洱海公园',dist:'1.2km',star:'4.5',cat:'🏞️',desc:'湖景散步 · 日落绝佳',tag:'顺路',tagCls:'lu',img:IMG+'erhai.jpg'},
-  {name:'大理古城',dist:'2.5km',star:'4.7',cat:'🏘️',desc:'南城门 · 五华楼 · 人民路',tag:'热门',tagCls:'hot',img:IMG+'dali.jpg'},
-  {name:'喜洲古镇',dist:'8km',star:'4.6',cat:'🌾',desc:'白族民居 · 稻田 · 扎染',tag:'评分高',tagCls:'rate',img:IMG+'sunset.jpg'},
-  {name:'苍山索道',dist:'12km',star:'4.4',cat:'🏔️',desc:'洗马潭索道 · 海拔3900m',tag:'景点',tagCls:'lu',img:IMG+'cangshan.jpg'},
+  {name:'洱海公园',dist:'1.2km',cat:'🏞️',img:IMG+'erhai.jpg'},
+  {name:'大理古城',dist:'2.5km',cat:'🏘️',img:IMG+'dali.jpg'},
+  {name:'喜洲古镇',dist:'8km',cat:'🌾',img:IMG+'sunset.jpg'},
+  {name:'苍山索道',dist:'12km',cat:'🏔️',img:IMG+'cangshan.jpg'},
 ];
+
+// 桌面 app 图标
+const appIcons=[
+  {ico:'📅',name:'日历',bg:'#FF3B30'},
+  {ico:'📷',name:'相机',bg:'#FF9500'},
+  {ico:'🗺️',name:'地图',bg:'#34C759'},
+  {ico:'🌤️',name:'天气',bg:'#0A84FF'},
+  {ico:'💰',name:'钱包',bg:'#34C759'},
+  {ico:'🎵',name:'音乐',bg:'#FF2D55'},
+  {ico:'⚙️',name:'设置',bg:'#8E8E93'},
+  {ico:'📞',name:'电话',bg:'#34C759'},
+];
+
+// ====== 填充桌面 app 图标 ======
+function fillAppIcons(){
+  const desktop=document.getElementById('desktop');
+  appIcons.forEach(a=>{
+    const el=document.createElement('div');
+    el.className='app-icon';
+    el.innerHTML=`<div class="ico" style="background:${a.bg}">${a.ico}</div><div class="name">${a.name}</div>`;
+    desktop.appendChild(el);
+  });
+}
 
 // ====== 渲染卡片 ======
 function renderCard(){
@@ -374,7 +386,7 @@ function renderCard(){
       <div class="tc-app-ico" style="background:${s.color}">${s.icon}</div>
       <div class="tc-app-name">旅行助手</div>
       <div class="tc-stage-badge">${s.name}</div>
-      <button class="tc-pull" onclick="toggleTimeline()" title="拉起全程时间线">↗</button>
+      <button class="tc-pull" onclick="event.stopPropagation();toggleTimeline()" title="拉起全程时间线">↗</button>
     </div>`;
 
   // Stage content
@@ -382,114 +394,82 @@ function renderCard(){
     body=`
       <div class="tc-label">距出发还有</div>
       <div class="tc-big">3 天</div>
-      <div class="tc-text"><b>8月21日 周四 08:45</b><br>昆明长水 ✈ 大理凤仪</div>
+      <div class="tc-text"><b>8月21日 08:45</b><br>昆明 ✈ 大理</div>
       <div class="tc-glass">
-        <div class="tc-label">🌤️ 目的地天气</div>
-        <div class="tc-row" style="margin-top:6px">
-          <span class="ico">☀️</span>
-          <span class="val">大理 22°C</span>
-          <span class="sub">18-25°C · 晴 · 微风</span>
-        </div>
+        <div class="tc-row"><span class="ico">☀️</span><span class="val">大理 22°C</span><span class="sub">晴</span></div>
       </div>
-      <div class="tc-label">行前清单</div>
       <div class="tc-chips">
-        <span class="tc-chip done">✓ 身份证</span>
         <span class="tc-chip done">✓ 机票</span>
         <span class="tc-chip done">✓ 酒店</span>
-        <span class="tc-chip todo">✗ 充电器</span>
-        <span class="tc-chip todo">✗ 防晒霜</span>
-      </div>
-      <button class="tc-cta">查看完整计划</button>`;
+        <span class="tc-chip todo">✗ 防晒</span>
+      </div>`;
   }
   else if(curStage===2){
     body=`
-      <div class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:16px">MU5731</span><span class="sub">昆明 → 大理</span></div>
+      <div class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:13px">MU5731</span><span class="sub">→大理</span></div>
       <div class="tc-label">起飞时间</div>
       <div class="tc-big">08:45</div>
-      <div class="tc-text">登机口 <b>B12</b> · 座位 <b>23A</b> · 经济舱</div>
+      <div class="tc-text">登机口 <b>B12</b> · 座位 <b>23A</b></div>
       <div class="tc-glass">
-        <div class="tc-row"><span class="ico">⏰</span><span class="val">距登机 1小时20分</span></div>
-        <div class="tc-status-flow" style="margin-top:8px">
-          <span class="step done">✅ 值机</span>
-          <span class="step done">✅ 安检</span>
-          <span class="step cur">● 登机</span>
-          <span class="step">○ 起飞</span>
+        <div class="tc-row"><span class="ico">⏰</span><span class="val">距登机 1h20m</span></div>
+        <div class="tc-status-flow" style="margin-top:5px">
+          <span class="step done">✓值机</span>
+          <span class="step done">✓安检</span>
+          <span class="step cur">●登机</span>
+          <span class="step">起飞</span>
         </div>
       </div>
-      <div class="tc-text">📍 昆明长水国际机场 T2<br>距登机口步行 8分钟</div>
       <button class="tc-cta">🧭 导航到登机口</button>`;
   }
   else if(curStage===3){
-    const tabs=`
-      <div class="tc-tabs">
-        <button class="tc-tab ${curTab==='next'?'on':''}" onclick="switchTab('next')">📍 下一目的地</button>
-        <button class="tc-tab ${curTab==='nearby'?'on':''}" onclick="switchTab('nearby')">🏛️ 附近 <span class="count">${nearby.length}</span></button>
-      </div>`;
+    // 同屏展示：下一目的地 + 附近推荐（无 Tab）
+    let nbHTML='';
+    nearby.slice(0,3).forEach(n=>{
+      nbHTML+=`
+        <div class="nb-mini" onclick="event.stopPropagation();alert('${n.name}')">
+          <span class="nb-cat">${n.cat}</span>
+          <span class="nb-name">${n.name}</span>
+          <span class="nb-dist">${n.dist}</span>
+        </div>`;
+    });
 
-    if(curTab==='next'){
-      body=tabs+`
-        <div class="tc-label">下一站 · 今日第3站</div>
-        <div class="tc-big sm">崇圣寺三塔</div>
-        <div class="tc-text"><b>14:00 - 16:00</b> · 建议游览1.5小时</div>
-        <div class="tc-glass">
-          <div class="tc-row"><span class="ico">🚶</span><span class="val">步行 8分钟</span><span class="sub">480m</span></div>
-          <div class="tc-row" style="margin-top:6px"><span class="ico">🚕</span><span class="val">打车 3分钟</span><span class="sub">约¥12</span></div>
-        </div>
-        <div class="tc-chips">
-          <span class="tc-chip">🎫 ¥75/人</span>
-          <span class="tc-chip">⭐ 4.6</span>
-          <span class="tc-chip">📸 拍照圣地</span>
-        </div>
-        <button class="tc-cta">🧭 开始导航</button>`;
-    } else {
-      let nbHTML=tabs+`<div class="tc-label">附近推荐 · 基于你的位置</div><div class="nearby-list">`;
-      nearby.forEach(n=>{
-        nbHTML+=`
-          <div class="nearby-item" onclick="alert('查看${n.name}')">
-            <div class="nb-thumb" style="background-image:url('${n.img}')"></div>
-            <div class="nb-info">
-              <div class="nb-name">${n.cat} ${n.name}</div>
-              <div class="nb-meta">${n.dist} · <span class="star">★${n.star}</span> · ${n.desc}</div>
-              <span class="nb-tag ${n.tagCls}">${n.tag}</span>
-            </div>
-          </div>`;
-      });
-      body=nbHTML+`</div>`;
-    }
+    body=`
+      <div class="tc-label">下一站 · 今日第3站</div>
+      <div class="tc-big sm">崇圣寺三塔</div>
+      <div class="tc-text"><b>14:00</b> · 步行8分钟 · 🎫¥75</div>
+      <div class="tc-divider"><span>附近推荐</span></div>
+      ${nbHTML}
+      <button class="tc-cta">🧭 开始导航</button>`;
   }
   else if(curStage===4){
     body=`
-      <div class="tc-label">返程航班</div>
-      <div class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:16px">MU5732</span><span class="sub">大理 → 昆明</span></div>
+      <div class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:13px">MU5732</span><span class="sub">→昆明</span></div>
+      <div class="tc-label">返程时间</div>
       <div class="tc-big">明天 15:30</div>
       <div class="tc-glass">
-        <div class="tc-row"><span class="ico">⏰</span><span class="val">距返程 23小时</span></div>
-        <div class="tc-text" style="margin-top:8px">建议 <b>13:00</b> 从酒店出发<br>车程约 40分钟</div>
+        <div class="tc-row"><span class="ico">⏰</span><span class="val">距返程 23h</span></div>
+        <div class="tc-text" style="margin-top:4px">建议 <b>13:00</b> 出发</div>
       </div>
-      <div class="tc-label">离店清单</div>
       <div class="tc-chips">
         <span class="tc-chip done">✓ 退房</span>
-        <span class="tc-chip done">✓ 行李打包</span>
-        <span class="tc-chip todo">✗ 机场大巴</span>
+        <span class="tc-chip todo">✗ 大巴</span>
       </div>
       <button class="tc-cta">⏰ 设置出发提醒</button>`;
   }
   else if(curStage===5){
     const photos=['erhai','cangshan','lijiang','sunset','dali','sky'];
     let grid='<div class="mem-grid">';
-    photos.forEach(p=>{grid+=`<div class="mem-ph" style="background-image:url('${IMG}${p}.jpg')" onclick="alert('查看照片')"></div>`});
+    photos.forEach(p=>{grid+=`<div class="mem-ph" style="background-image:url('${IMG}${p}.jpg')" onclick="event.stopPropagation();alert('查看照片')"></div>`});
     grid+='</div>';
 
     body=`
-      <div class="tc-big sm" style="font-size:24px">✨ 大理之行</div>
-      <div class="tc-text"><b>3天</b> · <b>12</b>个景点 · <b>248</b>张照片</div>
+      <div class="tc-big sm" style="font-size:16px">✨ 大理之行</div>
+      <div class="tc-text"><b>3天</b> · <b>12</b>景点 · <b>248</b>张照片</div>
       ${grid}
       <div class="tc-glass">
-        <div class="tc-label">🏆 最精彩的一天</div>
-        <div class="tc-row" style="margin-top:6px"><span class="ico">🏔️</span><span class="val">Day 2 · 苍山</span></div>
-        <div class="tc-text" style="margin-top:4px;font-size:12px">"金顶云海，海拔4100m，值了"</div>
+        <div class="tc-row"><span class="ico">🏆</span><span class="val" style="font-size:11px">Day2 苍山</span></div>
       </div>
-      <button class="tc-cta">📤 分享旅行相册</button>`;
+      <button class="tc-cta">📤 分享相册</button>`;
   }
 
   card.innerHTML=`
@@ -503,8 +483,6 @@ function renderCard(){
 function renderTimeline(){
   const list=document.getElementById('tl-list');
   list.innerHTML=timeline.map(t=>{
-    const isCur=t.s===curStage;
-    const isDone=t.status==='done';
     const cls=t.status==='done'?'done':(t.status==='cur'?'cur':'');
     return `
       <div class="tl-item ${cls}" onclick="switchStage(${t.s})">
@@ -538,16 +516,6 @@ function switchStage(n){
   },250);
 }
 
-// ====== Tab 切换 ======
-function switchTab(tab){
-  if(tab===curTab) return;
-  curTab=tab;
-  renderCard();
-  document.querySelectorAll('#tab-btns button').forEach(b=>{
-    b.classList.toggle('on',b.dataset.tab===tab);
-  });
-}
-
 // ====== 时间线开关 ======
 function toggleTimeline(){
   tlOpen=!tlOpen;
@@ -564,7 +532,6 @@ function switchPath(path){
   const badge=document.getElementById('xiaoyi-badge');
 
   if(path==='passive'){
-    // 隐藏卡片，显示通知
     card.style.opacity='0';
     card.style.pointerEvents='none';
     setTimeout(()=>notif.classList.add('show'),300);
@@ -572,7 +539,6 @@ function switchPath(path){
     notif.classList.remove('show');
     card.style.opacity='';
     card.style.pointerEvents='';
-    // 显示小艺徽章
     badge.classList.add('show');
     setTimeout(()=>badge.classList.remove('show'),2500);
   }
@@ -609,12 +575,6 @@ function updateUI(){
     <b>${s.icon} ${s.name}</b><br>
     ${s.desc}<br>
     <span class="si-signal">→ ${s.signal}</span>`;
-  document.getElementById('tab-section').style.display=curStage===3?'block':'none';
-  if(curStage===3){
-    document.querySelectorAll('#tab-btns button').forEach(b=>{
-      b.classList.toggle('on',b.dataset.tab===curTab);
-    });
-  }
 }
 
 // ====== 时钟 ======
@@ -627,14 +587,12 @@ function updateClock(){
 document.getElementById('stage-btns').addEventListener('click',e=>{
   if(e.target.tagName==='BUTTON') switchStage(parseInt(e.target.dataset.stage));
 });
-document.getElementById('tab-btns').addEventListener('click',e=>{
-  if(e.target.tagName==='BUTTON') switchTab(e.target.dataset.tab);
-});
 document.getElementById('path-btns').addEventListener('click',e=>{
   if(e.target.tagName==='BUTTON') switchPath(e.target.dataset.path);
 });
 
 // ====== 初始化 ======
+fillAppIcons();
 renderCard();
 updateUI();
 updateClock();
