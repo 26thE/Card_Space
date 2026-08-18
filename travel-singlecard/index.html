@@ -70,7 +70,7 @@
   .travel-card.fade-out{opacity:0;transform:scale(.96)}
   .tc-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
   .tc-bg::after{content:'';position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.22) 35%,rgba(0,0,0,.55) 100%)}
+    background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.28) 40%,rgba(0,0,0,.5) 100%)}
   /* 进度条 */
   .tc-progress{display:flex;gap:2px;padding:4px 10px 0;position:relative;z-index:2;flex-shrink:0}
   .tc-progress .seg{flex:1;height:2px;border-radius:1px;background:rgba(255,255,255,.2);transition:.3s}
@@ -88,52 +88,67 @@
     backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
     font-size:11px;color:#fff;cursor:pointer;flex-shrink:0;transition:.2s;border:none}
   .tc-pull:hover{background:rgba(255,255,255,.35)}
-  /* Body - 上下分区：主信息行(全宽) + 辅助glass面板(全宽填底) */
-  .tc-body{position:relative;z-index:2;flex:1;padding:1px 12px 8px;display:flex;
-    flex-direction:column;gap:6px;overflow:hidden;justify-content:space-between}
-  .tc-main{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;flex-shrink:0}
-  .tc-aux{background:rgba(255,255,255,.13);backdrop-filter:blur(10px);border-radius:12px;
-    padding:6px 10px;border:1px solid rgba(255,255,255,.08);flex:1;display:flex;
-    align-items:center;gap:10px;min-height:0;overflow:hidden}
+  /* Body - 整片毛玻璃信息面板 */
+  .tc-body{position:relative;z-index:2;flex:1;padding:1px 10px 10px;display:flex;
+    flex-direction:column;overflow:hidden}
+  .tc-glass-panel{flex:1;background:rgba(0,0,0,.34);backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);border-radius:18px;
+    border:1px solid rgba(255,255,255,.14);padding:10px 12px;display:flex;
+    flex-direction:column;gap:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),
+    0 6px 20px rgba(0,0,0,.15);overflow:hidden}
   /* 通用内容样式 */
-  .tc-label{font-size:9px;color:rgba(255,255,255,.7);font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.3)}
-  .tc-big{font-size:26px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.3)}
-  .tc-big.sm{font-size:18px}
-  .tc-text{font-size:10px;color:rgba(255,255,255,.92);line-height:1.4;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .tc-label{font-size:10px;color:rgba(255,255,255,.72);font-weight:500;letter-spacing:.2px}
+  .tc-big{font-size:34px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .tc-big.sm{font-size:22px;line-height:1.1}
+  .tc-text{font-size:11px;color:rgba(255,255,255,.88);line-height:1.4}
   .tc-text b{color:#fff;font-weight:600}
-  .tc-glass{background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:10px;
-    padding:7px 9px;border:1px solid rgba(255,255,255,.1)}
-  .tc-glass .tc-label{color:rgba(255,255,255,.6)}
-  .tc-row{display:flex;align-items:center;gap:5px;font-size:10px;color:#fff;flex-shrink:0}
-  .tc-row .ico{font-size:12px;flex-shrink:0}
+  .tc-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#fff;flex-shrink:0}
+  .tc-row .ico{font-size:14px;flex-shrink:0}
   .tc-row .val{font-weight:600}
-  .tc-row .sub{font-size:9px;color:rgba(255,255,255,.65)}
-  .tc-chips{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
-  .tc-chip{font-size:9px;background:rgba(255,255,255,.18);color:#fff;padding:3px 7px;
-    border-radius:12px;backdrop-filter:blur(4px)}
-  .tc-chip.done{background:rgba(52,199,89,.35)}
-  .tc-chip.todo{background:rgba(255,149,0,.3)}
-  .tc-status-flow{display:flex;align-items:center;gap:2px;font-size:9px;color:rgba(255,255,255,.85);margin-left:auto;flex-shrink:0}
-  .tc-status-flow .step{display:flex;align-items:center;gap:2px}
-  .tc-status-flow .step.done{color:rgba(255,255,255,.6)}
+  .tc-row .sub{font-size:10px;color:rgba(255,255,255,.7)}
+  .tc-chips{display:flex;gap:5px;flex-wrap:wrap}
+  .tc-chip{font-size:10px;background:rgba(255,255,255,.16);color:#fff;padding:4px 9px;
+    border-radius:13px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08)}
+  .tc-chip.done{background:rgba(52,199,89,.32);border-color:rgba(52,199,89,.25)}
+  .tc-chip.todo{background:rgba(255,159,10,.28);border-color:rgba(255,159,10,.2)}
+  .tc-sep{width:1px;height:14px;background:rgba(255,255,255,.15);flex-shrink:0;margin:0 2px}
+  /* 航班信息条 */
+  .flight-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:3px 9px;font-size:11px;color:#fff}
+  .flight-badge .plane{font-size:13px}
+  /* 状态流时间线 */
+  .tc-status-flow{display:flex;align-items:center;gap:3px;font-size:10px;color:rgba(255,255,255,.8);flex-wrap:wrap}
+  .tc-status-flow .step{display:flex;align-items:center;gap:3px;white-space:nowrap}
+  .tc-status-flow .step.done{color:rgba(255,255,255,.55)}
   .tc-status-flow .step.cur{color:#fff;font-weight:700}
-  .tc-status-flow .step::after{content:'→';margin:0 1px;opacity:.4}
+  .tc-status-flow .step::after{content:'→';margin:0 2px;opacity:.35}
   .tc-status-flow .step:last-child::after{display:none}
-  /* 分隔竖线 */
-  .tc-sep{width:1px;height:14px;background:rgba(255,255,255,.15);flex-shrink:0}
-  /* 附近推荐横排卡 */
-  .nb-mini{display:flex;flex-direction:column;align-items:center;gap:1px;flex:1;
-    background:rgba(255,255,255,.1);border-radius:9px;padding:5px 4px;cursor:pointer;
-    transition:.15s;min-width:0;overflow:hidden}
-  .nb-mini:hover{background:rgba(255,255,255,.2)}
-  .nb-mini .nb-cat{font-size:15px;line-height:1}
-  .nb-mini .nb-name{font-size:9px;color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .nb-mini .nb-dist{font-size:8px;color:rgba(255,255,255,.65)}
+  /* 分隔线 */
+  .tc-divider{height:1px;background:rgba(255,255,255,.12);margin:2px 0;width:100%}
+  /* 游览：目的地信息 */
+  .spot-row{display:flex;align-items:center;gap:10px}
+  .spot-thumb{width:52px;height:52px;border-radius:12px;background-size:cover;background-position:center;
+    flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .spot-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .spot-info .spot-name{font-size:18px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .spot-info .spot-meta{font-size:10px;color:rgba(255,255,255,.75)}
+  /* 附近推荐横排 */
+  .nearby-row{display:flex;gap:6px;flex:1;min-height:0}
+  .nearby-row .nb-label{align-self:center;font-size:10px;color:rgba(255,255,255,.6);writing-mode:vertical-rl;
+    letter-spacing:2px;margin-right:2px}
+  .nb-card{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    background:rgba(255,255,255,.1);border-radius:11px;padding:5px 3px;cursor:pointer;transition:.15s;
+    min-width:0;border:1px solid rgba(255,255,255,.08)}
+  .nb-card:hover{background:rgba(255,255,255,.18)}
+  .nb-card .nb-img{width:34px;height:34px;border-radius:8px;background-size:cover;background-position:center;
+    flex-shrink:0}
+  .nb-card .nb-name{font-size:9px;color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .nb-card .nb-dist{font-size:8px;color:rgba(255,255,255,.65)}
   /* 回忆照片横排 */
-  .mem-strip{display:flex;gap:3px;flex:1;overflow:hidden}
-  .mem-strip .mem-ph{flex:1;border-radius:6px;background-size:cover;background-position:center;
-    cursor:pointer;transition:.2s;min-width:0;aspect-ratio:auto}
-  .mem-strip .mem-ph:hover{transform:scale(1.05)}
+  .mem-row{display:flex;gap:4px;flex:1;min-height:0;overflow:hidden}
+  .mem-row .mem-ph{flex:1;border-radius:8px;background-size:cover;background-position:center;
+    cursor:pointer;transition:.2s;min-width:0}
+  .mem-row .mem-ph:hover{transform:scale(1.03)}
   /* ====== Dock ====== */
   .dock{height:60px;margin:4px 12px 12px;border-radius:22px;background:rgba(255,255,255,.3);
     backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;
@@ -397,94 +412,105 @@ function renderCard(){
       <button class="tc-pull" onclick="event.stopPropagation();toggleTimeline()" title="拉起全程时间线">↗</button>
     </div>`;
 
-  // Stage content - 上下分区：tc-main(全宽主信息行) + tc-aux(全宽glass辅助面板)
+  // Stage content - 统一使用 tc-glass-panel 包裹所有内容
   if(curStage===1){
     body=`
-      <div class="tc-main">
-        <span class="tc-label">距出发</span>
-        <span class="tc-big">3 天</span>
-        <span class="tc-text">8月21日 08:45 · 昆明 ✈ 大理</span>
-      </div>
-      <div class="tc-aux">
-        <span class="tc-row"><span class="ico">☀️</span><span class="val">大理 22°C</span><span class="sub">晴</span></span>
-        <span class="tc-sep"></span>
-        <div class="tc-chips">
-          <span class="tc-chip done">✓ 机票</span>
-          <span class="tc-chip done">✓ 酒店</span>
-          <span class="tc-chip todo">✗ 防晒</span>
+      <div class="tc-glass-panel">
+        <div class="tc-row" style="justify-content:space-between">
+          <span class="tc-label">距出发</span>
+          <span class="tc-text">8月21日 08:45 · 昆明 ✈ 大理</span>
+        </div>
+        <div class="tc-big">3 天</div>
+        <div class="tc-divider"></div>
+        <div class="tc-row" style="gap:10px">
+          <span class="tc-row"><span class="ico">☀️</span><span class="val">大理 22°C</span><span class="sub">晴</span></span>
+          <div class="tc-chips" style="margin-left:auto">
+            <span class="tc-chip done">✓ 机票</span>
+            <span class="tc-chip done">✓ 酒店</span>
+            <span class="tc-chip todo">✗ 防晒</span>
+          </div>
         </div>
       </div>`;
   }
   else if(curStage===2){
     body=`
-      <div class="tc-main">
-        <span class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:13px">MU5731</span><span class="sub">→大理</span></span>
-        <span class="tc-big">08:45</span>
-        <span class="tc-text">登机口 <b>B12</b> · 座位 <b>23A</b></span>
-      </div>
-      <div class="tc-aux">
-        <span class="tc-row"><span class="ico">⏰</span><span class="val">距登机 1h20m</span></span>
-        <span class="tc-sep"></span>
-        <div class="tc-status-flow">
-          <span class="step done">✓值机</span>
-          <span class="step done">✓安检</span>
-          <span class="step cur">●登机</span>
-          <span class="step">起飞</span>
+      <div class="tc-glass-panel">
+        <div class="tc-row" style="justify-content:space-between">
+          <span class="flight-badge"><span class="plane">✈️</span> MU5731 <span class="sub">→大理</span></span>
+          <span class="tc-text">登机口 <b>B12</b> · 座位 <b>23A</b></span>
+        </div>
+        <div class="tc-big">08:45</div>
+        <div class="tc-divider"></div>
+        <div class="tc-row" style="justify-content:space-between;flex-wrap:wrap;gap:4px">
+          <span class="tc-row"><span class="ico">⏰</span><span class="val">距登机 1h20m</span></span>
+          <div class="tc-status-flow">
+            <span class="step done">✓值机</span>
+            <span class="step done">✓安检</span>
+            <span class="step cur">●登机</span>
+            <span class="step">起飞</span>
+          </div>
         </div>
       </div>`;
   }
   else if(curStage===3){
-    // 游览：上方下一站信息，下方附近推荐横排（全宽glass面板内）
+    // 游览：目的地 + 附近推荐
     let nbHTML='';
     nearby.slice(0,3).forEach(n=>{
-      nbHTML+=`<div class="nb-mini" onclick="event.stopPropagation();alert('${n.name}')">
-        <span class="nb-cat">${n.cat}</span>
+      nbHTML+=`<div class="nb-card" onclick="event.stopPropagation();alert('${n.name}')">
+        <div class="nb-img" style="background-image:url('${n.img}')"></div>
         <span class="nb-name">${n.name}</span>
         <span class="nb-dist">${n.dist}</span>
       </div>`;
     });
 
     body=`
-      <div class="tc-main">
-        <span class="tc-label">下一站 · 今日第3站</span>
-        <span class="tc-big sm">崇圣寺三塔</span>
-        <span class="tc-text"><b>14:00</b> · 步行8分钟 · 🎫¥75</span>
-      </div>
-      <div class="tc-aux">
-        <span class="tc-label" style="flex-shrink:0">附近</span>
-        ${nbHTML}
+      <div class="tc-glass-panel">
+        <div class="tc-label">下一站 · 今日第3站</div>
+        <div class="spot-row">
+          <div class="spot-thumb" style="background-image:url('${IMG}dali.jpg')"></div>
+          <div class="spot-info">
+            <div class="spot-name">崇圣寺三塔</div>
+            <div class="spot-meta"><b>14:00</b> · 步行8分钟 · 🎫¥75</div>
+          </div>
+        </div>
+        <div class="tc-divider"></div>
+        <div class="nearby-row">
+          <span class="nb-label">附近</span>
+          ${nbHTML}
+        </div>
       </div>`;
   }
   else if(curStage===4){
     body=`
-      <div class="tc-main">
-        <span class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:13px">MU5732</span><span class="sub">→昆明</span></span>
-        <span class="tc-big">明天 15:30</span>
-        <span class="tc-text">建议 <b>13:00</b> 出发</span>
-      </div>
-      <div class="tc-aux">
-        <span class="tc-row"><span class="ico">⏰</span><span class="val">距返程 23h</span></span>
-        <span class="tc-sep"></span>
-        <div class="tc-chips">
-          <span class="tc-chip done">✓ 退房</span>
-          <span class="tc-chip todo">✗ 大巴</span>
+      <div class="tc-glass-panel">
+        <div class="tc-row" style="justify-content:space-between">
+          <span class="flight-badge"><span class="plane">✈️</span> MU5732 <span class="sub">→昆明</span></span>
+          <span class="tc-text">建议 <b>13:00</b> 出发</span>
+        </div>
+        <div class="tc-big sm">明天 15:30</div>
+        <div class="tc-divider"></div>
+        <div class="tc-row" style="justify-content:space-between;flex-wrap:wrap;gap:4px">
+          <span class="tc-row"><span class="ico">⏰</span><span class="val">距返程 23h</span></span>
+          <div class="tc-chips">
+            <span class="tc-chip done">✓ 退房</span>
+            <span class="tc-chip todo">✗ 大巴</span>
+          </div>
         </div>
       </div>`;
   }
   else if(curStage===5){
-    const photos=['erhai','cangshan','lijiang','sunset','dali','sky'];
-    let photoHTML='<div class="mem-strip">';
+    const photos=['erhai','cangshan','lijiang','sunset','dali'];
+    let photoHTML='<div class="mem-row">';
     photos.forEach(p=>{photoHTML+=`<div class="mem-ph" style="background-image:url('${IMG}${p}.jpg')" onclick="event.stopPropagation();alert('查看照片')"></div>`});
     photoHTML+='</div>';
 
     body=`
-      <div class="tc-main">
-        <span class="tc-big sm">✨ 大理之行</span>
-        <span class="tc-text"><b>3天</b> · <b>12</b>景点 · <b>248</b>张照片</span>
-        <span class="tc-sep"></span>
-        <span class="tc-row"><span class="ico">🏆</span><span class="val" style="font-size:10px">Day2 苍山</span></span>
-      </div>
-      <div class="tc-aux">
+      <div class="tc-glass-panel">
+        <div class="tc-row" style="justify-content:space-between">
+          <span class="tc-big sm">✨ 大理之行</span>
+          <span class="tc-row"><span class="ico">🏆</span><span class="val" style="font-size:10px">Day2 苍山</span></span>
+        </div>
+        <div class="tc-text"><b>3天</b> · <b>12</b>景点 · <b>248</b>张照片</div>
         ${photoHTML}
       </div>`;
   }
@@ -610,6 +636,9 @@ document.getElementById('path-btns').addEventListener('click',e=>{
 
 // ====== 初始化 ======
 fillAppIcons();
+// 支持 URL hash 自动选阶段（如 #stage=3），方便截图和分享
+const hashMatch=location.hash.match(/stage=(\d)/);
+if(hashMatch){curStage=parseInt(hashMatch[1]);}
 renderCard();
 updateUI();
 updateClock();
