@@ -61,8 +61,8 @@
   .app-icon .ico{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;
     justify-content:center;font-size:24px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
   .app-icon .name{font-size:9px;color:#1a1a1a;font-weight:500;text-shadow:0 1px 2px rgba(255,255,255,.5);max-width:70px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-  /* ====== 单卡 2×4 ====== */
-  .travel-card{grid-column:1/span 2;grid-row:1/span 4;border-radius:20px;overflow:hidden;
+  /* ====== 单卡 4×2（横向） ====== */
+  .travel-card{grid-column:1/span 4;grid-row:1/span 2;border-radius:20px;overflow:hidden;
     position:relative;box-shadow:0 6px 20px rgba(0,0,0,.15);
     transition:opacity .35s,transform .35s;animation:cardIn .4s ease;
     display:flex;flex-direction:column;cursor:pointer}
@@ -88,9 +88,12 @@
     backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
     font-size:11px;color:#fff;cursor:pointer;flex-shrink:0;transition:.2s;border:none}
   .tc-pull:hover{background:rgba(255,255,255,.35)}
-  /* Body */
-  .tc-body{position:relative;z-index:2;flex:1;padding:2px 10px 8px;display:flex;
-    flex-direction:column;gap:6px;overflow:hidden}
+  /* Body - 横向布局 */
+  .tc-body{position:relative;z-index:2;flex:1;padding:2px 12px 8px;display:flex;
+    flex-direction:row;gap:12px;overflow:hidden;align-items:stretch}
+  .tc-body .tc-left{flex:1.1;display:flex;flex-direction:column;gap:3px;min-width:0}
+  .tc-body .tc-right{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;
+    justify-content:center}
   /* 通用内容样式 */
   .tc-label{font-size:9px;color:rgba(255,255,255,.7);font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.3)}
   .tc-big{font-size:26px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 6px rgba(0,0,0,.3)}
@@ -276,9 +279,9 @@
 
     <!-- 桌面网格 -->
     <div class="desktop" id="desktop">
-      <!-- 单卡（JS渲染，占2×4） -->
+      <!-- 单卡（JS渲染，占4×2横向） -->
       <div class="travel-card" id="travel-card"></div>
-      <!-- 右侧 app 图标（2列×4行=8个，JS填充） -->
+      <!-- 下方 app 图标（JS填充） -->
     </div>
 
     <!-- Dock -->
@@ -353,6 +356,14 @@ const appIcons=[
   {ico:'🎵',name:'音乐',bg:'#FF2D55'},
   {ico:'⚙️',name:'设置',bg:'#8E8E93'},
   {ico:'📞',name:'电话',bg:'#34C759'},
+  {ico:'💡',name:'备忘',bg:'#FFCC00'},
+  {ico:'📧',name:'邮件',bg:'#007AFF'},
+  {ico:'🛒',name:'购物',bg:'#FF2D55'},
+  {ico:'⏰',name:'时钟',bg:'#000000'},
+  {ico:'📊',name:'健康',bg:'#FF3B30'},
+  {ico:'📝',name:'笔记',bg:'#FFCC00'},
+  {ico:'🎬',name:'视频',bg:'#000000'},
+  {ico:'🎮',name:'游戏',bg:'#5856D6'},
 ];
 
 // ====== 填充桌面 app 图标 ======
@@ -392,34 +403,42 @@ function renderCard(){
   // Stage content
   if(curStage===1){
     body=`
-      <div class="tc-label">距出发还有</div>
-      <div class="tc-big">3 天</div>
-      <div class="tc-text"><b>8月21日 08:45</b><br>昆明 ✈ 大理</div>
-      <div class="tc-glass">
-        <div class="tc-row"><span class="ico">☀️</span><span class="val">大理 22°C</span><span class="sub">晴</span></div>
+      <div class="tc-left">
+        <div class="tc-label">距出发还有</div>
+        <div class="tc-big">3 天</div>
+        <div class="tc-text"><b>8月21日 08:45</b><br>昆明 ✈ 大理</div>
       </div>
-      <div class="tc-chips">
-        <span class="tc-chip done">✓ 机票</span>
-        <span class="tc-chip done">✓ 酒店</span>
-        <span class="tc-chip todo">✗ 防晒</span>
+      <div class="tc-right">
+        <div class="tc-glass">
+          <div class="tc-row"><span class="ico">☀️</span><span class="val">大理 22°C</span><span class="sub">晴</span></div>
+        </div>
+        <div class="tc-chips" style="margin-top:2px">
+          <span class="tc-chip done">✓ 机票</span>
+          <span class="tc-chip done">✓ 酒店</span>
+          <span class="tc-chip todo">✗ 防晒</span>
+        </div>
       </div>`;
   }
   else if(curStage===2){
     body=`
-      <div class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:13px">MU5731</span><span class="sub">→大理</span></div>
-      <div class="tc-label">起飞时间</div>
-      <div class="tc-big">08:45</div>
-      <div class="tc-text">登机口 <b>B12</b> · 座位 <b>23A</b></div>
-      <div class="tc-glass">
-        <div class="tc-row"><span class="ico">⏰</span><span class="val">距登机 1h20m</span></div>
-        <div class="tc-status-flow" style="margin-top:5px">
-          <span class="step done">✓值机</span>
-          <span class="step done">✓安检</span>
-          <span class="step cur">●登机</span>
-          <span class="step">起飞</span>
-        </div>
+      <div class="tc-left">
+        <div class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:13px">MU5731</span><span class="sub">→大理</span></div>
+        <div class="tc-label">起飞时间</div>
+        <div class="tc-big">08:45</div>
+        <div class="tc-text">登机口 <b>B12</b> · 座位 <b>23A</b></div>
       </div>
-      <button class="tc-cta">🧭 导航到登机口</button>`;
+      <div class="tc-right">
+        <div class="tc-glass">
+          <div class="tc-row"><span class="ico">⏰</span><span class="val">距登机 1h20m</span></div>
+          <div class="tc-status-flow" style="margin-top:5px">
+            <span class="step done">✓值机</span>
+            <span class="step done">✓安检</span>
+            <span class="step cur">●登机</span>
+            <span class="step">起飞</span>
+          </div>
+        </div>
+        <button class="tc-cta">🧭 导航到登机口</button>
+      </div>`;
   }
   else if(curStage===3){
     // 同屏展示：下一目的地 + 附近推荐（无 Tab）
@@ -434,42 +453,54 @@ function renderCard(){
     });
 
     body=`
-      <div class="tc-label">下一站 · 今日第3站</div>
-      <div class="tc-big sm">崇圣寺三塔</div>
-      <div class="tc-text"><b>14:00</b> · 步行8分钟 · 🎫¥75</div>
-      <div class="tc-divider"><span>附近推荐</span></div>
-      ${nbHTML}
-      <button class="tc-cta">🧭 开始导航</button>`;
+      <div class="tc-left">
+        <div class="tc-label">下一站 · 今日第3站</div>
+        <div class="tc-big sm">崇圣寺三塔</div>
+        <div class="tc-text"><b>14:00</b> · 步行8分钟 · 🎫¥75</div>
+        <button class="tc-cta">🧭 开始导航</button>
+      </div>
+      <div class="tc-right">
+        <div class="tc-label" style="margin-bottom:2px">附近推荐</div>
+        ${nbHTML}
+      </div>`;
   }
   else if(curStage===4){
     body=`
-      <div class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:13px">MU5732</span><span class="sub">→昆明</span></div>
-      <div class="tc-label">返程时间</div>
-      <div class="tc-big">明天 15:30</div>
-      <div class="tc-glass">
-        <div class="tc-row"><span class="ico">⏰</span><span class="val">距返程 23h</span></div>
-        <div class="tc-text" style="margin-top:4px">建议 <b>13:00</b> 出发</div>
+      <div class="tc-left">
+        <div class="tc-row"><span class="ico">✈️</span><span class="val" style="font-size:13px">MU5732</span><span class="sub">→昆明</span></div>
+        <div class="tc-label">返程时间</div>
+        <div class="tc-big">明天 15:30</div>
+        <div class="tc-text">建议 <b>13:00</b> 出发</div>
       </div>
-      <div class="tc-chips">
-        <span class="tc-chip done">✓ 退房</span>
-        <span class="tc-chip todo">✗ 大巴</span>
-      </div>
-      <button class="tc-cta">⏰ 设置出发提醒</button>`;
+      <div class="tc-right">
+        <div class="tc-glass">
+          <div class="tc-row"><span class="ico">⏰</span><span class="val">距返程 23h</span></div>
+        </div>
+        <div class="tc-chips" style="margin-top:2px">
+          <span class="tc-chip done">✓ 退房</span>
+          <span class="tc-chip todo">✗ 大巴</span>
+        </div>
+        <button class="tc-cta">⏰ 设置出发提醒</button>
+      </div>`;
   }
   else if(curStage===5){
     const photos=['erhai','cangshan','lijiang','sunset','dali','sky'];
-    let grid='<div class="mem-grid">';
-    photos.forEach(p=>{grid+=`<div class="mem-ph" style="background-image:url('${IMG}${p}.jpg')" onclick="event.stopPropagation();alert('查看照片')"></div>`});
+    let grid='<div class="mem-grid" style="grid-template-columns:repeat(3,1fr)">';
+    photos.slice(0,6).forEach(p=>{grid+=`<div class="mem-ph" style="background-image:url('${IMG}${p}.jpg')" onclick="event.stopPropagation();alert('查看照片')"></div>`});
     grid+='</div>';
 
     body=`
-      <div class="tc-big sm" style="font-size:16px">✨ 大理之行</div>
-      <div class="tc-text"><b>3天</b> · <b>12</b>景点 · <b>248</b>张照片</div>
-      ${grid}
-      <div class="tc-glass">
-        <div class="tc-row"><span class="ico">🏆</span><span class="val" style="font-size:11px">Day2 苍山</span></div>
+      <div class="tc-left">
+        <div class="tc-big sm" style="font-size:16px">✨ 大理之行</div>
+        <div class="tc-text"><b>3天</b> · <b>12</b>景点 · <b>248</b>张照片</div>
+        <div class="tc-glass">
+          <div class="tc-row"><span class="ico">🏆</span><span class="val" style="font-size:11px">Day2 苍山</span></div>
+        </div>
+        <button class="tc-cta">📤 分享相册</button>
       </div>
-      <button class="tc-cta">📤 分享相册</button>`;
+      <div class="tc-right">
+        ${grid}
+      </div>`;
   }
 
   card.innerHTML=`
