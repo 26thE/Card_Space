@@ -176,22 +176,32 @@
     font-weight:600;cursor:pointer;font-family:inherit}
   .notif-create{background:var(--accent);color:#fff}
   .notif-later{background:var(--card-line);color:var(--panel-sub)}
-  /* ====== 时间线 overlay ====== */
-  .tl-overlay{position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.5);
-    backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s}
-  .tl-overlay.show{opacity:1;pointer-events:auto}
-  .tl-panel{position:absolute;left:0;right:0;bottom:0;max-height:82%;background:#fff;
-    border-radius:24px 24px 0 0;padding:0;transform:translateY(100%);transition:transform .35s cubic-bezier(.22,1,.36,1);
-    display:flex;flex-direction:column}
-  .tl-overlay.show .tl-panel{transform:translateY(0)}
-  .tl-handle{padding:10px 0 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
-  .tl-handle .bar{width:36px;height:4px;border-radius:2px;background:#D0D0D0}
-  .tl-handle span{font-size:11px;color:#8A8A8A}
-  .tl-head{padding:4px 20px 12px}
-  .tl-head h2{font-size:18px;font-weight:700}
-  .tl-head .sub{font-size:12px;color:#8A8A8A;margin-top:2px}
-  .tl-list{flex:1;overflow-y:auto;padding:0 20px 20px}
-  .tl-list::-webkit-scrollbar{width:0}
+  /* ====== 全程计划应用页（全屏，参考 travel-fork 详情页） ====== */
+  .app-page{position:absolute;inset:0;background:#fff;z-index:50;display:none;
+    flex-direction:column;animation:apSlide .3s ease}
+  .app-page.show{display:flex}
+  @keyframes apSlide{from{transform:translateY(24px);opacity:.3}to{transform:translateY(0);opacity:1}}
+  .ap-bar{height:52px;display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0;
+    border-bottom:1px solid var(--card-line);background:#fff;position:relative;z-index:2}
+  .ap-back{border:none;background:var(--card-line);width:32px;height:32px;border-radius:50%;
+    font-size:22px;cursor:pointer;color:var(--card-text);line-height:1;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;transition:.15s}
+  .ap-back:hover{background:#E4E4E4}
+  .ap-title{font-size:17px;font-weight:700;color:#1A1A1A}
+  .ap-sub{font-size:11px;color:#8A8A8A;margin-top:1px}
+  .ap-body{flex:1;overflow-y:auto;padding:16px 18px 28px;position:relative;z-index:1}
+  .ap-body::-webkit-scrollbar{width:0}
+  /* 顶部概览卡 */
+  .ap-overview{background:linear-gradient(135deg,#0A59F7,#8A5CF6);color:#fff;border-radius:18px;
+    padding:16px 18px;margin-bottom:18px;box-shadow:0 6px 18px rgba(10,89,247,.25)}
+  .ap-overview .ov-title{font-size:18px;font-weight:700}
+  .ap-overview .ov-sub{font-size:11px;opacity:.92;margin-top:4px}
+  .ap-overview .ov-stats{display:flex;gap:22px;margin-top:12px}
+  .ap-overview .ov-stats .st b{font-size:20px;font-weight:800;display:block;line-height:1}
+  .ap-overview .ov-stats .st span{font-size:10px;opacity:.85;margin-top:3px;display:block}
+  .ap-section-label{font-size:12px;font-weight:600;color:#8A8A8A;margin:0 2px 8px;letter-spacing:.3px}
+  /* 时间线列表 */
+  .tl-list{padding:0}
   .tl-item{display:flex;gap:14px;padding:12px 0;cursor:pointer;transition:.15s;border-radius:12px;padding:12px}
   .tl-item:hover{background:#F5F6FA}
   .tl-node{display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:2px}
@@ -307,26 +317,23 @@
       <div class="d">🌐</div>
     </div>
 
-    <!-- 时间线 overlay -->
-    <div class="tl-overlay" id="tl-overlay" onclick="if(event.target===this)toggleTimeline()">
-      <div class="tl-panel">
-        <div class="tl-handle" onclick="toggleTimeline()">
-          <div class="bar"></div>
-          <span>收起</span>
+    <!-- 全程计划应用页（全屏） -->
+    <div class="app-page" id="app-page">
+      <div class="ap-bar">
+        <button class="ap-back" onclick="closeAppPage()">‹</button>
+        <div>
+          <div class="ap-title">全程旅行计划</div>
+          <div class="ap-sub">大理 3 日游 · 8月21-24日 · 点击阶段切换</div>
         </div>
-        <div class="tl-head">
-          <h2>全程旅行计划</h2>
-          <div class="sub">大理 3 日游 · 8月21-24日 · 点击阶段切换</div>
-        </div>
-        <div class="tl-list" id="tl-list"></div>
       </div>
+      <div class="ap-body" id="ap-body"></div>
     </div>
   </div>
 </div>
 
 <script>
 const IMG='../travel-fork/images/';
-let curStage=1, curPath='active', tlOpen=false;
+let curStage=1, curPath='active';
 
 const stages={
   1:{name:'出行前',icon:'🧳',color:'var(--s1)',bg:IMG+'sky.jpg',
@@ -411,8 +418,7 @@ function renderCard(){
     <div class="tc-header">
       <div class="tc-app-ico" style="background:${s.color}">${s.icon}</div>
       <div class="tc-app-name">旅行助手</div>
-      <div class="tc-stage-badge">${s.name}</div>
-      <button class="tc-pull" onclick="event.stopPropagation();toggleTimeline()" title="拉起全程时间线">↗</button>
+      <button class="tc-pull" onclick="event.stopPropagation();openAppPage()" title="查看全程计划">↗</button>
     </div>`;
 
   // Stage content - 统一使用 tc-glass-panel 包裹所有内容
@@ -527,27 +533,40 @@ function renderCard(){
     <div class="tc-body">${body}</div>`;
 }
 
-// ====== 渲染时间线 ======
+// ====== 渲染全程计划应用页 ======
 function renderTimeline(){
-  const list=document.getElementById('tl-list');
-  list.innerHTML=timeline.map(t=>{
-    const cls=t.status==='done'?'done':(t.status==='cur'?'cur':'');
-    return `
-      <div class="tl-item ${cls}" onclick="switchStage(${t.s})">
-        <div class="tl-node">
-          <div class="tl-dot">${t.icon}</div>
-          <div class="tl-line"></div>
-        </div>
-        <div class="tl-content">
-          <div class="tl-stage-name">
-            ${t.name}
-            <span class="badge ${t.status}">${t.status==='done'?'已完成':(t.status==='cur'?'当前':'待出发')}</span>
+  const body=document.getElementById('ap-body');
+  const overview=`
+    <div class="ap-overview">
+      <div class="ov-title">大理 3 日游</div>
+      <div class="ov-sub">8月21-24日 · 昆明 ✈ 大理 · 5 个阶段</div>
+      <div class="ov-stats">
+        <div class="st"><b>3</b><span>天</span></div>
+        <div class="st"><b>12</b><span>景点</span></div>
+        <div class="st"><b>248</b><span>照片</span></div>
+      </div>
+    </div>`;
+  const list=`<div class="ap-section-label">行程阶段</div><div class="tl-list">${
+    timeline.map(t=>{
+      const cls=t.status==='done'?'done':(t.status==='cur'?'cur':'');
+      return `
+        <div class="tl-item ${cls}" onclick="switchStage(${t.s})">
+          <div class="tl-node">
+            <div class="tl-dot">${t.icon}</div>
+            <div class="tl-line"></div>
           </div>
-          <div class="tl-stage-date">${t.date}</div>
-          <div class="tl-stage-detail">${t.detail}</div>
-        </div>
-      </div>`;
-  }).join('');
+          <div class="tl-content">
+            <div class="tl-stage-name">
+              ${t.name}
+              <span class="badge ${t.status}">${t.status==='done'?'已完成':(t.status==='cur'?'当前':'待出发')}</span>
+            </div>
+            <div class="tl-stage-date">${t.date}</div>
+            <div class="tl-stage-detail">${t.detail}</div>
+          </div>
+        </div>`;
+    }).join('')
+  }</div>`;
+  body.innerHTML=overview+list;
 }
 
 // ====== 阶段切换 ======
@@ -560,16 +579,17 @@ function switchStage(n){
     renderCard();
     card.classList.remove('fade-out');
     updateUI();
-    if(tlOpen) renderTimeline();
+    closeAppPage();
   },250);
 }
 
-// ====== 时间线开关 ======
-function toggleTimeline(){
-  tlOpen=!tlOpen;
-  const ov=document.getElementById('tl-overlay');
-  if(tlOpen){renderTimeline();ov.classList.add('show')}
-  else ov.classList.remove('show');
+// ====== 应用页开关 ======
+function openAppPage(){
+  renderTimeline();
+  document.getElementById('app-page').classList.add('show');
+}
+function closeAppPage(){
+  document.getElementById('app-page').classList.remove('show');
 }
 
 // ====== 入口路径切换 ======
@@ -646,6 +666,8 @@ const hashMatch=location.hash.match(/stage=(\d)/);
 if(hashMatch){curStage=parseInt(hashMatch[1]);}
 renderCard();
 updateUI();
+// 支持 URL hash 自动打开全程计划应用页（如 #app=1），方便截图和分享
+if(location.hash.includes('app=1')) openAppPage();
 updateClock();
 setInterval(updateClock,30000);
 </script>
