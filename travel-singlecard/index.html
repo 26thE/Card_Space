@@ -108,7 +108,10 @@
   .tc-row .sub{font-size:10px;color:rgba(255,255,255,.7)}
   .tc-chips{display:flex;gap:5px;flex-wrap:wrap}
   .tc-chip{font-size:10px;background:rgba(255,255,255,.16);color:#fff;padding:4px 9px;
-    border-radius:13px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08)}
+    border-radius:13px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08);
+    cursor:pointer;transition:.15s;user-select:none}
+  .tc-chip:hover{filter:brightness(1.15);transform:scale(1.03)}
+  .tc-chip:active{transform:scale(.97)}
   .tc-chip.done{background:rgba(52,199,89,.32);border-color:rgba(52,199,89,.25)}
   .tc-chip.todo{background:rgba(255,159,10,.28);border-color:rgba(255,159,10,.2)}
   .tc-sep{width:1px;height:14px;background:rgba(255,255,255,.15);flex-shrink:0;margin:0 2px}
@@ -431,6 +434,24 @@
 const IMG='../travel-fork/images/';
 let curStage=1, curPath='active';
 
+// checklist 状态：true=已完成(✓绿) false=待办(✗橙)
+const chipState={
+  1:{'机票':true,'酒店':true,'身份证':true,'防晒霜':false},
+  4:{'证件':true,'手机':true,'房卡退还':false,'伴手礼':false}
+};
+function toggleChip(stage,item){
+  chipState[stage][item]=!chipState[stage][item];
+  renderCard();
+}
+function chipHTML(stage){
+  const items=Object.keys(chipState[stage]);
+  return '<div class="tc-chips" style="'+(stage===4?'margin-top:auto;padding-top:1px':'margin-top:2px')+'">'+
+    items.map(function(item){
+      var d=chipState[stage][item];
+      return '<span class="tc-chip '+(d?'done':'todo')+'" onclick="event.stopPropagation();toggleChip('+stage+',\''+item+'\')">'+(d?'✓':'✗')+' '+item+'</span>';
+    }).join('')+'</div>';
+}
+
 const stages={
   1:{name:'出行前',icon:'🧳',color:'var(--s1)',bg:IMG+'lijiang.jpg',
     desc:'行前倒计时+天气预览+清单进度。维持查看习惯，建立出发预期。',
@@ -562,12 +583,7 @@ function renderCard(){
           <span class="tc-row"><span class="ico">☀️</span><span class="val">昆明 14°C</span><span class="sub">多云</span></span>
           <span class="tc-row"><span class="ico">🌤️</span><span class="val">大理 22°C</span><span class="sub">晴</span></span>
         </div>
-        <div class="tc-chips" style="margin-top:2px">
-          <span class="tc-chip done">✓ 机票</span>
-          <span class="tc-chip done">✓ 酒店</span>
-          <span class="tc-chip done">✓ 身份证</span>
-          <span class="tc-chip todo">✗ 防晒霜</span>
-        </div>
+        ${chipHTML(1)}
       </div>`;
   }
   else if(curStage===2){
@@ -648,12 +664,7 @@ function renderCard(){
         <div class="tc-text" style="font-size:9px;color:rgba(255,255,255,.7);line-height:1.55">
           距返程 23h · 建议 13:00 出发<br>🏨 退房 12:00 还能待2h · 上午可以去洱海公园逛逛
         </div>
-        <div class="tc-chips" style="margin-top:auto;padding-top:1px">
-          <span class="tc-chip done">✓ 证件</span>
-          <span class="tc-chip done">✓ 手机</span>
-          <span class="tc-chip todo">✗ 房卡退还</span>
-          <span class="tc-chip todo">✗ 伴手礼</span>
-        </div>
+        ${chipHTML(4)}
       </div>`;
   }
   else if(curStage===5){
