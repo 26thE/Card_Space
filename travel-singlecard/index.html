@@ -324,6 +324,44 @@
   .tc-day-timeline .dt-step{white-space:nowrap}
   .tc-day-timeline .dt-step::after{content:'›';margin:0 3px;opacity:.4}
   .tc-day-timeline .dt-step:last-child::after{display:none}
+  /* CRUD: 搜索栏 */
+  .ap-search-bar{margin-bottom:14px}
+  .ap-search-input{width:100%;border:1px solid var(--card-line);border-radius:10px;
+    padding:9px 12px;font-size:13px;font-family:inherit;outline:none;transition:.2s}
+  .ap-search-input:focus{border-color:var(--accent)}
+  .ap-cat-filter{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .ap-cat-filter button{border:1px solid var(--card-line);background:#fff;color:var(--panel-sub);
+    padding:5px 10px;border-radius:8px;font-size:11px;cursor:pointer;transition:.2s;font-family:inherit;outline:none}
+  .ap-cat-filter button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* CRUD: 编辑/删除按钮 */
+  .ap-loc-actions{display:flex;gap:4px;flex-shrink:0;align-self:center}
+  .ap-loc-actions button{width:28px;height:28px;border-radius:8px;border:1px solid var(--card-line);
+    background:#fff;font-size:13px;cursor:pointer;transition:.15s;display:flex;align-items:center;
+    justify-content:center;font-family:inherit;outline:none}
+  .ap-loc-actions button:hover{background:#F5F6FA}
+  .ap-loc-actions .del-btn:hover{background:#FCEBEB;border-color:#F7C1C1;color:#E24B4A}
+  /* CRUD: 内联编辑器 */
+  .ap-edit-form{background:#F5F6FA;border-radius:12px;padding:12px;margin:8px 0}
+  .ap-edit-form .ef-row{display:flex;gap:8px;margin-bottom:8px}
+  .ap-edit-form .ef-row:last-child{margin-bottom:0}
+  .ap-edit-form input,.ap-edit-form select{border:1px solid var(--card-line);border-radius:8px;
+    padding:8px 10px;font-size:12px;font-family:inherit;outline:none;transition:.2s}
+  .ap-edit-form input:focus,.ap-edit-form select:focus{border-color:var(--accent)}
+  .ap-edit-form .ef-name{flex:1}
+  .ap-edit-form .ef-time{width:80px}
+  .ap-edit-form .ef-detail{flex:1}
+  .ap-edit-form .ef-cat{width:90px}
+  .ap-edit-form .ef-actions{display:flex;gap:8px}
+  .ap-edit-form .ef-save{flex:1;background:var(--accent);color:#fff;border:none;border-radius:8px;
+    padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+  .ap-edit-form .ef-cancel{background:#fff;border:1px solid var(--card-line);border-radius:8px;
+    padding:8px 14px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--panel-sub)}
+  /* CRUD: 添加按钮 */
+  .ap-add-loc{display:flex;align-items:center;justify-content:center;gap:6px;
+    border:1.5px dashed var(--card-line);border-radius:12px;padding:11px;
+    font-size:12px;color:var(--panel-sub);cursor:pointer;transition:.2s;margin-top:4px;font-family:inherit;
+    background:transparent;width:100%;outline:none}
+  .ap-add-loc:hover{border-color:var(--accent);color:var(--accent);background:#F0F4FF}
   /* 响应式 */
   @media(max-width:780px){
     .console{position:static;width:100%;max-width:384px}
@@ -485,7 +523,7 @@ const nearby=[
 ];
 
 // ====== 按天旅行日程（圆周旅记风格） ======
-const tripDays=[
+let tripDays=[
   {day:1,label:'Day 1',date:'8月21日',dist:'24km',locs:[
     {cat:'transport',ico:'✈️',name:'昆明 ✈ 大理',time:'08:45',detail:'MU5731 · 1h35m · 座位23A',dist:''},
     {cat:'hotel',ico:'🏨',name:'大理古城客栈',time:'11:00',detail:'入住 · 2晚 · ¥320/晚',dist:'12km'},
@@ -505,6 +543,10 @@ const tripDays=[
   ]},
 ];
 let curDay=0;
+let searchQuery='';
+let filterCat='all';
+let editingLoc=null;
+let addingLoc=null;
 
 // 桌面 app 图标
 const appIcons=[
@@ -572,13 +614,6 @@ function renderCard(){
         </div>
         <div class="tc-text" style="font-size:10px;color:rgba(255,255,255,.65)">8月21日 周四 · 08:45 起飞</div>
         <div class="tc-divider"></div>
-        <div class="tc-day-timeline">
-          <span class="dt-step">07:15 出门</span>
-          <span class="dt-step">07:45 到机场</span>
-          <span class="dt-step">08:15 值机截止</span>
-          <span class="dt-step">08:45 起飞</span>
-        </div>
-        <div class="tc-divider"></div>
         <div class="tc-row" style="gap:12px">
           <span class="tc-row"><span class="ico">☀️</span><span class="val">昆明 14°C</span><span class="sub">多云</span></span>
           <span class="tc-row"><span class="ico">🌤️</span><span class="val">大理 22°C</span><span class="sub">晴</span></span>
@@ -614,38 +649,28 @@ function renderCard(){
       </div>`;
   }
   else if(curStage===3){
-    // 游览：目的地 + 附近推荐 + 打车导航
-    let nbHTML='';
-    nearby.slice(0,3).forEach(n=>{
-      nbHTML+=`<div class="nb-card" onclick="event.stopPropagation();alert('${n.name}')">
-        <div class="nb-img" style="background-image:url('${n.img}')"></div>
-        <span class="nb-cat">${n.cat}</span>
-        <div class="nb-info">
-          <span class="nb-name">${n.name}</span>
-          <span class="nb-dist">${n.dist} · ${n.reason}</span>
-        </div>
-      </div>`;
-    });
-
     body=`
       <div class="tc-glass-panel">
         <div class="tc-row" style="justify-content:space-between">
-          <span class="tc-label" style="font-size:9px">下一站 · 今日第3站</span>
-          <span class="tc-text" style="font-size:8px;color:rgba(255,255,255,.55)">已游2站 · 还剩3站</span>
+          <span class="tc-label">当前 · 苍山</span>
+          <span class="tc-chip done" style="font-size:9px;padding:2px 7px">已游览 ✓</span>
+        </div>
+        <div class="tc-text" style="font-size:10px;color:rgba(255,255,255,.65)">索道¥282 · 最高3800m · 12km</div>
+        <div class="tc-divider"></div>
+        <div class="tc-row" style="justify-content:space-between">
+          <span class="tc-label" style="font-size:9px">下一站</span>
+          <span class="tc-text" style="font-size:9px;color:rgba(255,255,255,.55)">今日第4站 · 还剩2站</span>
         </div>
         <div class="spot-row">
-          <div class="spot-thumb" style="background-image:url('${IMG}dali.jpg')"></div>
+          <div class="spot-thumb" style="background-image:url('${IMG}erhai.jpg')"></div>
           <div class="spot-info">
-            <div class="spot-name">崇圣寺三塔</div>
-            <div class="spot-meta" style="font-size:9px"><b>14:00-15:30</b> · 步行8分钟 · 🎫¥75 · 开放08:00-17:00</div>
+            <div class="spot-name">洱海公园</div>
+            <div class="spot-meta" style="font-size:9px"><b>15:00</b> · 步行8分 · 日落最佳 · 1.2km</div>
           </div>
         </div>
         <div class="tc-action-btns">
           <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
           <div class="tc-action-btn" onclick="event.stopPropagation();alert('导航')"><span class="ab-ico">🧭</span>导航</div>
-        </div>
-        <div class="nearby-row">
-          ${nbHTML}
         </div>
       </div>`;
   }
@@ -696,22 +721,6 @@ function renderCard(){
         </div>
         ${photoHTML}
         <div class="mem-last-line">
-          <div class="mem-map-btn" onclick="event.stopPropagation();alert('足迹地图')">
-            <svg viewBox="0 0 100 32" width="84" height="28">
-              <rect width="100" height="32" rx="7" fill="rgba(10,89,247,.18)" stroke="rgba(255,255,255,.1)" stroke-width="0.5"/>
-              <path d="M10 23 L28 17 L50 9 L72 13 L90 7" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.2" stroke-dasharray="3 2"/>
-              <circle cx="10" cy="23" r="3" fill="#0A59F7"/>
-              <circle cx="28" cy="17" r="3" fill="#34C759"/>
-              <circle cx="50" cy="9" r="3" fill="#FF9500"/>
-              <circle cx="72" cy="13" r="3" fill="#BF5AF2"/>
-              <circle cx="90" cy="7" r="3" fill="#FF6B35"/>
-              <text x="10" y="31" font-size="4" fill="rgba(255,255,255,.7)" text-anchor="middle">昆明</text>
-              <text x="28" y="31" font-size="4" fill="rgba(255,255,255,.7)" text-anchor="middle">大理</text>
-              <text x="50" y="31" font-size="4" fill="rgba(255,255,255,.7)" text-anchor="middle">古城</text>
-              <text x="72" y="31" font-size="4" fill="rgba(255,255,255,.7)" text-anchor="middle">苍山</text>
-              <text x="90" y="31" font-size="4" fill="rgba(255,255,255,.7)" text-anchor="middle">洱海</text>
-            </svg>
-          </div>
           <div class="mem-archive-btn" onclick="event.stopPropagation();alert('归档行程')"><span class="ab-ico">📦</span>归档行程</div>
         </div>
       </div>`;
@@ -742,6 +751,18 @@ function renderAppPage(){
       </div>
     </div>`;
 
+  // 搜索栏 + 分类筛选（查）
+  const searchBar=`<div class="ap-search-bar">
+    <input class="ap-search-input" type="text" placeholder="搜索地点名称或详情..." value="${searchQuery}" oninput="filterLocs(this.value)">
+    <div class="ap-cat-filter">
+      <button class="${filterCat==='all'?'active':''}" onclick="filterByCat('all')">全部</button>
+      <button class="${filterCat==='spot'?'active':''}" onclick="filterByCat('spot')">景点</button>
+      <button class="${filterCat==='food'?'active':''}" onclick="filterByCat('food')">美食</button>
+      <button class="${filterCat==='transport'?'active':''}" onclick="filterByCat('transport')">交通</button>
+      <button class="${filterCat==='hotel'?'active':''}" onclick="filterByCat('hotel')">住宿</button>
+    </div>
+  </div>`;
+
   // 路线地图
   const routeMap=`<div class="ap-route-map">${routeMapSVG()}</div>`;
 
@@ -753,17 +774,31 @@ function renderAppPage(){
   });
   tabs+='</div>';
 
-  // 地点卡片
+  // 地点列表（含CRUD: 增删改查）
   let locHTML='<div class="ap-loc-list">';
-  const days=curDay===0?tripDays:[tripDays[curDay-1]];
-  days.forEach(d=>{
+  let dayIndices;
+  if(curDay===0){
+    dayIndices=tripDays.map(function(_,i){return i;});
+  }else{
+    dayIndices=[curDay-1];
+  }
+  dayIndices.forEach(function(dayIdx){
+    var d=tripDays[dayIdx];
     if(curDay===0){
       locHTML+=`<div style="font-size:11px;font-weight:700;color:#8A8A8A;margin:8px 0 2px;padding-left:2px">${d.label} · ${d.date} · 共${d.dist}</div>`;
     }
-    d.locs.forEach(l=>{
-      const cb=catBg[l.cat]||'#F0F0F0';
-      const cf=catFg[l.cat]||'#8E8E93';
-      locHTML+=`
+    d.locs.forEach(function(l,locIdx){
+      if(filterCat!=='all'&&l.cat!==filterCat) return;
+      if(searchQuery){
+        var q=searchQuery.toLowerCase();
+        if(!l.name.toLowerCase().includes(q)&&!(l.detail&&l.detail.toLowerCase().includes(q))) return;
+      }
+      var cb=catBg[l.cat]||'#F0F0F0';
+      var cf=catFg[l.cat]||'#8E8E93';
+      if(editingLoc&&editingLoc.dayIdx===dayIdx&&editingLoc.locIdx===locIdx){
+        locHTML+=editFormHTML(l,'editing','saveEdit','cancelEdit');
+      }else{
+        locHTML+=`
         <div class="ap-loc-item">
           <div class="ap-loc-time">${l.time}</div>
           <div class="ap-loc-ico" style="background:${cb}">${l.ico}</div>
@@ -772,13 +807,22 @@ function renderAppPage(){
             <div class="ap-loc-detail">${l.detail}</div>
             ${l.dist?`<div class="ap-loc-dist" style="color:${cf}">📍 ${l.dist}</div>`:''}
           </div>
-          <div class="ap-loc-cat" style="background:${cb};color:${cf}">${catLabel[l.cat]}</div>
+          <div class="ap-loc-actions">
+            <button onclick="startEdit(${dayIdx},${locIdx})">✏️</button>
+            <button class="del-btn" onclick="deleteLoc(${dayIdx},${locIdx})">🗑️</button>
+          </div>
         </div>`;
+      }
     });
+    if(addingLoc&&addingLoc.dayIdx===dayIdx){
+      locHTML+=editFormHTML({name:'',time:'',detail:'',cat:'spot'},'adding','saveAdd','cancelAdd');
+    }else{
+      locHTML+=`<button class="ap-add-loc" onclick="startAdd(${dayIdx})">+ 添加地点</button>`;
+    }
   });
   locHTML+='</div>';
 
-  body.innerHTML=overview+routeMap+tabs+locHTML;
+  body.innerHTML=overview+searchBar+routeMap+tabs+locHTML;
 }
 
 function routeMapSVG(){
@@ -811,6 +855,75 @@ function routeMapSVG(){
 function switchDayTab(n){
   curDay=n;
   renderAppPage();
+}
+
+// ====== CRUD: 增删改查 ======
+const catIcons={spot:'\u{1F3DB}\u{FE0F}',food:'\u{1F35C}',transport:'\u2708\u{FE0F}',hotel:'\u{1F3E8}'};
+
+function filterLocs(q){searchQuery=q;renderAppPage();}
+function filterByCat(cat){filterCat=cat;renderAppPage();}
+function startEdit(di,li){editingLoc={dayIdx:di,locIdx:li};addingLoc=null;renderAppPage();}
+function cancelEdit(){editingLoc=null;renderAppPage();}
+function deleteLoc(di,li){
+  var name=tripDays[di].locs[li].name;
+  if(confirm('确定删除\u300C'+name+'\u300D\uFF1F')){
+    tripDays[di].locs.splice(li,1);
+    renderAppPage();
+  }
+}
+function saveEdit(){
+  var f=document.querySelector('.ap-edit-form.editing');
+  if(!f)return;
+  var name=f.querySelector('.ef-name').value.trim();
+  if(!name){editingLoc=null;renderAppPage();return;}
+  var di=editingLoc.dayIdx,li=editingLoc.locIdx;
+  var cat=f.querySelector('.ef-cat').value;
+  tripDays[di].locs[li].name=name;
+  tripDays[di].locs[li].time=f.querySelector('.ef-time').value.trim();
+  tripDays[di].locs[li].detail=f.querySelector('.ef-detail').value.trim();
+  tripDays[di].locs[li].cat=cat;
+  tripDays[di].locs[li].ico=catIcons[cat]||'\u{1F4CD}';
+  editingLoc=null;
+  renderAppPage();
+}
+function startAdd(di){addingLoc={dayIdx:di};editingLoc=null;renderAppPage();}
+function cancelAdd(){addingLoc=null;renderAppPage();}
+function saveAdd(){
+  var f=document.querySelector('.ap-edit-form.adding');
+  if(!f)return;
+  var name=f.querySelector('.ef-name').value.trim();
+  if(!name){addingLoc=null;renderAppPage();return;}
+  var di=addingLoc.dayIdx;
+  var cat=f.querySelector('.ef-cat').value;
+  tripDays[di].locs.push({
+    cat:cat,ico:catIcons[cat]||'\u{1F4CD}',name:name,
+    time:f.querySelector('.ef-time').value.trim(),
+    detail:f.querySelector('.ef-detail').value.trim(),dist:''
+  });
+  addingLoc=null;
+  renderAppPage();
+}
+function editFormHTML(loc,formClass,saveFn,cancelFn){
+  var h='<div class="ap-edit-form '+formClass+'">';
+  h+='<div class="ef-row">';
+  h+='<input class="ef-name" type="text" value="'+(loc.name||'')+'" placeholder="\u5730\u70B9\u540D\u79F0">';
+  h+='<input class="ef-time" type="text" value="'+(loc.time||'')+'" placeholder="\u65F6\u95F4">';
+  h+='</div>';
+  h+='<div class="ef-row">';
+  h+='<input class="ef-detail" type="text" value="'+(loc.detail||'')+'" placeholder="\u8BE6\u60C5">';
+  h+='<select class="ef-cat">';
+  h+='<option value="spot"'+(loc.cat==='spot'?' selected':'')+'>\u666F\u70B9</option>';
+  h+='<option value="food"'+(loc.cat==='food'?' selected':'')+'>\u7F8E\u98DF</option>';
+  h+='<option value="transport"'+(loc.cat==='transport'?' selected':'')+'>\u4EA4\u901A</option>';
+  h+='<option value="hotel"'+(loc.cat==='hotel'?' selected':'')+'>\u4F4F\u5BBF</option>';
+  h+='</select>';
+  h+='</div>';
+  h+='<div class="ef-actions">';
+  h+='<button class="ef-save" onclick="'+saveFn+'()">\u4FDD\u5B58</button>';
+  h+='<button class="ef-cancel" onclick="'+cancelFn+'()">\u53D6\u6D88</button>';
+  h+='</div>';
+  h+='</div>';
+  return h;
 }
 
 // ====== 阶段切换 ======
