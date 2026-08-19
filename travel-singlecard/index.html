@@ -135,6 +135,23 @@
   .spot-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
   .spot-info .spot-name{font-size:18px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .spot-info .spot-meta{font-size:10px;color:rgba(255,255,255,.75)}
+  /* 游览：当前景点（核心展示） */
+  .cur-spot{display:flex;gap:10px;align-items:center;flex-shrink:0}
+  .cur-thumb{width:56px;height:56px;border-radius:12px;background-size:cover;background-position:center;
+    flex-shrink:0;position:relative;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+  .cur-thumb .cur-play{position:absolute;left:4px;bottom:4px;font-size:8px;font-weight:600;
+    color:#fff;background:rgba(10,89,247,.9);padding:2px 6px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  .cur-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .cur-info .cur-name{font-size:19px;font-weight:800;color:#fff;line-height:1.1}
+  .cur-info .cur-tags{display:flex;gap:4px;flex-wrap:wrap}
+  .cur-info .cur-tags span{font-size:9px;background:rgba(255,255,255,.18);color:#fff;
+    padding:2px 7px;border-radius:10px;backdrop-filter:blur(4px)}
+  .cur-info .cur-meta{font-size:10px;color:rgba(255,255,255,.72)}
+  /* 游览：下一站紧凑行 */
+  .next-spot{display:flex;align-items:center;gap:6px;font-size:11px;color:#fff;flex-shrink:0;
+    background:rgba(255,255,255,.08);border-radius:10px;padding:5px 8px;border:1px solid rgba(255,255,255,.1)}
+  .next-spot .next-name{font-weight:700;font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .next-spot .next-meta{font-size:9px;color:rgba(255,255,255,.65)}
   /* 附近推荐横排（图片铺满 + 文字叠底） */
   .nearby-row{display:flex;gap:5px;height:38px;flex-shrink:0;overflow:hidden}
   .nb-card{flex:1;position:relative;border-radius:9px;cursor:pointer;transition:.15s;
@@ -651,24 +668,30 @@ function renderCard(){
   else if(curStage===3){
     body=`
       <div class="tc-glass-panel">
-        <div class="tc-row" style="justify-content:space-between">
-          <span class="tc-label">当前 · 苍山</span>
-          <span class="tc-chip done" style="font-size:9px;padding:2px 7px">已游览 ✓</span>
+        <div class="tc-row" style="justify-content:space-between;flex-shrink:0">
+          <span class="tc-label">当前游览</span>
+          <span class="tc-chip done" style="font-size:9px;padding:2px 7px">正在游 ✓</span>
         </div>
-        <div class="tc-text" style="font-size:10px;color:rgba(255,255,255,.65)">索道¥282 · 最高3800m · 12km</div>
-        <div class="tc-divider"></div>
-        <div class="tc-row" style="justify-content:space-between">
-          <span class="tc-label" style="font-size:9px">下一站</span>
-          <span class="tc-text" style="font-size:9px;color:rgba(255,255,255,.55)">今日第4站 · 还剩2站</span>
-        </div>
-        <div class="spot-row">
-          <div class="spot-thumb" style="background-image:url('${IMG}erhai.jpg')"></div>
-          <div class="spot-info">
-            <div class="spot-name">洱海公园</div>
-            <div class="spot-meta" style="font-size:9px"><b>15:00</b> · 步行8分 · 日落最佳 · 1.2km</div>
+        <div class="cur-spot">
+          <div class="cur-thumb" style="background-image:url('${IMG}cangshan.jpg')">
+            <div class="cur-play">必体验</div>
+          </div>
+          <div class="cur-info">
+            <div class="cur-name">苍山</div>
+            <div class="cur-tags">
+              <span>洗马潭索道</span>
+              <span>云海观景</span>
+            </div>
+            <div class="cur-meta">索道 ¥282 · 最高 3800m · 游玩约 4h</div>
           </div>
         </div>
-        <div class="tc-action-btns">
+        <div class="tc-divider"></div>
+        <div class="next-spot">
+          <span class="tc-label" style="font-size:9px">下一站</span>
+          <span class="next-name">洱海公园</span>
+          <span class="next-meta">15:00 · 1.2km</span>
+        </div>
+        <div class="tc-action-btns" style="margin-top:auto;padding-top:4px">
           <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
           <div class="tc-action-btn" onclick="event.stopPropagation();alert('导航')"><span class="ab-ico">🧭</span>导航</div>
         </div>
