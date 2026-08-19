@@ -100,7 +100,7 @@
 <div class="doc-meta">
   <span class="tag">HarmonyOS NEXT</span>
   <span class="tag">桌面卡片</span>
-  <span>版本 v1.1</span>
+  <span>版本 v1.2</span>
   <span>状态：评审中</span>
   <span>作者：Product Strategy Team</span>
 </div>
@@ -110,8 +110,8 @@
   <div class="toc-title">目录</div>
   <ol>
     <li><a href="#overview">产品概述</a> — 背景问题、产品定位、目标用户</li>
-    <li><a href="#kep">KEP · 关键体验原则</a> — 六条核心设计准则</li>
-    <li><a href="#fr">功能需求</a> — FR1~FR7 逐项拆解</li>
+    <li><a href="#kep">KEP · 关键体验原则</a> — 八条核心设计准则</li>
+    <li><a href="#fr">功能需求</a> — FR1~FR9 逐项拆解</li>
     <li><a href="#state">状态机设计</a> — 五阶段触发信号与流转规则</li>
     <li><a href="#trigger">用户体验规格 · 卡片触发逻辑</a> — 信号源矩阵、置信度分级、决策流程、异常处理</li>
     <li><a href="#addcard">加桌引导 · 卡片发现与添加</a> — 触发场景、引导通道、文案设计、频次控制</li>
@@ -133,42 +133,72 @@
   <li><b>回忆断层</b>：旅行结束后照片沉睡在相册，缺少行程回顾的触发点和仪式感。</li>
 </ul>
 
-<h3>1.2 产品定位</h3>
+<h3>1.2 产品定位与牵引目标</h3>
 <div class="callout">
   <b>一句话定义</b>：鸿蒙桌面 4×2 单卡旅行助手，以<b>五阶段状态机</b>驱动，根据旅行时间线自动切换卡片内容，在出行前/交通/游览/返程/回忆五个节点提供<b>恰时、恰需、恰好</b>的信息服务。
 </div>
-<p>卡片不是另一个旅行 App，而是将旅行信息<b>折叠到桌面</b>——用户无需打开任何应用，在桌面即可获取当前阶段最关键的 3~4 条信息，需要详情时右上角 ↗ 拉起全程计划应用页。</p>
+<p>卡片不是另一个旅行 App，而是将旅行信息<b>折叠到桌面</b>——用户无需打开任何应用，在桌面即可获取当前阶段最关键的 Top 2 信息，需要详情时右上角 ↗ 拉起全程计划应用页。</p>
+
+<div class="callout" style="background:var(--green-bg);border-color:var(--green)">
+  <b>产品牵引目标</b>：帮助旅行计划用户<b>更好地完成行程规划</b>（输出结构规整的行程计划，支持增删改查）+ <b>更直观地查看计划</b>（桌面卡片 Top 2 核心信息 + 应用页全程按天浏览）。
+</div>
 
 <h3>1.3 目标用户</h3>
+<div class="callout" style="background:var(--orange-bg);border-color:var(--orange)">
+  <b>核心画像</b>：计划 <b>3 天及以上</b>长途旅行的用户，<b>需要做行程规划</b>且<b>做行程规划有难度</b>——信息分散在多个平台，不知从何下手，难以拼凑成完整可执行的行程。
+</div>
 <table>
-  <tr><th>画像</th><th>特征</th><th>核心场景</th></tr>
+  <tr><th>用户特征</th><th>痛点</th><th>产品解法</th></tr>
   <tr>
-    <td>规划型旅行者</td>
-    <td>出行前做攻略、订好机票酒店、列清单</td>
-    <td>出发前反复查看倒计时和清单；游览中按计划逐站打卡</td>
+    <td>长途旅行（≥3天）</td>
+    <td>行程跨度大，信息量大，无法靠记忆管理</td>
+    <td>五阶段状态机自动分阶段呈现，每阶段只看当前最关键的 Top 2</td>
   </tr>
   <tr>
-    <td>商务出行者</td>
-    <td>短途为主、行程紧凑、对时间敏感</td>
-    <td>交通阶段盯航班状态；返程阶段关注退房时间和出发倒计时</td>
+    <td>需要做行程规划</td>
+    <td>机票/酒店/景点/餐厅分散在短信、OTA、攻略帖，拼不齐</td>
+    <td>多源信号自动汇聚为结构化行程，按天×分类组织，支持增删改查</td>
   </tr>
   <tr>
-    <td>随性旅行者</td>
-    <td>有大致方向但不做细攻略</td>
-    <td>游览阶段依赖附近推荐做即兴决策</td>
+    <td>规划有难度</td>
+    <td>不知道怎么排顺序、时间冲突、遗漏关键节点</td>
+    <td>应用页提供按天时间线 + 距离统计 + 四分类配色，结构规整一目了然</td>
+  </tr>
+</table>
+
+<h3>1.4 核心落地要求</h3>
+<table>
+  <tr><th>#</th><th>要求</th><th>具体定义</th><th>对应功能</th></tr>
+  <tr>
+    <td>①</td>
+    <td><b>行程计划输出结构规整</b></td>
+    <td>按天×按时段×按分类（景点/美食/交通/住宿）组织，每天标注总距离，每个地点含时间、图标、名称、详情、距离、分类标签</td>
+    <td>FR4 应用页、FR8 行程 CRUD</td>
+  </tr>
+  <tr>
+    <td>②</td>
+    <td><b>可以增删改查</b></td>
+    <td>新增地点、删除地点、修改时间/名称/详情、按天/分类/关键词查询筛选——卡片与应用页双端同步</td>
+    <td>FR8 行程 CRUD</td>
+  </tr>
+  <tr>
+    <td>③</td>
+    <td><b>展示用户核心关注的 Top 2</b></td>
+    <td>桌面卡片每阶段只展示当前最关注的 2 条核心信息（而非铺满 3~4 条），其余信息在应用页查看</td>
+    <td>FR9 Top 2 智能排序</td>
   </tr>
 </table>
 
 <div class="metric-row">
+  <div class="m"><b>≥3天</b><span>目标用户旅行时长</span></div>
+  <div class="m"><b>Top 2</b><span>每阶段核心信息条数</span></div>
+  <div class="m"><b>CRUD</b><span>行程计划增删改查</span></div>
   <div class="m"><b>4×2</b><span>桌面网格尺寸</span></div>
-  <div class="m"><b>5</b><span>阶段状态机</span></div>
-  <div class="m"><b>2</b><span>入口路径</span></div>
-  <div class="m"><b>3-4</b><span>每阶段信息条数</span></div>
 </div>
 
 <!-- ====== 2. KEP ====== -->
 <h2 id="kep"><span class="num">2</span>KEP · 关键体验原则</h2>
-<p>KEP（Key Experience Principles）是贯穿整个产品的六条核心设计准则。每条原则都从 Demo 中的具体交互提炼，可量化、可验收。</p>
+<p>KEP（Key Experience Principles）是贯穿整个产品的八条核心设计准则。每条原则都从 Demo 中的具体交互提炼，可量化、可验收。</p>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">01</div>
@@ -182,19 +212,21 @@
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">02</div>
-  <div class="kep-title">恰需 · 每阶段只放 3~4 条</div>
+  <div class="kep-title">恰需 · 每阶段只展示 Top 2 核心关注</div>
   <div class="kep-desc">
-    4×2 卡片可用高度约 152px，减去进度条（8px）、Header（22px）、间距后，内容区约 110px。每阶段<b>只展示当前最关键的 3~4 条信息</b>，杜绝信息过载。
+    4×2 卡片可用高度约 152px，减去进度条（8px）、Header（22px）、间距后，内容区约 110px。每阶段<b>只展示当前用户最关注的 2 条核心信息</b>（Top 2），其余信息收起到应用页——杜绝信息过载，让用户一眼就看到最重要的内容。
     <br><br>
-    <b>分阶段信息预算</b>：
+    <b>Top 2 定义规则</b>：按阶段信息预算排序，取每个阶段关注优先级最高的 2 条：
     <table style="margin-top:8px">
-      <tr><th>阶段</th><th>第 1 条</th><th>第 2 条</th><th>第 3 条</th><th>第 4 条</th></tr>
-      <tr><td>出行前</td><td>倒计时大字</td><td>出发日时间线</td><td>天气双城</td><td>清单 chips</td></tr>
-      <tr><td>交通</td><td>航线视觉</td><td>航班号+登机口</td><td>登机/起飞时间</td><td>状态进度条</td></tr>
-      <tr><td>游览</td><td>下一站信息</td><td>打车/导航</td><td>附近推荐×3</td><td>—</td></tr>
-      <tr><td>返程</td><td>返程航线+航班</td><td>出发时间大字</td><td>退房/安排</td><td>清单 chips</td></tr>
-      <tr><td>回忆</td><td>精彩瞬间标题</td><td>行程统计</td><td>照片网格</td><td>足迹地图+归档</td></tr>
+      <tr><th>阶段</th><th>Top 1（最关注）</th><th>Top 2（次关注）</th><th>其余（收起）</th></tr>
+      <tr><td>出行前</td><td>倒计时大字「3天」</td><td>可交互 checklist（机票✓酒店✓身份证✓防晒霜✗）</td><td>出发日时间线、双城天气</td></tr>
+      <tr><td>交通</td><td>航线视觉+航班号+登机口</td><td>五步状态进度条（当前步骤高亮）</td><td>距起飞倒计时、座位号</td></tr>
+      <tr><td>游览</td><td>下一站信息+步行距离</td><td>附近推荐×3 横排</td><td>打车/导航按钮、已游N站进度</td></tr>
+      <tr><td>返程</td><td>出发时间大字「明天15:30」</td><td>可交互 checklist（证件✓手机✓房卡✗伴手✗）</td><td>退房提醒、上午安排</td></tr>
+      <tr><td>回忆</td><td>照片网格（主图+2侧图）</td><td>迷你 SVG 足迹地图</td><td>行程统计、归档按钮</td></tr>
     </table>
+    <br>
+    <b>验收标准</b>：每阶段桌面态可见核心信息 ≤ 2 条（Top 1 + Top 2）；其余信息仅应用页可见；Top 2 优先级可由系统根据时间/位置自动调整（如航班延误时，Top 1 切换为延误提示）。
   </div>
 </div>
 
@@ -241,6 +273,40 @@
     前四个阶段是<b>信息卡</b>（理性、准确、密度高），第五阶段回忆转为<b>情绪卡</b>：照片网格铺满主体区域、行程统计唤起成就感、迷你 SVG 足迹地图提供空间记忆、归档按钮提供仪式感收束。
     <br><br>
     <b>验收标准</b>：回忆阶段照片区域 ≥ 卡片内容区 50%；统计数字突出（3天·12景点·248张·42km）；足迹地图为真实示意 SVG（非占位图）；归档按钮为唯一底部操作（取代分享/视频/再出发等多按钮）。
+  </div>
+</div>
+
+<div class="kep-card" style="position:relative">
+  <div class="kep-num">07</div>
+  <div class="kep-title">可编辑 · 行程计划结构规整、增删改查</div>
+  <div class="kep-desc">
+    行程计划不是一次性只读数据，而是<b>用户可自主维护的活文档</b>。全程计划应用页提供<b>增删改查</b>四项操作，且输出始终结构规整（按天×按时段×按分类组织）。
+    <br><br>
+    <b>增</b>：在指定日期/时段新增地点（长按空白区域 → 填写名称/时间/分类 → 自动插入正确位置并重排时间线）<br>
+    <b>删</b>：删除某地点（左滑或长按 → 确认删除 → 后续地点自动前移）<br>
+    <b>改</b>：修改时间/名称/详情/分类（点击地点卡片 → 进入编辑态 → 修改后实时重排时间线并更新当天总距离）<br>
+    <b>查</b>：按天/分类/关键词筛选（Tab 切换按天、chip 切换按分类、搜索框按名称模糊匹配）
+    <br><br>
+    <b>结构规整保证</b>：任何增删改操作后，行程自动保持「按天分组 → 按时间排序 → 四分类着色 → 距离重算」四步一致性，不会出现时间倒挂或分类混乱。
+    <br>
+    <b>验收标准</b>：增删改查四项操作均可通过应用页完成；操作后行程自动重排（时间升序+距离重算）；卡片与应用页数据双端同步（应用页改了，卡片 Top 2 同步更新）。
+  </div>
+</div>
+
+<div class="kep-card" style="position:relative">
+  <div class="kep-num">08</div>
+  <div class="kep-title">Top 2 智能排序 · 最关注信息优先</div>
+  <div class="kep-desc">
+    桌面卡片每阶段的 Top 2 不是固定写死，而是<b>由系统根据上下文智能排序</b>。当外部条件变化（航班延误、天气骤变、位置移动），Top 2 的内容自动调整——始终展示当前最值得关注的信息。
+    <br><br>
+    <b>排序规则</b>（优先级从高到低）：
+    <ol style="margin-left:16px">
+      <li><b>异常事件</b>：航班延误/取消 → Top 1 切换为延误提示+新起飞时间</li>
+      <li><b>时间临近</b>：距下一节点 < 30 分钟 → Top 1 切换为该节点倒计时（如「距登机 25 分钟」）</li>
+      <li><b>位置触发</b>：GPS 到达某地点 200m 内 → Top 1 切换为该地点详情</li>
+      <li><b>默认优先</b>：无异常时按预设 Top 1/Top 2 展示</li>
+    </ol>
+    <b>验收标准</b>：Top 2 排序规则可在设置中关闭自动调整（回退为固定优先）；排序切换有 fade 过渡动画（200ms）；每次 Top 2 变化记录日志，用户可在应用页查看「Top 2 变化历史」。
   </div>
 </div>
 
@@ -376,6 +442,80 @@
   <li>通知含：图标 + 标题 + 正文 + 证据 chips + 双按钮（创建卡片 / 稀后）</li>
   <li>点击「创建卡片」→ 通知消失 → 卡片以 <code>cardIn</code> 动画入场</li>
 </ul>
+
+<h3>FR8 · 行程计划增删改查（CRUD）</h3>
+<p>全程计划应用页支持完整的<b>增删改查</b>四项操作，确保用户可以在旅行全程中灵活调整行程，输出始终结构规整。</p>
+
+<h4>增（Add）</h4>
+<ul>
+  <li><b>入口</b>：应用页某天 Tab 下，长按空白区域或点击底部「+ 添加地点」按钮</li>
+  <li><b>表单</b>：名称（必填）+ 时间（必填）+ 分类（景点/美食/交通/住宿四选一）+ 详情（选填）+ 预估距离（选填，可调用地图 API 自动计算）</li>
+  <li><b>插入逻辑</b>：按时间自动插入正确位置，后续地点后移；当天总距离重算</li>
+  <li><b>卡片同步</b>：若新增地点成为当前阶段的 Top 1 或 Top 2，卡片自动更新</li>
+</ul>
+
+<h4>删（Delete）</h4>
+<ul>
+  <li><b>入口</b>：地点卡片左滑出现删除按钮，或长按弹出菜单 → 「删除地点」</li>
+  <li><b>二次确认</b>：弹窗提示「确认删除「XX」？该操作不可撤销」+ 确认/取消</li>
+  <li><b>删除后</b>：后续地点自动前移；当天总距离重算；若删除的是当前卡片 Top 2 中的地点，卡片自动补位下一个优先级</li>
+</ul>
+
+<h4>改（Modify）</h4>
+<ul>
+  <li><b>入口</b>：点击地点卡片 → 进入编辑态（字段变为可输入）</li>
+  <li><b>可改字段</b>：时间、名称、详情、分类、距离</li>
+  <li><b>重排触发</b>：修改时间后自动重排当天时间线；修改分类后自动更新配色和图标</li>
+  <li><b>冲突检测</b>：两地点时间间隔 < 15 分钟时提示「时间过近，是否调整？」</li>
+</ul>
+
+<h4>查（Query）</h4>
+<ul>
+  <li><b>按天筛选</b>：Day Tab 切换（总览 / Day 1 / Day 2 / Day 3...）</li>
+  <li><b>按分类筛选</b>：分类 chip 切换（全部 / 景点 / 美食 / 交通 / 住宿）</li>
+  <li><b>关键词搜索</b>：顶部搜索框按名称模糊匹配，结果高亮</li>
+  <li><b>距离排序</b>：可切换按时间排序或按距离排序（查看哪天行程最紧凑）</li>
+</ul>
+
+<h4>结构规整保证</h4>
+<div class="callout">
+  任何 CRUD 操作后，行程自动执行四步一致性保证：
+  <br><b>① 按天分组</b> → <b>② 按时间排序</b>（升序） → <b>③ 四分类着色</b>（spot绿/food橙/transport蓝/hotel紫） → <b>④ 距离重算</b>（当天总距离更新到 Tab 标签）
+  <br>不会出现时间倒挂、分类混乱、距离不匹配。
+</div>
+
+<h3>FR9 · Top 2 智能排序</h3>
+<p>桌面卡片每阶段的内容不是静态写死，而是<b>由系统根据上下文智能排序</b>，始终展示当前最值得关注的 Top 2。</p>
+<table>
+  <tr><th>排序优先级</th><th>触发条件</th><th>Top 1 切换为</th><th>Top 2 切换为</th></tr>
+  <tr>
+    <td><span class="badge badge-red">P0</span> 异常事件</td>
+    <td>航班延误/取消</td>
+    <td>延误提示 + 新起飞时间</td>
+    <td>原 Top 1 降级为 Top 2</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-orange">P1</span> 时间临近</td>
+    <td>距下一节点 < 30 分钟</td>
+    <td>该节点倒计时（如「距登机 25 分钟」）</td>
+    <td>原 Top 1 降级为 Top 2</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-blue">P2</span> 位置触发</td>
+    <td>GPS 到达某地点 200m 内</td>
+    <td>该地点详情（名称+导航）</td>
+    <td>原 Top 1 降级为 Top 2</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-gray">P3</span> 默认</td>
+    <td>无异常/临近/到达</td>
+    <td>阶段预设 Top 1</td>
+    <td>阶段预设 Top 2</td>
+  </tr>
+</table>
+<div class="callout">
+  <b>用户控制</b>：Top 2 自动排序可在设置中关闭（回退为固定优先）；每次 Top 2 变化在应用页有「变更历史」可回看。
+</div>
 
 <!-- ====== 4. 状态机设计 ====== -->
 <h2 id="state"><span class="num">4</span>状态机设计</h2>
@@ -890,13 +1030,13 @@ nearby = [
   { name:'苍山索道', dist:'12km',  cat:'索道', reason:'俯瞰全景' },
 ]
 
-<span class="cmt">// 按天行程（应用页）</span>
+<span class="cmt">// 按天行程（应用页 · 可增删改查）</span>
 tripDays = [
   { day:1, label:'Day 1', date:'8月21日', dist:'24km', locs:[
-    { cat:'transport', ico:'✈️', name:'昆明✈大理',  time:'08:45', detail:'MU5731·1h35m·23A' },
-    { cat:'hotel',     ico:'🏨', name:'古城客栈',    time:'11:00', detail:'入住·2晚·¥320' },
-    { cat:'spot',      ico:'🏛️', name:'崇圣寺三塔',  time:'14:00', detail:'¥75·1.5h' },
-    { cat:'food',      ico:'🍜', name:'人民路小吃街',time:'18:00', detail:'砂锅鱼·¥80' },
+    { id:'d1l1', cat:'transport', ico:'✈️', name:'昆明✈大理',  time:'08:45', detail:'MU5731·1h35m·23A' },
+    { id:'d1l2', cat:'hotel',     ico:'🏨', name:'古城客栈',    time:'11:00', detail:'入住·2晚·¥320' },
+    { id:'d1l3', cat:'spot',      ico:'🏛️', name:'崇圣寺三塔',  time:'14:00', detail:'¥75·1.5h' },
+    { id:'d1l4', cat:'food',      ico:'🍜', name:'人民路小吃街',time:'18:00', detail:'砂锅鱼·¥80' },
   ]},
   <span class="cmt">// ... Day 2, Day 3 同结构</span>
 ]</pre>
@@ -909,6 +1049,50 @@ tripDays = [
   <tr><td>交通</td><td><code>transport</code></td><td><span class="badge badge-blue">#E3F2FD</span></td><td>#0A59F7</td><td>航班、高铁、打车</td></tr>
   <tr><td>住宿</td><td><code>hotel</code></td><td><span class="badge badge-purple">#F3E5F5</span></td><td>#7B1FA2</td><td>客栈入住、续住</td></tr>
 </table>
+
+<h3>7.3 行程计划 CRUD 数据模型</h3>
+<pre><span class="cmt">// 行程计划 · 支持增删改查的数据结构</span>
+tripPlan = {
+  tripId: 'trip_20260821_dali',
+  title: '大理 3 日游',
+  startDate: '2026-08-21',
+  endDate: '2026-08-23',
+  days: [
+    {
+      day: 1, label: 'Day 1', date: '8月21日',
+      dist: '24km',  <span class="cmt">// 自动重算</span>
+      locs: [
+        {
+          id: 'd1l1',           <span class="cmt">// 唯一 ID，用于删改定位</span>
+          cat: 'transport',      <span class="cmt">// spot/food/transport/hotel 四选一</span>
+          ico: '✈️',             <span class="cmt">// 由 cat 自动映射</span>
+          name: '昆明✈大理',     <span class="cmt">// 必填</span>
+          time: '08:45',         <span class="cmt">// 必填，HH:mm 格式</span>
+          detail: 'MU5731·1h35m·23A', <span class="cmt">// 选填</span>
+          dist: '15km',          <span class="cmt">// 选填，可调地图 API 自动算</span>
+        },
+        <span class="cmt">// ... 更多地点</span>
+      ]
+    },
+    <span class="cmt">// ... Day 2, Day 3</span>
+  ],
+  filter: { day:'all', cat:'all', kw:'' },  <span class="cmt">// 查询状态</span>
+  top2History: [],  <span class="cmt">// Top 2 变更日志</span>
+}
+
+<span class="cmt">// CRUD 操作函数签名</span>
+addLoc(dayNum, { name, time, cat, detail?, dist? }) → newLocId
+removeLoc(locId) → boolean
+updateLoc(locId, { name?, time?, cat?, detail?, dist? }) → boolean
+queryLocs({ day?, cat?, keyword? }) → [loc, ...]
+reorderByTime(dayNum) → void    <span class="cmt">// 时间升序重排</span>
+recalcDist(dayNum) → string     <span class="cmt">// 重算当天总距离</span>
+reorderTop2(stage) → [top1, top2]  <span class="cmt">// Top 2 智能排序</span>
+</pre>
+
+<div class="callout">
+  <b>双端同步</b>：任何 CRUD 操作在应用页执行后，卡片桌面态同步更新——若修改的地点恰为当前阶段 Top 1 或 Top 2，卡片立即刷新渲染。同步延迟 ≤ 200ms。
+</div>
 
 <!-- ====== 6. 交互与视觉规范 ====== -->
 <h2 id="spec"><span class="num">8</span>交互与视觉规范</h2>
@@ -969,9 +1153,9 @@ tripDays = [
   </tr>
   <tr>
     <td><span class="badge badge-green">V1</span></td>
-    <td>可交互 Checklist + 全程计划应用页</td>
-    <td>chip 点击切换 ✓/×、应用页路线地图+按天 Tab+分类地点卡片、圆周旅记风格</td>
-    <td>chip 切换状态持久化；应用页 3 天行程完整渲染</td>
+    <td>可交互 Checklist + 全程计划应用页 + 行程 CRUD</td>
+    <td>chip 点击切换 ✓/×、应用页路线地图+按天 Tab+分类地点卡片、圆周旅记风格、行程计划增删改查+结构规整、Top 2 智能排序</td>
+    <td>chip 切换状态持久化；应用页 3 天行程完整渲染；CRUD 操作后自动重排+双端同步</td>
   </tr>
   <tr>
     <td><span class="badge badge-purple">V2</span></td>
@@ -982,7 +1166,7 @@ tripDays = [
 </table>
 
 <div class="callout">
-  <b>当前 Demo 对应版本</b>：MVP + V1 已完成。V2 需要 HarmonyOS 卡片框架的实时数据能力（航班 API、GPS、短信解析）支撑，属于系统级集成，超出前端 Demo 范畴。
+  <b>当前 Demo 对应版本</b>：MVP + V1（卡片态+应用页）已完成。FR8 行程 CRUD + FR9 Top 2 智能排序为 V1 规划功能，Demo 中数据结构已预留 <code>id</code> 字段和 CRUD 函数签名，待鸿蒙卡片框架交互能力支撑后实现。V2 需要系统级集成（航班 API、GPS、短信解析）。
 </div>
 
 <!-- ====== 8. 验收标准 ====== -->
@@ -991,11 +1175,13 @@ tripDays = [
 <h3>10.1 KEP 验收</h3>
 <ul class="check-list">
   <li class="done">KEP-01 恰时：5 阶段均有独立信息架构，阶段间有自动切换信号定义</li>
-  <li class="done">KEP-02 恰需：每阶段可见信息 ≤ 4 条，无内容溢出卡片边界</li>
+  <li class="done">KEP-02 恰需：每阶段桌面态只展示 Top 2 核心信息，其余收起至应用页</li>
   <li class="done">KEP-03 恰好：桌面态只概览，应用页才深度；两层有明确过渡动画</li>
   <li class="done">KEP-04 可交互：chip 可点击切换 ✓/×，状态跨阶段保留</li>
   <li class="done">KEP-05 双入口：主动路径有「小艺创建」徽章；被动路径有证据+确认</li>
   <li class="done">KEP-06 情绪收束：回忆阶段照片 ≥ 50% 内容区，归档按钮为唯一底部操作</li>
+  <li>KEP-07 可编辑：行程计划应用页支持增删改查四项操作，操作后自动重排+重算</li>
+  <li>KEP-08 Top 2 排序：Top 2 可由异常/时间临近/位置触发自动调整，可在设置中关闭</li>
 </ul>
 
 <h3>10.2 功能验收</h3>
@@ -1007,6 +1193,16 @@ tripDays = [
   <li class="done">FR5 进度条 5 段可点击切换阶段</li>
   <li class="done">FR6 阶段切换有 fade-out → cardIn 动画</li>
   <li class="done">FR7 被动通知含证据 chips + 双按钮</li>
+  <li>FR8 增：应用页可新增地点，按时间自动插入正确位置，当天距离重算</li>
+  <li>FR8 删：左滑/长按删除地点，二次确认，后续地点自动前移</li>
+  <li>FR8 改：点击地点进入编辑态，改时间后自动重排，改分类后自动更新配色</li>
+  <li>FR8 查：按天 Tab + 分类 chip + 关键词搜索三种筛选方式均可用</li>
+  <li>FR8 结构规整：任何 CRUD 操作后行程保持按天分组+时间升序+四分类着色+距离重算</li>
+  <li>FR8 双端同步：应用页 CRUD 后卡片 Top 2 同步刷新（延迟 ≤ 200ms）</li>
+  <li>FR9 Top 2 默认排序：每阶段 Top 1 + Top 2 按预设优先级展示</li>
+  <li>FR9 异常升序：航班延误时 Top 1 切换为延误提示，原 Top 1 降级</li>
+  <li>FR9 时间临近：距下一节点 < 30 分钟时 Top 1 切换为倒计时</li>
+  <li>FR9 用户控制：可在设置中关闭 Top 2 自动排序，回退固定优先</li>
 </ul>
 
 <h3>10.3 视觉验收</h3>
@@ -1068,7 +1264,7 @@ tripDays = [
 <h3>11.2 术语表</h3>
 <table>
   <tr><th>术语</th><th>定义</th></tr>
-  <tr><td>KEP</td><td>Key Experience Principles，关键体验原则。从 Demo 交互中提炼的六条核心设计准则，可量化验收。</td></tr>
+  <tr><td>KEP</td><td>Key Experience Principles，关键体验原则。从 Demo 交互中提炼的八条核心设计准则，可量化验收。</td></tr>
   <tr><td>状态机</td><td>卡片内容的五阶段流转模型，由时间/位置/航班状态信号驱动自动切换。</td></tr>
   <tr><td>毛玻璃面板</td><td>卡片内容区容器，<code>backdrop-filter:blur(20px)</code> + 深色半透明背景，使文字在风景图上可读。</td></tr>
   <tr><td>圆周旅记风格</td><td>参考圆周旅记 App 的交互模式：顶部路线地图 + 按天分 Tab + 地点卡片（分类图标+时间+距离）。</td></tr>
@@ -1079,6 +1275,10 @@ tripDays = [
   <tr><td>加桌引导</td><td>系统检测到出行信号后，通过通知/小艺/卡片中心等通道提醒用户将旅行卡片添加到桌面的机制。</td></tr>
   <tr><td>证据 chips</td><td>加桌引导通知中展示的信号来源标签（如 ✈️机票短信 / 📅日历事件 / 🏨酒店预订），让用户知道系统为何认为其有出行计划。</td></tr>
   <tr><td>免打扰时段</td><td>22:00~08:00 期间不推送加桌引导通知，尊重用户休息时间。</td></tr>
+  <tr><td>Top 2</td><td>桌面卡片每阶段只展示的 2 条核心信息，由系统按优先级排序——异常事件 > 时间临近 > 位置触发 > 默认预设。</td></tr>
+  <tr><td>增删改查 (CRUD)</td><td>行程计划的四项可编辑操作：增（新增地点）、删（删除地点）、改（修改详情）、查（筛选浏览）。操作后行程自动保持结构规整。</td></tr>
+  <tr><td>结构规整</td><td>行程计划输出的四步一致性保证：按天分组 → 按时间升序排序 → 四分类着色 → 距离重算，确保 CRUD 后不会出现混乱。</td></tr>
+  <tr><td>双端同步</td><td>应用页 CRUD 操作后，卡片桌面态 Top 2 在 200ms 内同步刷新，保持信息一致。</td></tr>
 </table>
 
 <div class="footer">
