@@ -57,11 +57,6 @@
   /* ====== 桌面网格（鸿蒙手机 4 列 × 6 行宫格，方格 78.5×77px ≈ 1:1 对齐真机卡片比例）====== */
   .desktop{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:77px;
     gap:8px;padding:4px 12px 0;overflow:hidden;align-content:start}
-  /* app 图标 */
-  .app-icon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
-  .app-icon .ico{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;
-    justify-content:center;font-size:24px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-  .app-icon .name{font-size:9px;color:#1a1a1a;font-weight:500;text-shadow:0 1px 2px rgba(255,255,255,.5);max-width:70px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   /* ====== 单卡 4×2（横向） ====== */
   .travel-card{grid-column:1/span 4;grid-row:1/span 2;border-radius:20px;overflow:hidden;
     position:relative;box-shadow:0 6px 20px rgba(0,0,0,.15);
@@ -484,7 +479,7 @@
     <div class="ni">• <b>2×4 桌面卡片</b>，右上角↗拉起全程时间线</div>
     <div class="ni">• 三阶段<b>自动切换</b>：出发前 → 游览中 → 回忆</div>
     <div class="ni">• 出发前：天数+起飞时间+天气胶囊+✓/✗ 清单</div>
-    <div class="ni">• 游览阶段：左侧美图 + 右侧下一站 + 导航/打车</div>
+    <div class="ni">• 游览阶段：顶部行程进度+天气人流，左侧当前景点美图（游览中状态），右侧下一站（时间/距离/购票状态/拍照攻略）+ 打车/导航</div>
     <div class="ni">• 回忆阶段：信息卡→<b>情绪卡</b>（照片+统计+分享）</div>
   </div>
 </div>
@@ -616,37 +611,6 @@ let searchQuery='';
 let filterCat='all';
 let modalLoc=null;   // {dayIdx, locIdx, mode: 'view'|'edit'|'add'}
 
-// 桌面 app 图标
-const appIcons=[
-  {ico:'📅',name:'日历',bg:'#FF3B30'},
-  {ico:'📷',name:'相机',bg:'#FF9500'},
-  {ico:'🗺️',name:'地图',bg:'#34C759'},
-  {ico:'🌤️',name:'天气',bg:'#0A84FF'},
-  {ico:'💰',name:'钱包',bg:'#34C759'},
-  {ico:'🎵',name:'音乐',bg:'#FF2D55'},
-  {ico:'⚙️',name:'设置',bg:'#8E8E93'},
-  {ico:'📞',name:'电话',bg:'#34C759'},
-  {ico:'💡',name:'备忘',bg:'#FFCC00'},
-  {ico:'📧',name:'邮件',bg:'#007AFF'},
-  {ico:'🛒',name:'购物',bg:'#FF2D55'},
-  {ico:'⏰',name:'时钟',bg:'#000000'},
-  {ico:'📊',name:'健康',bg:'#FF3B30'},
-  {ico:'📝',name:'笔记',bg:'#FFCC00'},
-  {ico:'🎬',name:'视频',bg:'#000000'},
-  {ico:'🎮',name:'游戏',bg:'#5856D6'},
-];
-
-// ====== 填充桌面 app 图标 ======
-function fillAppIcons(){
-  const desktop=document.getElementById('desktop');
-  appIcons.forEach(a=>{
-    const el=document.createElement('div');
-    el.className='app-icon';
-    el.innerHTML=`<div class="ico" style="background:${a.bg}">${a.ico}</div><div class="name">${a.name}</div>`;
-    desktop.appendChild(el);
-  });
-}
-
 // ====== 渲染卡片 ======
 function renderCard(){
   const s=stages[curStage];
@@ -679,19 +643,26 @@ function renderCard(){
   }
   else if(curStage===2){
     body=`
-      <div class="tc-glass-panel" style="flex-direction:row;gap:10px">
-        <div class="vis-left" onclick="event.stopPropagation();openAppPage()">
-          <div class="vl-img" style="background-image:url('${IMG}cangshan.jpg')"></div>
-          <div class="vl-tag">苍山</div>
-          <div class="vl-sub">洗马潭索道 · 云海观景</div>
+      <div class="tc-glass-panel">
+        <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:26px">
+          <span><span class="ico">📍</span><span class="val">Day 2 · 第 3/5 站</span></span>
+          <span>☀️ 22° 晴 · 人流舒适</span>
         </div>
-        <div class="vis-right">
-          <div class="vr-label">下一站</div>
-          <div class="vr-name">洱海公园</div>
-          <div class="vr-meta">15:00 · 1.2km</div>
-          <div class="tc-action-btns" style="margin-top:auto">
-            <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
-            <div class="tc-action-btn" onclick="event.stopPropagation();alert('导航')"><span class="ab-ico">🧭</span>导航</div>
+        <div style="flex:1;display:flex;gap:10px;min-height:0">
+          <div class="vis-left" onclick="event.stopPropagation();openAppPage()">
+            <div class="vl-img" style="background-image:url('${IMG}cangshan.jpg')"></div>
+            <div class="vl-tag">苍山</div>
+            <div class="vl-sub">洗马潭索道 · 游览中 45 分钟</div>
+          </div>
+          <div class="vis-right">
+            <div class="vr-label">下一站</div>
+            <div class="vr-name">洱海公园</div>
+            <div class="vr-meta">15:00 · 1.2km · ✓ 已购票</div>
+            <div class="vr-meta" style="color:#FFE08A;cursor:pointer" onclick="event.stopPropagation();alert('拍照攻略')">📸 拍照攻略 · 3 个机位</div>
+            <div class="tc-action-btns" style="margin-top:auto">
+              <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
+              <div class="tc-action-btn" onclick="event.stopPropagation();alert('导航')"><span class="ab-ico">🧭</span>导航</div>
+            </div>
           </div>
         </div>
       </div>`;
@@ -1181,7 +1152,6 @@ document.getElementById('path-btns').addEventListener('click',e=>{
 });
 
 // ====== 初始化 ======
-fillAppIcons();
 // 支持 URL hash 自动选阶段（如 #stage=3），方便截图和分享
 const hashMatch=location.hash.match(/stage=(\d)/);
 if(hashMatch){curStage=parseInt(hashMatch[1]);}
