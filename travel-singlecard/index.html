@@ -70,9 +70,9 @@
   .travel-card.fade-out{opacity:0;transform:scale(.96)}
   .tc-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
   .tc-bg::after{content:'';position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,.4) 45%,rgba(0,0,0,.58) 100%)}
+    background:linear-gradient(180deg,rgba(0,0,0,.14) 0%,rgba(0,0,0,.26) 48%,rgba(0,0,0,.46) 100%)}
   /* 进度条 */
-  .tc-progress{display:flex;gap:2px;padding:4px 34px 0 10px;position:relative;z-index:2;flex-shrink:0}
+  .tc-progress{display:flex;gap:2px;padding:6px 34px 0 10px;position:relative;z-index:2;flex-shrink:0}
   .tc-progress .seg{flex:1;height:2px;border-radius:1px;background:rgba(255,255,255,.2);transition:.3s}
   .tc-progress .seg.done{background:rgba(255,255,255,.5)}
   .tc-progress .seg.cur{background:#fff;box-shadow:0 0 4px rgba(255,255,255,.6)}
@@ -83,7 +83,7 @@
     cursor:pointer;transition:.2s;border:none}
   .tc-pull:hover{background:rgba(255,255,255,.35)}
   /* Body - 内容直接承载于卡片背景（单框设计，去掉内嵌毛玻璃框） */
-  .tc-body{position:relative;z-index:2;flex:1;padding:4px 12px 12px;display:flex;
+  .tc-body{position:relative;z-index:2;flex:1;padding:9px 13px 14px;display:flex;
     flex-direction:column;overflow:hidden}
   .tc-glass-panel{flex:1;display:flex;flex-direction:column;gap:5px;overflow:hidden;
     background:transparent;border:none;box-shadow:none;border-radius:0;
@@ -120,13 +120,6 @@
   .tc-status-flow .step:last-child::after{display:none}
   /* 分隔线 */
   .tc-divider{height:1px;background:rgba(255,255,255,.12);margin:2px 0;width:100%}
-  /* 天气胶囊（出发前） */
-  .tc-weather-bar{display:flex;align-items:center;justify-content:center;gap:8px;
-    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.16);
-    border-radius:14px;padding:8px 12px;margin-top:10px;color:#fff;font-size:12px;font-weight:600;
-    backdrop-filter:blur(4px);text-shadow:0 1px 3px rgba(0,0,0,.35)}
-  .tc-weather-bar .ww-ico{font-size:14px}
-  .tc-weather-bar .ww-arr{font-size:12px;opacity:.6}
   /* 游览：目的地信息 */
   .spot-row{display:flex;align-items:center;gap:10px}
   .spot-thumb{width:48px;height:48px;border-radius:10px;background-size:cover;background-position:center;
@@ -675,11 +668,10 @@ function renderCard(){
     body=`
       <div class="tc-glass-panel">
         <div class="tc-big" style="font-size:36px">3 天</div>
-        <div class="tc-text" style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">8月21日 周四 · 08:45 起飞</div>
-        <div class="tc-weather-bar">
-          <span><span class="ww-ico">☁️</span> 昆明 14°</span>
-          <span class="ww-arr">→</span>
-          <span><span class="ww-ico">☀️</span> 大理 22°</span>
+        <div class="tc-text" style="font-size:11px;color:rgba(255,255,255,.8);margin-top:2px">8月21日 周四 · 08:45 起飞</div>
+        <div class="tc-row" style="gap:14px;margin-top:8px">
+          <span class="tc-row"><span class="ico">☁️</span><span class="val">昆明 14°</span><span class="sub">多云</span></span>
+          <span class="tc-row"><span class="ico">☀️</span><span class="val">大理 22°</span><span class="sub">晴</span></span>
         </div>
         ${chipHTML(1)}
       </div>`;
