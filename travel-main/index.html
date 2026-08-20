@@ -54,9 +54,10 @@
   .compliance b{color:#0A7A4A}
   .toggle{margin-top:14px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--panel-sub)}
   /* ---- 手机 ---- */
-  .phone{width:384px;height:832px;background:#1c1c1e;border-radius:46px;padding:11px;
+  /* 机框复刻华为 Mate 70：机身 384×814（比例 2.12:1 ≈ 160.9×75.9mm），屏幕 362×800（比例 2.21:1 ≈ 2688×1216px） */
+  .phone{width:384px;height:814px;background:#1c1c1e;border-radius:46px;padding:7px 11px;
     box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;flex-shrink:0}
-  .screen{width:362px;height:810px;border-radius:36px;overflow:hidden;position:relative;
+  .screen{width:362px;height:800px;border-radius:36px;overflow:hidden;position:relative;
     background:linear-gradient(165deg,var(--wall1),var(--wall2) 55%,var(--wall3));
     display:flex;flex-direction:column}
   .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:10px;height:10px;
@@ -68,7 +69,7 @@
     align-items:center;gap:6px;padding:0 12px;font-size:11px;margin:0 14px 4px;flex-shrink:0;z-index:21}
   .capsule.show{display:flex;animation:fade .3s ease}
   @keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-  /* 桌面：4 列、固定方格 74px、7 行上限、绝不溢出 */
+  /* 桌面：4 列、固定方格 74px、6 行上限（鸿蒙手机 4×6 宫格）、绝不溢出 */
   .desktop{flex:1;display:grid;grid-template-columns:repeat(4,1fr);
     grid-auto-rows:74px;gap:9px;padding:14px;align-content:start;overflow:hidden}
   .dock{height:64px;margin:4px 14px 14px;border-radius:24px;background:rgba(255,255,255,.25);
@@ -411,7 +412,7 @@
         · 卡片内无长按/二级菜单，编辑（行李勾选）在「详情页」完成<br>
         · 卡片为独立沙箱，实时数据由 FormExtensionAbility 推送<br>
         · 刷新以 30 分钟为单位；时间线整卡即「路线示意」<br>
-        · <b>每屏严格落在 7 行网格内，零溢出</b>
+        · <b>每屏严格落在 6 行网格内（鸿蒙 4×6 宫格），零溢出</b>
       </div>
     </div>
 
