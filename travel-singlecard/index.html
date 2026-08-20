@@ -706,7 +706,6 @@ function renderCard(){
       <div class="tc-glass-panel">
         <div class="tc-row" style="justify-content:space-between;flex-shrink:0">
           <span class="tc-label">当前游览</span>
-          <span class="tc-chip done" style="font-size:9px;padding:2px 7px">正在游 ✓</span>
         </div>
         <div class="cur-spot">
           <div class="cur-thumb" style="background-image:url('${IMG}cangshan.jpg')">
@@ -726,6 +725,24 @@ function renderCard(){
           <span class="tc-label" style="font-size:9px">下一站</span>
           <span class="next-name">洱海公园</span>
           <span class="next-meta">15:00 · 1.2km</span>
+        </div>
+        <div class="tc-row" style="justify-content:space-between;align-items:flex-end;flex-shrink:0">
+          <span class="tc-label" style="font-size:9px">附近</span>
+          <span class="tc-text" style="font-size:8px;color:rgba(255,255,255,.55)">基于当前位置</span>
+        </div>
+        <div class="nearby-row">
+          <div class="nb-card" onclick="event.stopPropagation();alert('感通索道详情')">
+            <div class="nb-img" style="background-image:url('${IMG}cangshan.jpg')"></div>
+            <div class="nb-info"><div class="nb-name">感通索道</div><div class="nb-dist">2.3km</div></div>
+          </div>
+          <div class="nb-card" onclick="event.stopPropagation();alert('寂照庵详情')">
+            <div class="nb-img" style="background-image:url('${IMG}dali.jpg')"></div>
+            <div class="nb-info"><div class="nb-name">寂照庵</div><div class="nb-dist">1.8km</div></div>
+          </div>
+          <div class="nb-card" onclick="event.stopPropagation();alert('山海咖啡馆详情')">
+            <div class="nb-img" style="background-image:url('${IMG}erhai.jpg')"></div>
+            <div class="nb-info"><div class="nb-name">山海咖啡馆</div><div class="nb-dist">800m</div></div>
+          </div>
         </div>
         <div class="tc-action-btns" style="margin-top:auto;padding-top:4px">
           <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
