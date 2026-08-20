@@ -379,6 +379,45 @@
     font-size:12px;color:var(--panel-sub);cursor:pointer;transition:.2s;margin-top:4px;font-family:inherit;
     background:transparent;width:100%;outline:none}
   .ap-add-loc:hover{border-color:var(--accent);color:var(--accent);background:#F0F4FF}
+  /* CRUD: 地点项可点击 */
+  .ap-loc-item{cursor:pointer;transition:.15s}
+  .ap-loc-item:hover{background:#F5F6FA}
+  .ap-loc-item:active{background:#EDEFF4}
+  /* CRUD: 半模态弹窗 */
+  .ap-modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:60;
+    opacity:0;pointer-events:none;transition:opacity .25s}
+  .ap-modal-mask.show{opacity:1;pointer-events:auto}
+  .ap-modal-sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;
+    background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -6px 30px rgba(0,0,0,.15);
+    transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);
+    padding:0 18px 24px;max-height:80vh;overflow-y:auto}
+  .ap-modal-mask.show~.ap-modal-sheet,.ap-modal-sheet.show{transform:translateY(0)}
+  .ap-modal-handle{width:36px;height:4px;border-radius:3px;background:#D8D8D8;margin:8px auto 0}
+  .ap-modal-title{font-size:16px;font-weight:700;color:#1A1A1A;margin:10px 0 2px;text-align:center}
+  .ap-modal-sub{font-size:12px;color:#8A8A8A;text-align:center;margin-bottom:14px}
+  .ap-modal-info{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;justify-content:center}
+  .ap-modal-info .mi-chip{font-size:11px;padding:4px 10px;border-radius:10px;font-weight:500}
+  .ap-modal-actions{display:flex;gap:10px}
+  .ap-modal-actions .ma-btn{flex:1;border:none;border-radius:12px;padding:12px;font-size:14px;
+    font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;
+    justify-content:center;gap:6px;transition:.15s}
+  .ap-modal-actions .ma-edit{background:#F0F4FF;color:var(--accent)}
+  .ap-modal-actions .ma-edit:hover{background:#D9E5FF}
+  .ap-modal-actions .ma-del{background:#FCEBEB;color:#E24B4A}
+  .ap-modal-actions .ma-del:hover{background:#F8D5D5}
+  .ap-modal-close{position:absolute;top:10px;right:14px;width:28px;height:28px;border-radius:50%;
+    background:#F5F6FA;border:none;font-size:16px;cursor:pointer;color:#8A8A8A;transition:.15s}
+  .ap-modal-close:hover{background:#E4E4E4}
+  /* CRUD: 可拖动浮动按钮 */
+  .ap-fab{position:absolute;right:18px;bottom:20px;width:52px;height:52px;border-radius:50%;
+    background:var(--accent);color:#fff;border:none;font-size:24px;cursor:grab;
+    box-shadow:0 4px 14px rgba(10,89,247,.4);z-index:55;
+    display:flex;align-items:center;justify-content:center;
+    transition:box-shadow .2s,transform .15s;touch-action:none;user-select:none}
+  .ap-fab:hover{box-shadow:0 6px 20px rgba(10,89,247,.5);transform:scale(1.05)}
+  .ap-fab.dragging{cursor:grabbing;transition:none;transform:scale(1.1)}
+  .ap-fab:hover{box-shadow:0 6px 20px rgba(10,89,247,.5);transform:scale(1.05)}
+  .ap-fab.dragging{cursor:grabbing;transition:none;transform:scale(1.1)}
   /* 响应式 */
   @media(max-width:780px){
     .console{position:static;width:100%;max-width:384px}
@@ -562,8 +601,7 @@ let tripDays=[
 let curDay=0;
 let searchQuery='';
 let filterCat='all';
-let editingLoc=null;
-let addingLoc=null;
+let modalLoc=null;   // {dayIdx, locIdx, mode: 'view'|'edit'|'add'}
 
 // 桌面 app 图标
 const appIcons=[
@@ -797,7 +835,7 @@ function renderAppPage(){
   });
   tabs+='</div>';
 
-  // 地点列表（含CRUD: 增删改查）
+  // 地点列表（可点击 → 半模态弹窗编辑/删除）
   let locHTML='<div class="ap-loc-list">';
   let dayIndices;
   if(curDay===0){
@@ -818,34 +856,63 @@ function renderAppPage(){
       }
       var cb=catBg[l.cat]||'#F0F0F0';
       var cf=catFg[l.cat]||'#8E8E93';
-      if(editingLoc&&editingLoc.dayIdx===dayIdx&&editingLoc.locIdx===locIdx){
-        locHTML+=editFormHTML(l,'editing','saveEdit','cancelEdit');
-      }else{
-        locHTML+=`
-        <div class="ap-loc-item">
-          <div class="ap-loc-time">${l.time}</div>
-          <div class="ap-loc-ico" style="background:${cb}">${l.ico}</div>
-          <div class="ap-loc-info">
-            <div class="ap-loc-name">${l.name}</div>
-            <div class="ap-loc-detail">${l.detail}</div>
-            ${l.dist?`<div class="ap-loc-dist" style="color:${cf}">📍 ${l.dist}</div>`:''}
-          </div>
-          <div class="ap-loc-actions">
-            <button onclick="startEdit(${dayIdx},${locIdx})">✏️</button>
-            <button class="del-btn" onclick="deleteLoc(${dayIdx},${locIdx})">🗑️</button>
-          </div>
-        </div>`;
-      }
+      locHTML+=`
+      <div class="ap-loc-item" onclick="openLocModal(${dayIdx},${locIdx})">
+        <div class="ap-loc-time">${l.time}</div>
+        <div class="ap-loc-ico" style="background:${cb}">${l.ico}</div>
+        <div class="ap-loc-info">
+          <div class="ap-loc-name">${l.name}</div>
+          <div class="ap-loc-detail">${l.detail}</div>
+          ${l.dist?`<div class="ap-loc-dist" style="color:${cf}">📍 ${l.dist}</div>`:''}
+        </div>
+        <div class="ap-loc-cat" style="background:${cb};color:${cf}">${catLabel[l.cat]}</div>
+      </div>`;
     });
-    if(addingLoc&&addingLoc.dayIdx===dayIdx){
-      locHTML+=editFormHTML({name:'',time:'',detail:'',cat:'spot'},'adding','saveAdd','cancelAdd');
-    }else{
-      locHTML+=`<button class="ap-add-loc" onclick="startAdd(${dayIdx})">+ 添加地点</button>`;
-    }
   });
   locHTML+='</div>';
 
-  body.innerHTML=overview+searchBar+routeMap+tabs+locHTML;
+  // 半模态弹窗
+  var modalHTML='';
+  if(modalLoc){
+    var ml=modalLoc.mode==='add'
+      ?{name:'',time:'',detail:'',cat:'spot',ico:'📍',dist:''}
+      :tripDays[modalLoc.dayIdx].locs[modalLoc.locIdx];
+    var mcb=catBg[ml.cat]||'#F0F0F0';
+    var mcf=catFg[ml.cat]||'#8E8E93';
+    modalHTML=`<div class="ap-modal-mask show" onclick="closeLocModal()"></div>
+    <div class="ap-modal-sheet show">
+      <div class="ap-modal-handle"></div>
+      <button class="ap-modal-close" onclick="closeLocModal()">✕</button>`;
+    if(modalLoc.mode==='view'){
+      modalHTML+=`
+        <div class="ap-modal-title">${ml.name}</div>
+        <div class="ap-modal-sub">${ml.time||'未设置时间'} · ${catLabel[ml.cat]||'地点'}</div>
+        ${ml.detail?`<div style="font-size:13px;color:#6B6B6B;text-align:center;margin-bottom:14px;line-height:1.5">${ml.detail}</div>`:''}
+        ${ml.dist?`<div style="font-size:12px;color:${mcf};text-align:center;margin-bottom:14px">📍 ${ml.dist}</div>`:''}
+        <div class="ap-modal-actions">
+          <button class="ma-btn ma-edit" onclick="setModalMode('edit')">✏️ 编辑</button>
+          <button class="ma-btn ma-del" onclick="confirmDeleteLoc()">🗑️ 删除</button>
+        </div>`;
+    }else{
+      var saveFn=modalLoc.mode==='edit'?'saveModalEdit':'saveModalAdd';
+      modalHTML+=editFormHTML(ml,modalLoc.mode,saveFn,'closeLocModal');
+    }
+    modalHTML+=`</div>`;
+  }
+
+  // 可拖动浮动按钮（独立于 ap-body，挂在 app-page 上）
+  var fabHTML=`<button class="ap-fab" id="apFab" onclick="if(!fabDragged)openLocModal(-1,-1)">+</button>`;
+
+  body.innerHTML=overview+searchBar+routeMap+tabs+locHTML+modalHTML;
+
+  // FAB 挂到 app-page 上（不被 ap-body 的 overflow 影响）
+  var appPage=document.querySelector('.app-page');
+  var oldFab=document.getElementById('apFab');
+  if(oldFab) oldFab.remove();
+  if(appPage) appPage.insertAdjacentHTML('beforeend',fabHTML);
+
+  // 初始化FAB拖拽
+  initFabDrag();
 }
 
 function routeMapSVG(){
@@ -880,73 +947,140 @@ function switchDayTab(n){
   renderAppPage();
 }
 
-// ====== CRUD: 增删改查 ======
+// ====== CRUD: 半模态弹窗 + 可拖动FAB ======
 const catIcons={spot:'\u{1F3DB}\u{FE0F}',food:'\u{1F35C}',transport:'\u2708\u{FE0F}',hotel:'\u{1F3E8}'};
 
 function filterLocs(q){searchQuery=q;renderAppPage();}
 function filterByCat(cat){filterCat=cat;renderAppPage();}
-function startEdit(di,li){editingLoc={dayIdx:di,locIdx:li};addingLoc=null;renderAppPage();}
-function cancelEdit(){editingLoc=null;renderAppPage();}
-function deleteLoc(di,li){
+
+// 打开半模态弹窗：查看/编辑/添加
+function openLocModal(di,li){
+  if(di===-1){
+    // FAB添加：定位到当前选中的天
+    var dayIdx=curDay===0?0:curDay-1;
+    modalLoc={dayIdx:dayIdx,locIdx:-1,mode:'add'};
+  }else{
+    modalLoc={dayIdx:di,locIdx:li,mode:'view'};
+  }
+  renderAppPage();
+}
+function closeLocModal(){modalLoc=null;renderAppPage();}
+function setModalMode(m){if(modalLoc){modalLoc.mode=m;renderAppPage();}}
+
+// 确认删除
+function confirmDeleteLoc(){
+  if(!modalLoc)return;
+  var di=modalLoc.dayIdx,li=modalLoc.locIdx;
   var name=tripDays[di].locs[li].name;
-  if(confirm('确定删除\u300C'+name+'\u300D\uFF1F')){
+  if(confirm('确定删除「'+name+'」？')){
     tripDays[di].locs.splice(li,1);
+    modalLoc=null;
     renderAppPage();
   }
 }
-function saveEdit(){
+
+// 保存编辑
+function saveModalEdit(){
+  if(!modalLoc)return;
   var f=document.querySelector('.ap-edit-form.editing');
   if(!f)return;
   var name=f.querySelector('.ef-name').value.trim();
-  if(!name){editingLoc=null;renderAppPage();return;}
-  var di=editingLoc.dayIdx,li=editingLoc.locIdx;
+  if(!name){modalLoc=null;renderAppPage();return;}
+  var di=modalLoc.dayIdx,li=modalLoc.locIdx;
   var cat=f.querySelector('.ef-cat').value;
   tripDays[di].locs[li].name=name;
   tripDays[di].locs[li].time=f.querySelector('.ef-time').value.trim();
   tripDays[di].locs[li].detail=f.querySelector('.ef-detail').value.trim();
   tripDays[di].locs[li].cat=cat;
   tripDays[di].locs[li].ico=catIcons[cat]||'\u{1F4CD}';
-  editingLoc=null;
+  modalLoc=null;
   renderAppPage();
 }
-function startAdd(di){addingLoc={dayIdx:di};editingLoc=null;renderAppPage();}
-function cancelAdd(){addingLoc=null;renderAppPage();}
-function saveAdd(){
+
+// 保存添加
+function saveModalAdd(){
+  if(!modalLoc)return;
   var f=document.querySelector('.ap-edit-form.adding');
   if(!f)return;
   var name=f.querySelector('.ef-name').value.trim();
-  if(!name){addingLoc=null;renderAppPage();return;}
-  var di=addingLoc.dayIdx;
+  if(!name){modalLoc=null;renderAppPage();return;}
+  var di=modalLoc.dayIdx;
   var cat=f.querySelector('.ef-cat').value;
   tripDays[di].locs.push({
     cat:cat,ico:catIcons[cat]||'\u{1F4CD}',name:name,
     time:f.querySelector('.ef-time').value.trim(),
     detail:f.querySelector('.ef-detail').value.trim(),dist:''
   });
-  addingLoc=null;
+  modalLoc=null;
   renderAppPage();
 }
+
+// 编辑表单HTML（复用）
 function editFormHTML(loc,formClass,saveFn,cancelFn){
   var h='<div class="ap-edit-form '+formClass+'">';
   h+='<div class="ef-row">';
-  h+='<input class="ef-name" type="text" value="'+(loc.name||'')+'" placeholder="\u5730\u70B9\u540D\u79F0">';
-  h+='<input class="ef-time" type="text" value="'+(loc.time||'')+'" placeholder="\u65F6\u95F4">';
+  h+='<input class="ef-name" type="text" value="'+(loc.name||'')+'" placeholder="地点名称">';
+  h+='<input class="ef-time" type="text" value="'+(loc.time||'')+'" placeholder="时间">';
   h+='</div>';
   h+='<div class="ef-row">';
-  h+='<input class="ef-detail" type="text" value="'+(loc.detail||'')+'" placeholder="\u8BE6\u60C5">';
+  h+='<input class="ef-detail" type="text" value="'+(loc.detail||'')+'" placeholder="详情">';
   h+='<select class="ef-cat">';
-  h+='<option value="spot"'+(loc.cat==='spot'?' selected':'')+'>\u666F\u70B9</option>';
-  h+='<option value="food"'+(loc.cat==='food'?' selected':'')+'>\u7F8E\u98DF</option>';
-  h+='<option value="transport"'+(loc.cat==='transport'?' selected':'')+'>\u4EA4\u901A</option>';
-  h+='<option value="hotel"'+(loc.cat==='hotel'?' selected':'')+'>\u4F4F\u5BBF</option>';
+  h+='<option value="spot"'+(loc.cat==='spot'?' selected':'')+'>景点</option>';
+  h+='<option value="food"'+(loc.cat==='food'?' selected':'')+'>美食</option>';
+  h+='<option value="transport"'+(loc.cat==='transport'?' selected':'')+'>交通</option>';
+  h+='<option value="hotel"'+(loc.cat==='hotel'?' selected':'')+'>住宿</option>';
   h+='</select>';
   h+='</div>';
   h+='<div class="ef-actions">';
-  h+='<button class="ef-save" onclick="'+saveFn+'()">\u4FDD\u5B58</button>';
-  h+='<button class="ef-cancel" onclick="'+cancelFn+'()">\u53D6\u6D88</button>';
+  h+='<button class="ef-save" onclick="'+saveFn+'()">保存</button>';
+  h+='<button class="ef-cancel" onclick="'+cancelFn+'()">取消</button>';
   h+='</div>';
   h+='</div>';
   return h;
+}
+
+// ====== 可拖动浮动按钮 ======
+var fabDragged=false;
+function initFabDrag(){
+  var fab=document.getElementById('apFab');
+  if(!fab)return;
+  var startX=0,startY=0,origX=0,origY=0,moved=false;
+  fab.addEventListener('pointerdown',function(e){
+    startX=e.clientX;startY=e.clientY;
+    var rect=fab.getBoundingClientRect();
+    var parent=(fab.offsetParent||document.body).getBoundingClientRect();
+    origX=rect.left-parent.left;
+    origY=rect.top-parent.top;
+    moved=false;
+    fabDragged=false;
+    fab.setPointerCapture(e.pointerId);
+    fab.classList.add('dragging');
+    fab.style.transition='none';
+    e.preventDefault();
+  });
+  fab.addEventListener('pointermove',function(e){
+    var dx=e.clientX-startX;
+    var dy=e.clientY-startY;
+    if(Math.abs(dx)>4||Math.abs(dy)>4){moved=true;fabDragged=true;}
+    if(moved){
+      fab.style.left=origX+dx+'px';
+      fab.style.top=origY+dy+'px';
+      fab.style.right='auto';
+      fab.style.bottom='auto';
+    }
+  });
+  fab.addEventListener('pointerup',function(e){
+    fab.releasePointerCapture(e.pointerId);
+    fab.classList.remove('dragging');
+    fab.style.transition='';
+    if(fabDragged){
+      setTimeout(function(){fabDragged=false;},50);
+    }
+  });
+  fab.addEventListener('pointercancel',function(){
+    fab.classList.remove('dragging');
+    fab.style.transition='';
+  });
 }
 
 // ====== 阶段切换 ======
