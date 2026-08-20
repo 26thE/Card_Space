@@ -120,6 +120,13 @@
   .tc-status-flow .step:last-child::after{display:none}
   /* 分隔线 */
   .tc-divider{height:1px;background:rgba(255,255,255,.12);margin:2px 0;width:100%}
+  /* 天气胶囊（出发前） */
+  .tc-weather-bar{display:flex;align-items:center;justify-content:center;gap:8px;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.16);
+    border-radius:14px;padding:8px 12px;margin-top:10px;color:#fff;font-size:12px;font-weight:600;
+    backdrop-filter:blur(4px);text-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .tc-weather-bar .ww-ico{font-size:14px}
+  .tc-weather-bar .ww-arr{font-size:12px;opacity:.6}
   /* 游览：目的地信息 */
   .spot-row{display:flex;align-items:center;gap:10px}
   .spot-thumb{width:48px;height:48px;border-radius:10px;background-size:cover;background-position:center;
@@ -318,6 +325,22 @@
     backdrop-filter:blur(6px)}
   .tc-action-btn:hover{background:rgba(255,255,255,.26)}
   .tc-action-btn .ab-ico{font-size:12px}
+  /* 游览阶段：左右布局（美图 + 下一站） */
+  .vis-left{flex:1.35;position:relative;border-radius:14px;overflow:hidden;cursor:pointer;
+    min-width:0;border:1px solid rgba(255,255,255,.12);box-shadow:0 2px 10px rgba(0,0,0,.2)}
+  .vis-left .vl-img{position:absolute;inset:0;background-size:cover;background-position:center}
+  .vis-left .vl-img::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.55) 100%)}
+  .vis-left .vl-tag{position:absolute;left:8px;bottom:18px;font-size:16px;font-weight:800;color:#fff;
+    z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+  .vis-left .vl-sub{position:absolute;left:8px;bottom:6px;font-size:9px;color:rgba(255,255,255,.9);
+    z-index:1;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+  .vis-right{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;justify-content:flex-start;padding:2px 0}
+  .vis-right .vr-label{font-size:9px;color:rgba(255,255,255,.72);text-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .vis-right .vr-name{font-size:18px;font-weight:800;color:#fff;line-height:1.1;
+    text-shadow:0 1px 4px rgba(0,0,0,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .vis-right .vr-meta{font-size:10px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .vis-right .tc-action-btns{margin-top:auto}
   /* 阶段3：附近卡片标签 */
   .nb-card .nb-cat{font-size:7px;color:rgba(255,255,255,.9);background:rgba(0,0,0,.35);
     padding:1px 4px;border-radius:5px;position:absolute;top:3px;left:3px;z-index:1;backdrop-filter:blur(2px)}
@@ -441,7 +464,7 @@
 <!-- ====== 控制台 ====== -->
 <div class="console">
   <h1>单卡旅行助手</h1>
-  <p class="sub">2×4 桌面卡片 · 五阶段状态机 · 同屏展示下一站+附近</p>
+  <p class="sub">2×4 桌面卡片 · 三阶段状态机 · 出发前清单+游览美图+回忆</p>
   <div class="trip-card">
     <div class="t1">大理 3 日游</div>
     <div class="t2">8月21日出发 · 昆明 ✈ 大理 · 3天12景点</div>
@@ -456,10 +479,8 @@
   <div class="seg-label">阶段切换 <span class="signal" id="signal-hint">信号触发</span></div>
   <div class="btn-group" id="stage-btns">
     <button class="on" data-stage="1">🧳 出行前</button>
-    <button data-stage="2">✈️ 交通</button>
-    <button data-stage="3">🗺️ 游览</button>
-    <button data-stage="4">🛫 返程</button>
-    <button data-stage="5">📸 回忆</button>
+    <button data-stage="2">🗺️ 游览中</button>
+    <button data-stage="3">📸 回忆</button>
   </div>
 
   <div class="stage-info" id="stage-info"></div>
@@ -467,9 +488,9 @@
   <div class="notes">
     <div class="seg-label" style="margin-top:0">设计要点</div>
     <div class="ni">• <b>2×4 桌面卡片</b>，右上角↗拉起全程时间线</div>
-    <div class="ni">• 五阶段<b>自动切换</b>：时间/位置/航班状态触发</div>
-    <div class="ni">• 游览阶段<b>同屏</b>：下一目的地 + 附近推荐</div>
-    <div class="ni">• 被动识别路径：首次<b>轻确认</b>，不直接建卡</div>
+    <div class="ni">• 三阶段<b>自动切换</b>：出发前 → 游览中 → 回忆</div>
+    <div class="ni">• 出发前：天数+起飞时间+天气胶囊+✓/✗ 清单</div>
+    <div class="ni">• 游览阶段：左侧美图 + 右侧下一站 + 导航/打车</div>
     <div class="ni">• 回忆阶段：信息卡→<b>情绪卡</b>（照片+统计+分享）</div>
   </div>
 </div>
@@ -537,8 +558,7 @@ let curStage=1, curPath='active';
 
 // checklist 状态：true=已完成(✓绿) false=待办(✗橙)
 const chipState={
-  1:{'机票':true,'酒店':true,'身份证':true,'防晒霜':false},
-  4:{'证件':true,'手机':true,'房卡退还':false,'伴手礼':false}
+  1:{'机票':true,'酒店':true,'身份证':true,'防晒霜':false}
 };
 function toggleChip(stage,item){
   chipState[stage][item]=!chipState[stage][item];
@@ -546,7 +566,7 @@ function toggleChip(stage,item){
 }
 function chipHTML(stage){
   const items=Object.keys(chipState[stage]);
-  return '<div class="tc-chips" style="'+(stage===4?'margin-top:auto;padding-top:1px':'margin-top:2px')+'">'+
+  return '<div class="tc-chips" style="margin-top:10px">'+
     items.map(function(item){
       var d=chipState[stage][item];
       return '<span class="tc-chip '+(d?'done':'todo')+'" onclick="event.stopPropagation();toggleChip('+stage+',\''+item+'\')">'+(d?'✓':'✗')+' '+item+'</span>';
@@ -556,27 +576,19 @@ function chipHTML(stage){
 const stages={
   1:{name:'出行前',icon:'🧳',color:'var(--s1)',bg:IMG+'lijiang.jpg',
     desc:'行前倒计时+天气预览+清单进度。维持查看习惯，建立出发预期。',
-    signal:'出发前2小时 / 到达机场 → 切换到交通'},
-  2:{name:'出行中',icon:'✈️',color:'var(--s2)',bg:IMG+'sky.jpg',
-    desc:'航班信息+登机口+实时状态流。单卡黄金场景，信息密度最高。',
-    signal:'航班降落 / 到达目的地 → 切换到游览'},
-  3:{name:'游览中',icon:'🗺️',color:'var(--s3)',bg:IMG+'dali.jpg',
-    desc:'同屏展示下一目的地（计划内）+附近推荐（计划外发现）。',
-    signal:'最后一天 / 返程前12小时 → 切换到返程'},
-  4:{name:'返程',icon:'🛫',color:'var(--s4)',bg:IMG+'sunset.jpg',
-    desc:'返程倒计时+出发建议+离店清单。与阶段2镜像但方向反转。',
-    signal:'返程航班降落 → 切换到回忆'},
-  5:{name:'回忆',icon:'📸',color:'var(--s5)',bg:IMG+'lijiang.jpg',
+    signal:'出发当天 → 切换到游览'},
+  2:{name:'游览中',icon:'🗺️',color:'var(--s3)',bg:IMG+'dali.jpg',
+    desc:'同屏展示当前景点美图与下一目的地，一键导航/打车。',
+    signal:'行程最后一天 → 切换到回忆'},
+  3:{name:'回忆',icon:'📸',color:'var(--s5)',bg:IMG+'lijiang.jpg',
     desc:'照片网格+行程统计+精彩瞬间。从信息卡转为情绪卡。',
     signal:'旅行结束后7天 → 卡片自动归档'},
 };
 
 const timeline=[
   {s:1,icon:'🧳',name:'出行前',date:'8月18-20日',detail:'行前准备 · 机票✓ 酒店✓ 清单60%',status:'done'},
-  {s:2,icon:'✈️',name:'出行交通',date:'8月21日 08:45',detail:'MU5731 昆明→大理 · 登机口B12 · 座位23A',status:'done'},
-  {s:3,icon:'🗺️',name:'游览中',date:'8月21-23日',detail:'Day2: 苍山→崇圣寺三塔→洱海日落',status:'cur'},
-  {s:4,icon:'🛫',name:'返程交通',date:'8月24日 15:30',detail:'MU5732 大理→昆明 · 建议13:00出发',status:'upcoming'},
-  {s:5,icon:'📸',name:'旅行回忆',date:'8月25日起',detail:'3天·12景点·248张照片 · 精彩:Day2苍山',status:'upcoming'},
+  {s:2,icon:'🗺️',name:'游览中',date:'8月21-23日',detail:'Day2: 苍山→崇圣寺三塔→洱海日落',status:'cur'},
+  {s:3,icon:'📸',name:'旅行回忆',date:'8月24日起',detail:'3天·12景点·248张照片 · 精彩:Day2苍山',status:'upcoming'},
 ];
 
 const nearby=[
@@ -649,7 +661,7 @@ function renderCard(){
 
   // 进度条
   let progress='<div class="tc-progress">';
-  for(let i=1;i<=5;i++){
+  for(let i=1;i<=3;i++){
     let cls=i<curStage?'done':(i===curStage?'cur':'');
     progress+=`<div class="seg ${cls}" onclick="switchStage(${i})" title="${stages[i].name}"></div>`;
   }
@@ -662,113 +674,36 @@ function renderCard(){
   if(curStage===1){
     body=`
       <div class="tc-glass-panel">
-        <div class="tc-row" style="align-items:baseline;justify-content:space-between">
-          <div class="tc-big">3 天</div>
-        </div>
-        <div class="tc-text" style="font-size:10px;color:rgba(255,255,255,.65)">8月21日 周四 · 08:45 起飞</div>
-        <div class="tc-divider"></div>
-        <div class="tc-row" style="gap:12px">
-          <span class="tc-row"><span class="ico">☀️</span><span class="val">昆明 14°C</span><span class="sub">多云</span></span>
-          <span class="tc-row"><span class="ico">🌤️</span><span class="val">大理 22°C</span><span class="sub">晴</span></span>
+        <div class="tc-big" style="font-size:36px">3 天</div>
+        <div class="tc-text" style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">8月21日 周四 · 08:45 起飞</div>
+        <div class="tc-weather-bar">
+          <span><span class="ww-ico">☁️</span> 昆明 14°</span>
+          <span class="ww-arr">→</span>
+          <span><span class="ww-ico">☀️</span> 大理 22°</span>
         </div>
         ${chipHTML(1)}
       </div>`;
   }
   else if(curStage===2){
     body=`
-      <div class="tc-glass-panel">
-        <div class="tc-route-vis">
-          <div class="rv-city"><span class="rv-code">KMG</span><span class="rv-name">昆明</span></div>
-          <div class="rv-line"><span class="rv-plane">✈️</span></div>
-          <div class="rv-city"><span class="rv-code">DLU</span><span class="rv-name">大理</span></div>
+      <div class="tc-glass-panel" style="flex-direction:row;gap:10px">
+        <div class="vis-left" onclick="event.stopPropagation();openAppPage()">
+          <div class="vl-img" style="background-image:url('${IMG}cangshan.jpg')"></div>
+          <div class="vl-tag">苍山</div>
+          <div class="vl-sub">洗马潭索道 · 云海观景</div>
         </div>
-        <div class="tc-row" style="justify-content:space-between">
-          <span class="flight-badge"><span class="plane">✈️</span> MU5731</span>
-          <span class="tc-text">登机口 <b>B12</b> · 座位 <b>23A</b></span>
+        <div class="vis-right">
+          <div class="vr-label">下一站</div>
+          <div class="vr-name">洱海公园</div>
+          <div class="vr-meta">15:00 · 1.2km</div>
+          <div class="tc-action-btns" style="margin-top:auto">
+            <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
+            <div class="tc-action-btn" onclick="event.stopPropagation();alert('导航')"><span class="ab-ico">🧭</span>导航</div>
+          </div>
         </div>
-        <div class="tc-row" style="justify-content:space-between;align-items:flex-end">
-          <div><div class="tc-label" style="font-size:8px">登机</div><div class="tc-big sm" style="font-size:20px">08:15</div></div>
-          <div class="tc-row"><span class="ico">⏰</span><span class="val" style="font-size:13px">距登机 1h20m</span></div>
-          <div style="text-align:right"><div class="tc-label" style="font-size:8px">起飞</div><div class="tc-big sm" style="font-size:20px">08:45</div></div>
-        </div>
-        <div class="tc-status-bar">
-          <div class="sb-step done"><div class="sb-dot">✓</div><span class="sb-label">值机</span></div>
-          <div class="sb-step done"><div class="sb-dot">✓</div><span class="sb-label">安检</span></div>
-          <div class="sb-step cur"><div class="sb-dot">●</div><span class="sb-label">登机</span></div>
-          <div class="sb-step"><div class="sb-dot"></div><span class="sb-label">起飞</span></div>
-          <div class="sb-step"><div class="sb-dot"></div><span class="sb-label">到达</span></div>
-        </div>
-        <div class="tc-text" style="font-size:9px;color:rgba(255,255,255,.65)">预计 10:20 降落 · T2 步行8分钟 · 大理 22°C 晴</div>
       </div>`;
   }
   else if(curStage===3){
-    body=`
-      <div class="tc-glass-panel">
-        <div class="tc-row" style="justify-content:space-between;flex-shrink:0">
-          <span class="tc-label">当前游览</span>
-        </div>
-        <div class="cur-spot">
-          <div class="cur-thumb" style="background-image:url('${IMG}cangshan.jpg')">
-            <div class="cur-play">必体验</div>
-          </div>
-          <div class="cur-info">
-            <div class="cur-name">苍山</div>
-            <div class="cur-tags">
-              <span>洗马潭索道</span>
-              <span>云海观景</span>
-            </div>
-            <div class="cur-meta">索道 ¥282 · 最高 3800m · 游玩约 4h</div>
-          </div>
-        </div>
-        <div class="tc-divider"></div>
-        <div class="next-spot">
-          <span class="tc-label" style="font-size:9px">下一站</span>
-          <span class="next-name">洱海公园</span>
-          <span class="next-meta">15:00 · 1.2km</span>
-        </div>
-        <div class="tc-row" style="justify-content:space-between;align-items:flex-end;flex-shrink:0">
-          <span class="tc-label" style="font-size:9px">附近</span>
-          <span class="tc-text" style="font-size:8px;color:rgba(255,255,255,.55)">基于当前位置</span>
-        </div>
-        <div class="nearby-row">
-          <div class="nb-card" onclick="event.stopPropagation();alert('感通索道详情')">
-            <div class="nb-img" style="background-image:url('${IMG}cangshan.jpg')"></div>
-            <div class="nb-info"><div class="nb-name">感通索道</div><div class="nb-dist">2.3km</div></div>
-          </div>
-          <div class="nb-card" onclick="event.stopPropagation();alert('寂照庵详情')">
-            <div class="nb-img" style="background-image:url('${IMG}dali.jpg')"></div>
-            <div class="nb-info"><div class="nb-name">寂照庵</div><div class="nb-dist">1.8km</div></div>
-          </div>
-          <div class="nb-card" onclick="event.stopPropagation();alert('山海咖啡馆详情')">
-            <div class="nb-img" style="background-image:url('${IMG}erhai.jpg')"></div>
-            <div class="nb-info"><div class="nb-name">山海咖啡馆</div><div class="nb-dist">800m</div></div>
-          </div>
-        </div>
-        <div class="tc-action-btns" style="margin-top:auto;padding-top:4px">
-          <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
-          <div class="tc-action-btn" onclick="event.stopPropagation();alert('导航')"><span class="ab-ico">🧭</span>导航</div>
-        </div>
-      </div>`;
-  }
-  else if(curStage===4){
-    body=`
-      <div class="tc-glass-panel">
-        <div class="tc-row" style="justify-content:space-between;flex-shrink:0">
-          <div class="tc-route-vis" style="flex:1;min-width:0">
-            <div class="rv-city"><span class="rv-code">DLU</span><span class="rv-name">大理</span></div>
-            <div class="rv-line"><span class="rv-plane">✈️</span></div>
-            <div class="rv-city"><span class="rv-code">KMG</span><span class="rv-name">昆明</span></div>
-          </div>
-          <span class="flight-badge" style="flex-shrink:0"><span class="plane">✈️</span> MU5732</span>
-        </div>
-        <div class="tc-big" style="font-size:26px">明天 15:30</div>
-        <div class="tc-text" style="font-size:9px;color:rgba(255,255,255,.7);line-height:1.55">
-          距返程 23h · 建议 13:00 出发<br>🏨 退房 12:00 还能待2h · 上午可以去洱海公园逛逛
-        </div>
-        ${chipHTML(4)}
-      </div>`;
-  }
-  else if(curStage===5){
     const photos=[
       {img:'cangshan',tag:'苍山 · Day2',main:true},
       {img:'erhai',tag:'洱海'},
