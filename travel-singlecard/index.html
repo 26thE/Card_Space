@@ -446,6 +446,52 @@
     .console{position:static;width:100%;max-width:384px}
     body{flex-direction:column;align-items:center}
   }
+  /* ====== 游览中 · 场景卡片矩阵（食住行游购娱） ====== */
+  .matrix{width:100%;max-width:1120px;margin-top:10px}
+  .mx-title{font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px}
+  .mx-sub{font-size:12px;color:var(--panel-sub);margin-top:6px}
+  .mx-grid{display:flex;flex-wrap:wrap;gap:18px;margin-top:16px}
+  .mx-card{width:338px;height:162px;border-radius:20px;overflow:hidden;position:relative;
+    box-shadow:0 6px 20px rgba(0,0,0,.12);cursor:pointer;transition:transform .2s,box-shadow .2s;
+    display:flex;flex-direction:column;flex-shrink:0}
+  .mx-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.18)}
+  .mx-tag{position:absolute;top:10px;right:12px;z-index:3;font-size:10px;padding:3px 9px;
+    border-radius:10px;background:rgba(0,0,0,.35);color:#fff;backdrop-filter:blur(6px)}
+  .mx-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:11px 14px;min-height:0}
+  .mx-h{display:flex;align-items:center;gap:6px;font-size:10px;flex-shrink:0}
+  .mx-h .dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7}
+  .mx-big{font-size:19px;font-weight:800;line-height:1.15;margin-top:5px}
+  .mx-meta{font-size:10px;margin-top:3px;opacity:.85}
+  .mx-btns{display:flex;gap:6px;margin-top:auto}
+  .mx-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:3px;
+    font-size:11px;font-weight:600;padding:6px 0;border-radius:10px}
+  /* 深色图底卡 */
+  .mx-dark{color:#fff;background-size:cover;background-position:center;text-shadow:0 1px 4px rgba(0,0,0,.45)}
+  .mx-dark::before{content:'';position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(0,0,0,.16) 0%,rgba(0,0,0,.5) 100%)}
+  .mx-dark .mx-h{color:rgba(255,255,255,.85)}
+  .mx-dark .mx-btn{background:rgba(255,255,255,.2);color:#fff;backdrop-filter:blur(8px)}
+  /* 浅色卡 */
+  .mx-light{background:#fff;color:#1A1A1A;text-shadow:none}
+  .mx-light .mx-h{color:#8A8A8A}
+  .mx-light .mx-meta{color:#6B6B6B}
+  .mx-light .mx-btn{background:#F0F4FF;color:#0A59F7}
+  /* 渐变卡 */
+  .mx-grad{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.3);
+    background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
+  .mx-grad .mx-h{color:rgba(255,255,255,.85)}
+  .mx-grad .mx-btn{background:rgba(255,255,255,.22);color:#fff;backdrop-filter:blur(8px)}
+  /* 列表行（浅色卡用） */
+  .mx-li{display:flex;align-items:center;gap:8px;font-size:11px;padding:5px 0;
+    border-bottom:1px dashed rgba(0,0,0,.06)}
+  .mx-li:last-of-type{border-bottom:none}
+  .mx-li .nm{font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mx-li .rt{color:#FF7A1A;font-weight:600;font-size:10px;flex-shrink:0}
+  .mx-li .ds{color:#8A8A8A;font-size:10px;flex-shrink:0}
+  /* 倒计时数字 */
+  .mx-count{font-size:24px;font-weight:800;line-height:1}
+  .mx-count small{font-size:11px;font-weight:600;opacity:.75;margin-left:2px}
+  .mx-accent{color:#FFE08A}
 </style>
 </head>
 <body>
@@ -538,6 +584,102 @@
       </div>
       <div class="ap-body" id="ap-body"></div>
     </div>
+  </div>
+</div>
+
+<!-- ====== 游览中 · 场景卡片矩阵（食住行游购娱） ====== -->
+<div class="matrix">
+  <div class="mx-title">🗺️ 游览中 · 场景卡片矩阵</div>
+  <div class="mx-sub">同一行程数据，按旅游六要素「食住行游购娱」生成的 6 种 2×4 卡片样式（338×162，与真机卡片同比例）</div>
+  <div class="mx-grid">
+
+    <!-- 游 · 景点导览（深色图底，主卡同款） -->
+    <div class="mx-card mx-dark" style="background-image:url('../travel-fork/images/cangshan.jpg')">
+      <div class="mx-tag">游 · 景点导览</div>
+      <div class="mx-inner">
+        <div class="mx-h" style="padding-right:78px">📍 Day 2 · 第 3/5 站 <span class="dot"></span> 苍山 · 游览中 45 分钟</div>
+        <div class="mx-big">下一站 · 洱海公园</div>
+        <div class="mx-meta">15:00 · 1.2km · ✓ 已购票 · 📸 3 个机位</div>
+        <div class="mx-btns">
+          <div class="mx-btn">🚕 打车</div>
+          <div class="mx-btn">🧭 导航</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 食 · 附近美食（浅色列表卡） -->
+    <div class="mx-card mx-light">
+      <div class="mx-tag" style="background:#FF7A1A">食 · 附近美食</div>
+      <div class="mx-inner">
+        <div class="mx-h">🍜 午餐推荐 · 基于位置与用餐时段</div>
+        <div class="mx-li"><span class="nm">段公子 · 砂锅鱼</span><span class="rt">⭐4.8</span><span class="ds">300m · 等位 15 分钟</span></div>
+        <div class="mx-li"><span class="nm">再回首 · 凉鸡米线</span><span class="rt">⭐4.6</span><span class="ds">500m · 无需等位</span></div>
+        <div class="mx-btns">
+          <div class="mx-btn">🧭 导航</div>
+          <div class="mx-btn">🎫 线上取号</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 住 · 今晚住宿（渐变卡） -->
+    <div class="mx-card mx-grad">
+      <div class="mx-tag">住 · 今晚住宿</div>
+      <div class="mx-inner">
+        <div class="mx-h">🏨 已预订 · 14:00 后可入住</div>
+        <div class="mx-big">大理古城 · 栖云客栈</div>
+        <div class="mx-meta">距当前 2.4km · 明日 12:00 退房 · 管家已发入住指引</div>
+        <div class="mx-btns">
+          <div class="mx-btn">🧭 导航回客栈</div>
+          <div class="mx-btn">💬 联系管家</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 行 · 景区交通（浅色倒计时卡） -->
+    <div class="mx-card mx-light">
+      <div class="mx-tag" style="background:#0A59F7">行 · 景区交通</div>
+      <div class="mx-inner">
+        <div class="mx-h">🚌 环洱海观光巴士 · 上车站：才村码头 200m</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-top:5px">
+          <span class="mx-count" style="color:#0A59F7">12<small>分钟后来车</small></span>
+          <span style="font-size:11px;color:#6B6B6B">下一班 15:30</span>
+        </div>
+        <div class="mx-meta">✓ 已购一日通票 · 扫码上车</div>
+        <div class="mx-btns">
+          <div class="mx-btn">🎫 出示车票</div>
+          <div class="mx-btn">🧭 导航到站</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 购 · 伴手礼（深色图底） -->
+    <div class="mx-card mx-dark" style="background-image:url('../travel-fork/images/dali.jpg')">
+      <div class="mx-tag">购 · 伴手礼</div>
+      <div class="mx-inner">
+        <div class="mx-h" style="padding-right:78px">🛍️ 古城周边 · 认准非遗标识</div>
+        <div class="mx-big">周城扎染坊</div>
+        <div class="mx-meta">⭐4.9 · 1.8km · 扎染体验 68 元起 · 乳扇/雕梅有售</div>
+        <div class="mx-btns">
+          <div class="mx-btn">🧭 导航</div>
+          <div class="mx-btn">⭐ 收藏</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 娱 · 晚间活动（深色图底） -->
+    <div class="mx-card mx-dark" style="background-image:url('../travel-fork/images/sunset.jpg')">
+      <div class="mx-tag">娱 · 晚间活动</div>
+      <div class="mx-inner">
+        <div class="mx-h">🔥 今晚 · 距 3.2km</div>
+        <div class="mx-big">洱海篝火晚会 <span class="mx-accent" style="font-size:13px">20:00 开始</span></div>
+        <div class="mx-meta">🌅 日落 19:24 · 黄金拍摄 18:50 起 · 余票充足</div>
+        <div class="mx-btns">
+          <div class="mx-btn">🎫 订票</div>
+          <div class="mx-btn">🧭 导航</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
