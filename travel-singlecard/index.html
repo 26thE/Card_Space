@@ -209,23 +209,38 @@
   .ap-sub{font-size:11px;color:#8A8A8A;margin-top:1px}
   .ap-body{flex:1;overflow-y:auto;padding:16px 18px 28px;position:relative;z-index:1}
   .ap-body::-webkit-scrollbar{width:0}
-  /* 顶部概览卡 */
-  /* 顶部概览卡（手账风格：3天+起飞时间+双城天气+确认标签） */
-  .ap-overview{background:linear-gradient(135deg,#0A59F7,#8A5CF6);color:#fff;border-radius:18px;
-    padding:16px 18px;margin-bottom:18px;box-shadow:0 6px 18px rgba(10,89,247,.25);position:relative}
+  /* 顶部概览卡（旅行手账风格：日出渐变 + 太阳 + 云朵 + 城市天气 + 可点击标签） */
+  .ap-overview{background:linear-gradient(160deg,#0A59F7 0%,#4F8CFF 45%,#F472B6 100%);color:#fff;border-radius:20px;
+    padding:18px 18px 16px;margin-bottom:18px;box-shadow:0 10px 28px rgba(10,89,247,.28);position:relative;overflow:hidden}
+  .ap-overview::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 88% 18%,rgba(255,255,255,.35) 0%,transparent 38%);pointer-events:none}
+  .ap-overview::after{content:'';position:absolute;left:0;right:0;bottom:0;height:52px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 52'%3E%3Cpath fill='%23ffffff' fill-opacity='0.10' d='M0 52 L0 36 Q30 20 60 34 T120 30 T180 36 T240 26 T300 34 T360 28 L360 52Z'/%3E%3Cpath fill='%23ffffff' fill-opacity='0.08' d='M0 52 L0 42 Q45 30 90 42 T180 36 T270 44 T360 38 L360 52Z'/%3E%3C/svg%3E") no-repeat bottom center / cover;pointer-events:none}
   .ap-overview .ov-goto{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;
     background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:18px;
     cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);
-    transition:.15s}
-  .ap-overview .ov-goto:hover{background:rgba(255,255,255,.32)}
-  .ap-overview .ov-days{font-size:36px;font-weight:800;line-height:1;letter-spacing:-1px}
-  .ap-overview .ov-date{font-size:13px;font-weight:600;opacity:.95;margin-top:8px;padding-bottom:12px;
-    border-bottom:1px solid rgba(255,255,255,.28)}
-  .ap-overview .ov-weather{display:flex;align-items:center;gap:8px;font-size:12px;opacity:.93;margin-top:12px}
-  .ap-overview .ov-weather .ov-w-arr{font-size:14px;opacity:.65}
-  .ap-overview .ov-tags{display:flex;gap:8px;margin-top:12px}
-  .ap-overview .ov-tag{font-size:11px;font-weight:700;background:rgba(255,255,255,.2);
-    padding:5px 11px;border-radius:20px}
+    transition:.15s;z-index:2}
+  .ap-overview .ov-goto:hover{background:rgba(255,255,255,.35);transform:scale(1.05)}
+  .ap-overview .ov-sun{position:absolute;right:58px;top:12px;width:46px;height:46px;z-index:1;pointer-events:none}
+  .ap-overview .ov-sun svg{width:100%;height:100%}
+  .ap-overview .ov-days{font-size:42px;font-weight:900;line-height:1;letter-spacing:-2px;position:relative;z-index:2;
+    text-shadow:0 2px 8px rgba(0,0,0,.12)}
+  .ap-overview .ov-days small{font-size:16px;font-weight:700;margin-left:4px;letter-spacing:0}
+  .ap-overview .ov-date{font-size:13px;font-weight:700;opacity:.96;margin-top:6px;position:relative;z-index:2;
+    display:flex;align-items:center;gap:6px}
+  .ap-overview .ov-date::before{content:'✈';font-size:12px;opacity:.85}
+  .ap-overview .ov-weather{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;position:relative;z-index:2;
+    margin-top:12px;padding:10px 12px;background:rgba(255,255,255,.14);border-radius:14px;backdrop-filter:blur(4px)}
+  .ap-overview .ov-weather .ov-w-city{display:flex;align-items:center;gap:4px}
+  .ap-overview .ov-weather .ov-w-ico{font-size:16px}
+  .ap-overview .ov-weather .ov-w-arr{font-size:14px;opacity:.7}
+  .ap-overview .ov-weather .ov-w-temp{font-weight:800}
+  .ap-overview .ov-tags{display:flex;gap:8px;margin-top:12px;position:relative;z-index:2;flex-wrap:wrap}
+  .ap-overview .ov-tag{font-size:11px;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);
+    color:#fff;padding:6px 12px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:5px;
+    transition:.15s;backdrop-filter:blur(4px)}
+  .ap-overview .ov-tag:hover{background:rgba(255,255,255,.3);transform:translateY(-1px)}
+  .ap-overview .ov-tag:active{transform:scale(.96)}
+  .ap-overview .ov-tag.checked{background:rgba(255,255,255,.9);color:#0A59F7}
+  .ap-overview .ov-tag .ovt-ico{font-size:13px}
   .ap-section-label{font-size:12px;font-weight:600;color:#8A8A8A;margin:0 2px 8px;letter-spacing:.3px}
   /* 时间线列表 */
   .tl-list{padding:0}
@@ -809,16 +824,41 @@ function renderAppPage(){
   const overview=`
     <div class="ap-overview">
       <button class="ov-goto" onclick="scrollToRouteMap()">↗</button>
-      <div class="ov-days">3天</div>
+      <div class="ov-sun">
+        <svg viewBox="0 0 46 46" fill="none">
+          <circle cx="23" cy="23" r="9" fill="#FFD54F"/>
+          <g stroke="#FFD54F" stroke-width="2" stroke-linecap="round">
+            <line x1="23" y1="3" x2="23" y2="8"/>
+            <line x1="23" y1="38" x2="23" y2="43"/>
+            <line x1="3" y1="23" x2="8" y2="23"/>
+            <line x1="38" y1="23" x2="43" y2="23"/>
+            <line x1="8.86" y1="8.86" x2="12.39" y2="12.39"/>
+            <line x1="33.61" y1="33.61" x2="37.14" y2="37.14"/>
+            <line x1="8.86" y1="37.14" x2="12.39" y2="33.61"/>
+            <line x1="33.61" y1="12.39" x2="37.14" y2="8.86"/>
+          </g>
+        </svg>
+      </div>
+      <div class="ov-days">3<small>天</small></div>
       <div class="ov-date">8月21日 · 08:45 起</div>
       <div class="ov-weather">
-        <span>☁ 昆明 14°C 多云</span>
+        <span class="ov-w-city"><span class="ov-w-ico">☁️</span><span>昆明</span><span class="ov-w-temp">14°</span></span>
         <span class="ov-w-arr">→</span>
-        <span>📍 大理 18°C 晴</span>
+        <span class="ov-w-city"><span class="ov-w-ico">☀️</span><span>大理</span><span class="ov-w-temp">18°</span></span>
       </div>
       <div class="ov-tags">
-        <span class="ov-tag">✓ 机票</span>
-        <span class="ov-tag">✓ 酒店</span>
+        <button class="ov-tag checked" onclick="onPrepTagClick(this,'机票','MU5731 已出票，座位 23A')">
+          <span class="ovt-ico">✓</span><span>机票</span>
+        </button>
+        <button class="ov-tag checked" onclick="onPrepTagClick(this,'酒店','大理古城客栈 · 2晚已预订')">
+          <span class="ovt-ico">✓</span><span>酒店</span>
+        </button>
+        <button class="ov-tag" onclick="onPrepTagClick(this,'身份证','证件已携带，有效期至 2032')">
+          <span class="ovt-ico">🪪</span><span>身份证</span>
+        </button>
+        <button class="ov-tag" onclick="onPrepTagClick(this,'防晒霜','大理紫外线强，SPF50+ 已备')">
+          <span class="ovt-ico">🧴</span><span>防晒霜</span>
+        </button>
       </div>
     </div>`;
 
@@ -929,6 +969,30 @@ function scrollToRouteMap(){
   var ab=document.getElementById('ap-body');
   var rm=document.querySelector('.ap-route-map');
   if(ab && rm) ab.scrollTop=rm.offsetTop-20;
+}
+
+function onPrepTagClick(el,title,detail){
+  // 切换 checked 状态
+  el.classList.toggle('checked');
+  var ico=el.querySelector('.ovt-ico');
+  var txt=el.querySelector('span:last-child').textContent;
+  var isChecked=el.classList.contains('checked');
+  if(ico) ico.textContent=isChecked?'✓':(txt==='身份证'?'🪪':(txt==='防晒霜'?'🧴':'○'));
+  showAppToast((isChecked?'✓ ':'○ ')+title,detail);
+}
+
+function showAppToast(title,body){
+  var page=document.querySelector('.app-page');
+  if(!page) return;
+  var old=document.getElementById('appToast');
+  if(old) old.remove();
+  var t=document.createElement('div');
+  t.id='appToast';
+  t.style.cssText='position:absolute;left:14px;right:14px;bottom:90px;background:rgba(26,26,26,.92);color:#fff;border-radius:14px;padding:12px 14px;z-index:70;box-shadow:0 8px 24px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;transition:.25s;font-size:13px;pointer-events:none';
+  t.innerHTML='<div style="font-weight:700;margin-bottom:3px">'+title+'</div><div style="font-size:12px;opacity:.85">'+body+'</div>';
+  page.appendChild(t);
+  requestAnimationFrame(function(){t.style.transform='translateY(0)';t.style.opacity='1';});
+  setTimeout(function(){t.style.transform='translateY(20px)';t.style.opacity='0';setTimeout(function(){t.remove();},260);},2200);
 }
 
 function routeMapSVG(){
