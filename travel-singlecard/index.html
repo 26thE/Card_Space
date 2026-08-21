@@ -423,8 +423,14 @@
     box-shadow:0 6px 20px rgba(0,0,0,.12);cursor:pointer;transition:transform .2s,box-shadow .2s;
     display:flex;flex-direction:column;flex-shrink:0}
   .mx-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.18)}
-  .mx-tag{position:absolute;top:10px;right:12px;z-index:3;font-size:10px;padding:3px 9px;
+  .mx-tag{position:absolute;top:10px;right:46px;z-index:3;font-size:10px;padding:3px 9px;
     border-radius:10px;background:rgba(0,0,0,.35);color:#fff;backdrop-filter:blur(6px)}
+  /* 点击进入详情页的展开箭头（同主卡 ↗） */
+  .mx-open{position:absolute;top:8px;right:10px;z-index:4;width:26px;height:26px;border-radius:50%;
+    background:rgba(0,0,0,.35);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(6px);transition:.15s}
+  .mx-card:hover .mx-open{background:rgba(10,89,247,.85);transform:scale(1.08)}
+  .mx-mini-btn{font-size:9px;background:#F0F4FF;color:#0A59F7;padding:3px 8px;border-radius:8px;font-weight:700}
   .mx-inner{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:11px 14px;min-height:0}
   .mx-h{display:flex;align-items:center;gap:6px;font-size:10px;flex-shrink:0}
   .mx-h .dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7}
@@ -450,7 +456,7 @@
   .mx-grad .mx-h{color:rgba(255,255,255,.85)}
   .mx-grad .mx-btn{background:rgba(255,255,255,.22);color:#fff;backdrop-filter:blur(8px)}
   /* 列表行（浅色卡用） */
-  .mx-li{display:flex;align-items:center;gap:8px;font-size:11px;padding:5px 0;
+  .mx-li{display:flex;align-items:center;gap:8px;font-size:11px;padding:4px 0;
     border-bottom:1px dashed rgba(0,0,0,.06)}
   .mx-li:last-of-type{border-bottom:none}
   .mx-li .nm{font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -461,20 +467,17 @@
   .mx-count small{font-size:11px;font-weight:600;opacity:.75;margin-left:2px}
   .mx-accent{color:#FFE08A}
   /* —— 六种不同版式 —— */
-  /* 游：左右分栏卡（左图右文 + 行程进度条） */
+  /* 游：左右分栏卡（左图右文） */
   .mx-split{flex-direction:row;background:#fff;text-shadow:none;color:#1A1A1A}
   .mx-split .mx-photo{width:38%;background-size:cover;background-position:center;position:relative;flex-shrink:0}
   .mx-split .ph-label{position:absolute;left:8px;bottom:8px;font-size:9px;color:#fff;
     background:rgba(0,0,0,.42);padding:2px 7px;border-radius:8px;backdrop-filter:blur(4px)}
   .mx-split .mx-side{flex:1;display:flex;flex-direction:column;padding:11px 12px;min-width:0}
-  .mx-prog{height:5px;border-radius:3px;background:#EEF1F6;margin-top:7px;overflow:hidden;flex-shrink:0}
-  .mx-prog i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#0A59F7,#4F8CFF)}
-  /* 食：榜单卡（排名徽章 + 行内操作，无底部按钮） */
+  /* 食：榜单卡（排名徽章） */
   .mx-rk{width:16px;height:16px;border-radius:6px;background:#EEF1F6;color:#8A8A8A;
     font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .mx-rk.r1{background:linear-gradient(135deg,#FFB800,#FF7A1A);color:#fff}
   .mx-rk.r2{background:linear-gradient(135deg,#B8C4CE,#90A4AE);color:#fff}
-  .mx-li .act{color:#0A59F7;font-weight:700;font-size:10px;flex-shrink:0}
   /* 住：票据/房卡（左信息 + 右时间存根，虚线穿孔分隔） */
   .mx-ticket{flex-direction:row;background:#fff;text-shadow:none;color:#1A1A1A}
   .mx-ticket .tk-main{flex:1;display:flex;flex-direction:column;padding:11px 12px;min-width:0}
@@ -487,19 +490,13 @@
   .mx-ticket .tk-stub::after{bottom:-7px}
   .tk-time{font-size:15px;font-weight:800;color:#0A59F7}
   .tk-lab{font-size:9px;color:#8A8A8A}
-  /* 行：站牌卡（蓝底 + 倒计时圆环） */
-  .mx-sign{background:linear-gradient(135deg,#0A59F7,#0D47C4);color:#fff;text-shadow:none;
-    flex-direction:row;align-items:center;padding:0 14px;gap:12px}
-  .mx-ring{width:64px;height:64px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-    background:conic-gradient(#FFD54F 0 40%,rgba(255,255,255,.22) 40% 100%)}
-  .mx-ring .in{width:52px;height:52px;border-radius:50%;background:#0A3FA8;
+  /* 行：图底 + 倒计时圆环 */
+  .mx-ring{width:56px;height:56px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    background:conic-gradient(#FFD54F 0 40%,rgba(255,255,255,.28) 40% 100%)}
+  .mx-ring .in{width:44px;height:44px;border-radius:50%;background:rgba(8,24,48,.78);
     display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .mx-ring .n{font-size:19px;font-weight:800;line-height:1}
+  .mx-ring .n{font-size:17px;font-weight:800;line-height:1}
   .mx-ring .u{font-size:8px;opacity:.8;margin-top:2px}
-  .mx-sign .sg-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-  /* 购：图底居中卡（内容整体居中靠下，单全宽按钮） */
-  .mx-center .mx-inner{align-items:center;text-align:center;justify-content:flex-end;padding-bottom:11px}
-  .mx-center .mx-big{font-size:21px}
   /* 娱：图底 + 底部毛玻璃信息条 */
   .mx-sheet .mx-inner{padding:0;justify-content:flex-end}
   .mx-sheet .sheet{margin:0 8px 8px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
@@ -604,46 +601,55 @@
 <!-- ====== 游览中 · 场景卡片矩阵（食住行游购娱） ====== -->
 <div class="matrix">
   <div class="mx-title">🗺️ 游览中 · 场景卡片矩阵</div>
-  <div class="mx-sub">同一行程数据，按旅游六要素「食住行游购娱」生成的 6 种 2×4 卡片样式（338×162，与真机卡片同比例）</div>
+  <div class="mx-sub">同一行程数据，按旅游六要素「食住行游购娱」生成的 6 种 2×4 卡片样式（338×162，与真机卡片同比例）· 点击任意卡片或右上角 ↗ 进入全程计划详情页</div>
   <div class="mx-grid">
 
-    <!-- 游 · 景点导览（左右分栏卡：左图右文 + 行程进度条） -->
-    <div class="mx-card mx-split">
-      <div class="mx-photo" style="background-image:url('../travel-fork/images/cangshan.jpg')">
-        <div class="ph-label">苍山 · 游览中 45 分钟</div>
+    <!-- 游 · 景点导览（左右分栏卡：左图右文，附近景点推荐） -->
+    <div class="mx-card mx-split" onclick="openAppPage()">
+      <div class="mx-photo" style="background-image:url('../travel-fork/images/dali.jpg')">
+        <div class="ph-label">⭐4.8 · 门票 ¥75</div>
       </div>
       <div class="mx-side">
-        <div class="mx-h" style="color:#8A8A8A">📍 Day 2 · 第 3/5 站</div>
-        <div class="mx-prog"><i style="width:60%"></i></div>
-        <div class="mx-big" style="font-size:17px">下一站 · 洱海公园</div>
-        <div class="mx-meta" style="color:#6B6B6B">15:00 · 1.2km · ✓ 已购票 · 📸 3 个机位</div>
+        <div class="mx-h" style="color:#8A8A8A;padding-right:64px">📍 附近景点推荐</div>
+        <div class="mx-big" style="font-size:17px">崇圣寺三塔</div>
+        <div class="mx-meta" style="color:#6B6B6B">距你 800m · 建议 2h · 17:30 停止入园</div>
         <div class="mx-btns">
-          <div class="mx-btn" style="background:#0A59F7;color:#fff">🧭 导航前往</div>
+          <div class="mx-btn" style="background:#F0F4FF;color:#0A59F7" onclick="event.stopPropagation();alert('打车前往崇圣寺三塔')">🚕 打车</div>
+          <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('导航前往崇圣寺三塔')">🧭 导航</div>
         </div>
+        <div style="font-size:10px;color:#0A59F7;font-weight:700;margin-top:5px" onclick="event.stopPropagation();alert('已加入今日计划')">＋ 加入计划</div>
       </div>
       <div class="mx-tag">游 · 景点导览</div>
+      <div class="mx-open">↗</div>
     </div>
 
-    <!-- 食 · 附近美食（榜单卡：排名徽章 + 行内操作） -->
-    <div class="mx-card mx-light">
-      <div class="mx-tag" style="background:#FF7A1A">食 · 附近美食</div>
+    <!-- 食 · 美食街（榜单卡：一条街多家推荐） -->
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-tag" style="background:#FF7A1A">食 · 美食街</div>
+      <div class="mx-open">↗</div>
       <div class="mx-inner">
-        <div class="mx-h">🍜 午餐推荐 · 距你 500m 内高分榜</div>
-        <div class="mx-li"><span class="mx-rk r1">1</span><span class="nm">段公子 · 砂锅鱼</span><span class="rt">⭐4.8</span><span class="ds">等位 15 分钟</span><span class="act">取号</span></div>
-        <div class="mx-li"><span class="mx-rk r2">2</span><span class="nm">再回首 · 凉鸡米线</span><span class="rt">⭐4.6</span><span class="ds">无需等位</span><span class="act">导航</span></div>
-        <div class="mx-meta" style="margin-top:auto;text-align:center">基于位置与用餐时段推荐 · 12:30 更新</div>
+        <div class="mx-h">🍜 复兴路美食街 · 距你 300m · 共 32 家</div>
+        <div class="mx-li"><span class="mx-rk r1">1</span><span class="nm">段公子 · 砂锅鱼</span><span class="rt">⭐4.8</span><span class="ds">等位 15 分钟</span></div>
+        <div class="mx-li"><span class="mx-rk r2">2</span><span class="nm">再回首 · 凉鸡米线</span><span class="rt">⭐4.6</span><span class="ds">无需等位</span></div>
+        <div class="mx-li"><span class="mx-rk">3</span><span class="nm">杨记 · 烤乳扇</span><span class="rt">⭐4.7</span><span class="ds">现烤现卖</span></div>
+        <div class="mx-li"><span class="mx-rk">4</span><span class="nm">四方小吃 · 喜洲粑粑</span><span class="rt">⭐4.5</span><span class="ds">甜咸两种</span></div>
+        <div class="mx-meta" style="margin-top:auto;display:flex;justify-content:space-between">
+          <span>12:30 更新</span>
+          <span><span style="color:#0A59F7;font-weight:700" onclick="event.stopPropagation();alert('打车前往复兴路美食街')">🚕 打车</span> · <span style="color:#0A59F7;font-weight:700" onclick="event.stopPropagation();alert('导航前往复兴路美食街')">🧭 导航</span></span>
+        </div>
       </div>
     </div>
 
     <!-- 住 · 今晚住宿（票据卡：左信息 + 右时间存根） -->
-    <div class="mx-card mx-ticket">
+    <div class="mx-card mx-ticket" onclick="openAppPage()">
       <div class="tk-main">
         <div class="mx-h" style="color:#8A8A8A">🏨 已预订 · 管家已发入住指引</div>
-        <div class="mx-big" style="font-size:17px;margin-top:6px">大理古城 · 栖云客栈</div>
-        <div class="mx-meta" style="color:#6B6B6B">距当前 2.4km · 观景大床房 · 含双早</div>
+        <div class="mx-big" style="font-size:17px;margin-top:5px">大理古城 · 栖云客栈</div>
+        <div class="mx-meta" style="color:#6B6B6B">距当前 2.4km · 🚕 打车约 ¥9</div>
+        <div class="mx-meta" style="color:#6B6B6B">观景大床房 · 含双早 07:30-09:30</div>
         <div class="mx-btns">
-          <div class="mx-btn" style="background:#F0F4FF;color:#0A59F7">🧭 导航回客栈</div>
-          <div class="mx-btn" style="background:#F0F4FF;color:#0A59F7">💬 联系管家</div>
+          <div class="mx-btn" style="background:#F0F4FF;color:#0A59F7" onclick="event.stopPropagation();alert('导航回客栈')">🧭 导航回客栈</div>
+          <div class="mx-btn" style="background:#F0F4FF;color:#0A59F7" onclick="event.stopPropagation();alert('联系管家')">💬 联系管家</div>
         </div>
       </div>
       <div class="tk-stub">
@@ -652,46 +658,67 @@
         <div style="width:60%;border-top:1px dashed rgba(0,0,0,.12);margin:4px 0"></div>
         <div class="tk-lab">退房</div>
         <div class="tk-time">12:00</div>
+        <div class="tk-lab" style="color:#E25C00;margin-top:2px">🔑 记得带房卡</div>
       </div>
       <div class="mx-tag" style="background:#667eea">住 · 今晚住宿</div>
+      <div class="mx-open">↗</div>
     </div>
 
-    <!-- 行 · 景区交通（站牌卡：倒计时圆环） -->
-    <div class="mx-card mx-sign">
-      <div class="mx-ring"><div class="in"><div class="n">12</div><div class="u">分钟</div></div></div>
-      <div class="sg-body">
-        <div class="mx-h" style="color:rgba(255,255,255,.85)">🚌 环洱海观光巴士 · 才村码头站 200m</div>
-        <div style="font-size:15px;font-weight:800">12 分钟后来车 <span style="font-size:10px;font-weight:600;opacity:.8;margin-left:4px">下一班 15:30</span></div>
-        <div style="font-size:10px;opacity:.85">✓ 已购一日通票 · 扫码上车</div>
-      </div>
-      <div class="mx-tag" style="background:rgba(0,0,0,.25)">行 · 景区交通</div>
-    </div>
-
-    <!-- 购 · 伴手礼（图底居中卡） -->
-    <div class="mx-card mx-dark mx-center" style="background-image:url('../travel-fork/images/dali.jpg')">
-      <div class="mx-tag">购 · 伴手礼</div>
+    <!-- 行 · 景区交通（洱海图底 + 倒计时圆环） -->
+    <div class="mx-card mx-dark" style="background-image:url('../travel-fork/images/erhai.jpg')" onclick="openAppPage()">
+      <div class="mx-tag">行 · 景区交通</div>
+      <div class="mx-open">↗</div>
       <div class="mx-inner">
-        <div class="mx-h" style="justify-content:center">🛍️ 古城周边 · 认准非遗标识</div>
+        <div class="mx-h" style="padding-right:96px">🚌 环洱海观光巴士 · 才村码头站 200m</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:7px">
+          <div class="mx-ring"><div class="in"><div class="n">12</div><div class="u">分钟</div></div></div>
+          <div>
+            <div style="font-size:15px;font-weight:800">12 分钟后来车</div>
+            <div style="font-size:10px;opacity:.85;margin-top:2px">下一班 15:30 · ✓ 已购一日通票</div>
+          </div>
+        </div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('出示车票')">🎫 车票</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('打车前往才村码头站')">🚕 打车</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('导航到才村码头站')">🧭 导航</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 购 · 伴手礼（图底左对齐卡） -->
+    <div class="mx-card mx-dark" style="background-image:url('../travel-fork/images/lijiang.jpg')" onclick="openAppPage()">
+      <div class="mx-tag">购 · 伴手礼</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-h" style="padding-right:96px">🛍️ 古城周边 · 认准非遗标识</div>
         <div class="mx-big">周城扎染坊</div>
-        <div class="mx-meta">⭐4.9 · 1.8km · 扎染体验 68 元起 · 乳扇/雕梅有售</div>
-        <div class="mx-btns" style="width:100%">
-          <div class="mx-btn">🧭 导航 · ⭐ 收藏</div>
+        <div class="mx-meta">⭐4.9 · 1.8km · 扎染体验 68 元起</div>
+        <div class="mx-meta">乳扇 / 雕梅 / 鲜花饼有售 · 可邮寄</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('打车前往周城扎染坊')">🚕 打车</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('导航前往周城扎染坊')">🧭 导航</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('已加入计划')">＋ 加入计划</div>
         </div>
       </div>
     </div>
 
     <!-- 娱 · 晚间活动（图底 + 底部毛玻璃信息条） -->
-    <div class="mx-card mx-dark mx-sheet" style="background-image:url('../travel-fork/images/sunset.jpg')">
+    <div class="mx-card mx-dark mx-sheet" style="background-image:url('../travel-fork/images/sunset.jpg')" onclick="openAppPage()">
       <div class="mx-tag">娱 · 晚间活动</div>
-      <div style="position:absolute;top:11px;left:14px;z-index:2;font-size:10px;color:rgba(255,255,255,.9)">🔥 今晚 · 距 3.2km</div>
+      <div class="mx-open">↗</div>
+      <div style="position:absolute;top:11px;left:14px;z-index:2;font-size:10px;color:rgba(255,255,255,.9)">🔥 今晚 · 距 3.2km · 🌅 日落 19:24</div>
       <div class="mx-inner">
         <div class="sheet">
           <div class="t">20:00</div>
           <div class="b">
             <div style="font-size:13px;font-weight:800">洱海篝火晚会</div>
-            <div style="font-size:9px;color:#6B6B6B;margin-top:1px">🌅 日落 19:24 · 黄金拍摄 18:50 起 · 余票充足</div>
+            <div style="font-size:9px;color:#6B6B6B;margin-top:1px">才村码头广场 · 黄金拍摄 18:50 起 · 余票充足</div>
+            <div style="display:flex;gap:5px;margin-top:5px">
+              <span class="mx-mini-btn" onclick="event.stopPropagation();alert('打车前往才村码头广场')">🚕 打车</span>
+              <span class="mx-mini-btn" onclick="event.stopPropagation();alert('导航前往才村码头广场')">🧭 导航</span>
+            </div>
           </div>
-          <div class="mx-btn" style="background:#0A59F7;color:#fff;padding:6px 12px;flex:none">🎫 订票</div>
+          <div class="mx-btn" style="background:#0A59F7;color:#fff;padding:6px 12px;flex:none" onclick="event.stopPropagation();alert('订票')">🎫 订票</div>
         </div>
       </div>
     </div>
