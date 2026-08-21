@@ -19,6 +19,9 @@
   .console{width:340px;background:var(--panel-bg);border-radius:20px;padding:22px;
     box-shadow:0 8px 30px rgba(0,0,0,.08);position:sticky;top:20px;flex-shrink:0}
   .console h1{font-size:20px;font-weight:700}
+  .console .slogan{font-size:12px;font-weight:800;margin-top:6px;letter-spacing:.5px;
+    background:linear-gradient(90deg,#0A59F7,#8A5CF6,#F472B6);-webkit-background-clip:text;
+    background-clip:text;color:transparent}
   .console .sub{font-size:12px;color:var(--panel-sub);margin-top:4px;line-height:1.5}
   .trip-card{background:linear-gradient(135deg,#0A59F7,#8A5CF6);color:#fff;border-radius:14px;
     padding:14px 16px;margin-top:14px;line-height:1.5}
@@ -193,6 +196,28 @@
     font-size:22px;cursor:pointer;color:var(--card-text);line-height:1;flex-shrink:0;
     display:flex;align-items:center;justify-content:center;transition:.15s}
   .ap-back:hover{background:#E4E4E4}
+  .ap-share{margin-left:auto;border:none;background:#0A59F7;color:#fff;font-size:12px;font-weight:700;
+    padding:7px 14px;border-radius:16px;cursor:pointer;display:flex;align-items:center;gap:4px;
+    font-family:inherit;transition:.15s;flex-shrink:0}
+  .ap-share:hover{background:#0848CC;transform:translateY(-1px)}
+  /* 分享面板（底部弹出） */
+  .ap-share-mask{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:60;display:none;
+    align-items:flex-end;animation:apFade .2s ease}
+  .ap-share-mask.show{display:flex}
+  @keyframes apFade{from{opacity:0}to{opacity:1}}
+  .ap-share-sheet{width:100%;background:#fff;border-radius:20px 20px 0 0;padding:18px 18px 24px;
+    animation:apUp .25s ease}
+  @keyframes apUp{from{transform:translateY(40px)}to{transform:translateY(0)}}
+  .ap-share-title{font-size:14px;font-weight:800;color:#1A1A1A;text-align:center}
+  .ap-share-sub{font-size:11px;color:#8A8A8A;text-align:center;margin-top:3px}
+  .ap-share-opts{display:flex;gap:10px;margin-top:16px}
+  .ap-share-opt{flex:1;background:#F5F6FA;border-radius:14px;padding:14px 0;text-align:center;
+    cursor:pointer;transition:.15s}
+  .ap-share-opt:hover{background:#EBF0FE}
+  .ap-share-opt .ic{font-size:24px}
+  .ap-share-opt .tx{font-size:11px;font-weight:600;color:#1A1A1A;margin-top:5px}
+  .ap-share-cancel{margin-top:12px;text-align:center;font-size:13px;font-weight:700;color:#1A1A1A;
+    background:#F5F6FA;border-radius:14px;padding:12px 0;cursor:pointer}
   .ap-title{font-size:17px;font-weight:700;color:#1A1A1A}
   .ap-sub{font-size:11px;color:#8A8A8A;margin-top:1px}
   .ap-body{flex:1;overflow-y:auto;padding:16px 18px 28px;position:relative;z-index:1}
@@ -512,6 +537,7 @@
 <!-- ====== 控制台 ====== -->
 <div class="console">
   <h1>单卡旅行助手</h1>
+  <div class="slogan">让卡片不再是一个人的便利贴</div>
   <p class="sub">2×4 桌面卡片 · 三阶段状态机 · 出发前清单+游览美图+回忆</p>
   <div class="trip-card">
     <div class="t1">大理 3 日游</div>
@@ -594,8 +620,22 @@
     <div class="app-page" id="app-page">
       <div class="ap-bar">
         <button class="ap-back" onclick="closeAppPage()">‹</button>
+        <button class="ap-share" onclick="openShare()">↗ 分享</button>
       </div>
       <div class="ap-body" id="ap-body"></div>
+      <!-- 分享面板 -->
+      <div class="ap-share-mask" id="shareMask" onclick="if(event.target===this)closeShare()">
+        <div class="ap-share-sheet">
+          <div class="ap-share-title">分享旅行计划</div>
+          <div class="ap-share-sub">让卡片不再是一个人的便利贴 · 同行人领取后行程实时同步</div>
+          <div class="ap-share-opts">
+            <div class="ap-share-opt" onclick="doShare('碰一碰')"><div class="ic">📲</div><div class="tx">碰一碰</div></div>
+            <div class="ap-share-opt" onclick="doShare('扫码')"><div class="ic">🔳</div><div class="tx">扫码领取</div></div>
+            <div class="ap-share-opt" onclick="doShare('链接')"><div class="ic">🔗</div><div class="tx">复制链接</div></div>
+          </div>
+          <div class="ap-share-cancel" onclick="closeShare()">取消</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1221,6 +1261,18 @@ function openAppPage(){
 }
 function closeAppPage(){
   document.getElementById('app-page').classList.remove('show');
+}
+
+// ====== 分享面板 ======
+function openShare(){
+  document.getElementById('shareMask').classList.add('show');
+}
+function closeShare(){
+  document.getElementById('shareMask').classList.remove('show');
+}
+function doShare(way){
+  closeShare();
+  showAppToast('已通过'+way+'分享','同行人领取后，行程变更将实时同步到 Ta 的卡片');
 }
 
 // ====== 入口路径切换 ======
