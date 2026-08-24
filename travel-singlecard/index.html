@@ -530,6 +530,18 @@
     border-radius:14px;padding:8px 12px;color:#1A1A1A;text-shadow:none;display:flex;align-items:center;gap:10px}
   .mx-sheet .sheet .t{font-size:17px;font-weight:800;color:#E25C00;flex-shrink:0}
   .mx-sheet .sheet .b{flex:1;min-width:0}
+  /* —— 情境提醒卡（触发式） —— */
+  .mx-trig{position:absolute;top:10px;left:12px;z-index:3;font-size:9px;padding:2px 8px;
+    border-radius:8px;background:rgba(0,0,0,.35);color:#fff;backdrop-filter:blur(6px)}
+  .mx-trig.light{background:#F0F1F5;color:#6B7280;backdrop-filter:none}
+  /* 预警卡（琥珀渐变） */
+  .mx-warn{background:linear-gradient(135deg,#F59E0B,#EA580C);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .mx-warn .mx-h{color:rgba(255,255,255,.9)}
+  .mx-warn .mx-btn{background:rgba(255,255,255,.25);color:#fff;backdrop-filter:blur(8px)}
+  /* 清单勾选项 */
+  .mx-ck{display:flex;align-items:center;gap:6px;font-size:11px;padding:3px 0;color:#1A1A1A}
+  .mx-ck .ok{color:#16A34A;font-weight:800}
+  .mx-ck .no{color:#EA580C;font-weight:800}
 </style>
 </head>
 <body>
@@ -776,6 +788,114 @@
       </div>
     </div>
     <div class="mx-cap"><i style="background:#E25C00"></i>娱 · 晚间活动</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== 情境提醒卡 · 让攻略主动找上门 ====== -->
+<div class="matrix">
+  <div class="mx-title">🔔 情境提醒 · 攻略主动找上门</div>
+  <div class="mx-sub">攻略的价值不该死在收藏夹里：按 地点 / 时间 / 行程状态 触发，把你「曾经看过的攻略」在对的瞬间推到桌面（338×162，点击任意卡片进入详情页）</div>
+  <div class="mx-grid">
+
+    <!-- 攻略浮现卡：进入景区 → 浮现收藏过的拍照攻略（地点触发） -->
+    <div class="mx-item">
+    <div class="mx-card mx-dark" style="background-image:url('../travel-fork/images/cangshan.jpg')" onclick="openAppPage()">
+      <div class="mx-trig">📍 地点触发 · 已进入「苍山 · 洗马潭」</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner" style="justify-content:flex-end;padding-top:26px">
+        <div class="mx-big" style="font-size:15px">你 3 天前收藏过这里的拍照攻略</div>
+        <div class="mx-meta">📸 3 个机位 · 云海栈道拐角最出片 · 现在光线正好</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('打开收藏的小红书攻略原文')">📖 查看攻略原文</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('本次不再提醒')">不再提醒</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#0A59F7"></i>攻略浮现卡 · 拍照机位</div>
+    </div>
+
+    <!-- 收藏店铺卡：进入美食街 → 列出收藏过的店（地点触发） -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light">📍 地点触发 · 已进入「复兴路美食街」</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-h">你的攻略里收藏了这条街的 3 家店</div>
+        <div class="mx-li"><span class="nm">杨记 · 烤乳扇</span><span class="rt">⭐4.7</span><span class="ds">前方 50m · 推荐玫瑰味</span></div>
+        <div class="mx-li"><span class="nm">再回首 · 凉鸡米线</span><span class="rt">⭐4.6</span><span class="ds">120m · 无需等位</span></div>
+        <div class="mx-li"><span class="nm">四方小吃 · 喜洲粑粑</span><span class="rt">⭐4.5</span><span class="ds">200m · 甜咸两种</span></div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('打开收藏的攻略原文')">📖 攻略原文</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('导航到最近收藏店铺')">🧭 去最近一家</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#FF7A1A"></i>攻略浮现卡 · 收藏店铺</div>
+    </div>
+
+    <!-- 出门检查卡：离开酒店 → 按攻略备注提醒（状态触发） -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light">🏨 状态触发 · 你已离开酒店 100m</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-h">出门前检查 · 按你的攻略备注生成</div>
+        <div style="display:flex;gap:18px;margin-top:6px">
+          <div>
+            <div class="mx-ck"><span class="ok">✓</span>充电宝</div>
+            <div class="mx-ck"><span class="ok">✓</span>防晒霜</div>
+          </div>
+          <div>
+            <div class="mx-ck"><span class="no">✗</span><strong>房卡</strong></div>
+            <div class="mx-ck"><span class="no">✗</span>外套 <span style="color:#8A8A8A;font-size:9px">攻略说山上冷</span></div>
+          </div>
+        </div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('导航返回酒店取房卡')">🔑 回去拿</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('好的，都带齐了')">✓ 都带了</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#667eea"></i>出门检查卡 · 带房卡</div>
+    </div>
+
+    <!-- 末班车预警卡：景区车倒计时（时间触发） -->
+    <div class="mx-item">
+    <div class="mx-card mx-warn" onclick="openAppPage()">
+      <div class="mx-trig">⏰ 时间触发 · 景区摆渡车末班 18:30</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-top:16px">
+          <span class="mx-count" style="font-size:30px">45<small>分钟后末班车</small></span>
+        </div>
+        <div class="mx-meta" style="opacity:.95">步行到站点 12 分钟 · 错过末班打车约 ¥80</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('导航到摆渡车站点')">🧭 导航到站</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('提前叫车备选')">🚕 叫车备选</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#EA580C"></i>末班车预警卡</div>
+    </div>
+
+    <!-- 节奏提醒卡：停留超时 → 对照攻略建议出发（行程联动触发） -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light">🚶 节奏触发 · 洱海公园已停留 90 分钟</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-h">对照你的攻略，该去下一站了</div>
+        <div class="mx-big" style="font-size:16px;margin-top:6px">崇圣寺三塔 · 17:30 停止入园</div>
+        <div class="mx-meta" style="color:#6B6B6B">车程 20 分钟 · 再晚景区门口不好打车</div>
+        <div class="mx-btns">
+          <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('打车前往崇圣寺三塔')">🚕 现在出发</div>
+          <div class="mx-btn" onclick="event.stopPropagation();alert('再逛 20 分钟')">再逛会儿</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#16A34A"></i>节奏提醒卡 · 该走了</div>
     </div>
 
   </div>
