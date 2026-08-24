@@ -452,6 +452,21 @@
   .mx-item{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
   .mx-cap{font-size:11px;color:var(--panel-sub);font-weight:600;display:flex;align-items:center;gap:5px;padding-left:4px}
   .mx-cap i{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  /* ====== 体验路径 · 它是怎么工作的 ====== */
+  .flow{width:100%;max-width:1120px;margin-top:34px}
+  .fl-steps{display:flex;align-items:stretch;margin-top:18px}
+  .fl-step{flex:1;background:#fff;border-radius:16px;padding:16px 14px 12px;
+    box-shadow:0 2px 12px rgba(0,0,0,.06);position:relative}
+  .fl-num{position:absolute;top:-9px;left:12px;color:#fff;font-size:9px;font-weight:800;
+    padding:2px 9px;border-radius:99px;letter-spacing:.5px}
+  .fl-ico{font-size:22px;margin-top:2px}
+  .fl-t{font-size:13px;font-weight:800;margin-top:6px}
+  .fl-d{font-size:11px;color:var(--panel-sub);margin-top:4px;line-height:1.6}
+  .fl-arrow{display:flex;align-items:center;padding:0 8px;color:#C4C9D4;font-size:18px;font-weight:800;flex-shrink:0}
+  .fl-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px}
+  .fl-tag{font-size:9px;padding:2px 7px;border-radius:99px;background:#F0F1F5;color:#4B5563;font-weight:600}
+  .fl-loop{margin:16px auto 0;width:fit-content;font-size:11px;font-weight:700;color:#0A59F7;
+    background:#EAF1FF;padding:7px 18px;border-radius:99px}
   /* 点击进入详情页的展开箭头（同主卡 ↗） */
   .mx-open{position:absolute;top:8px;right:10px;z-index:4;width:26px;height:26px;border-radius:50%;
     background:rgba(0,0,0,.35);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;
@@ -899,6 +914,54 @@
     </div>
 
   </div>
+</div>
+
+<!-- ====== 体验路径 · 它是怎么工作的 ====== -->
+<div class="flow">
+  <div class="mx-title">🧭 它是怎么工作的 · 从刷到攻略到卡片找上门</div>
+  <div class="mx-sub">攻略不该死在收藏夹里：刷到 → 剪藏 → 场景命中 → 卡片浮现，一条完整闭环</div>
+  <div class="fl-steps">
+
+    <div class="fl-step">
+      <div class="fl-num" style="background:#0A59F7">STEP 1</div>
+      <div class="fl-ico">📱</div>
+      <div class="fl-t">刷到攻略</div>
+      <div class="fl-d">行前刷内容平台，看到「苍山机位」「复兴路必吃」「摆渡车末班 18:30」这类好内容</div>
+      <div class="fl-tags"><span class="fl-tag">小红书</span><span class="fl-tag">马蜂窝</span><span class="fl-tag">公众号</span></div>
+    </div>
+
+    <div class="fl-arrow">→</div>
+
+    <div class="fl-step">
+      <div class="fl-num" style="background:#FF7A1A">STEP 2</div>
+      <div class="fl-ico">🔖</div>
+      <div class="fl-t">一键剪藏</div>
+      <div class="fl-d">系统分享或复制链接收入攻略包，自动解析成结构化条目，绑定触发器</div>
+      <div class="fl-tags"><span class="fl-tag">机位 → 📍地点</span><span class="fl-tag">末班车 → ⏰时间</span><span class="fl-tag">带外套 → 🏨状态</span></div>
+    </div>
+
+    <div class="fl-arrow">→</div>
+
+    <div class="fl-step">
+      <div class="fl-num" style="background:#EA580C">STEP 3</div>
+      <div class="fl-ico">📍</div>
+      <div class="fl-t">场景命中</div>
+      <div class="fl-d">旅途中端侧实时感知：进入地点围栏 / 时间倒计时 / 离开酒店 / 停留超时</div>
+      <div class="fl-tags"><span class="fl-tag">📍 地点</span><span class="fl-tag">⏰ 时间</span><span class="fl-tag">🏨 状态</span><span class="fl-tag">🚶 节奏</span></div>
+    </div>
+
+    <div class="fl-arrow">→</div>
+
+    <div class="fl-step">
+      <div class="fl-num" style="background:#16A34A">STEP 4</div>
+      <div class="fl-ico">🪄</div>
+      <div class="fl-t">卡片浮现</div>
+      <div class="fl-d">对应情境卡置顶到桌面，一键看攻略原文，或直接执行动作</div>
+      <div class="fl-tags"><span class="fl-tag">📖 看原文</span><span class="fl-tag">🧭 导航</span><span class="fl-tag">🚕 打车</span><span class="fl-tag">✓ 完成</span></div>
+    </div>
+
+  </div>
+  <div class="fl-loop">🔁 行后：践行记录沉淀进攻略包，可分享给同行人 —— 让卡片不再是一个人的便利贴</div>
 </div>
 
 <script>
