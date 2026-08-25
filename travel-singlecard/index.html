@@ -1304,18 +1304,15 @@ function renderCard(){
       body=`
       <div class="tc-glass-panel">
         <div style="flex:1;display:flex;gap:10px;min-height:0">
-          <div class="vis-left" id="locSlider" style="flex:none;width:116px;cursor:grab"
+          <div class="vis-left" id="locSlider" style="flex:1.5;cursor:grab"
             onpointerdown="slideStart(event)" onpointerup="slideEnd(event)">
             ${slides}
             <div style="position:absolute;bottom:6px;left:0;right:0;z-index:2;display:flex;gap:4px;justify-content:center">${dots}</div>
           </div>
-          <div class="vis-right">
-            <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;align-content:stretch">
-              <div class="sl-act" onclick="event.stopPropagation();alert('打车前往 ${sl.short}')"><span>🚕</span>打车</div>
-              <div class="sl-act" onclick="event.stopPropagation();alert('导航前往 ${sl.short}')"><span>🧭</span>导航</div>
-              <div class="sl-act" onclick="event.stopPropagation();alert('打开 ${sl.short} 的攻略原文')"><span>📖</span>攻略</div>
-              <div class="sl-act" onclick="event.stopPropagation();${slideIdx===curMoment?'checkinMoment()':`jumpMoment(${slideIdx})`}"><span>✓</span>${slideIdx===curMoment?'打卡':'设为当前'}</div>
-            </div>
+          <div class="vis-right" style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <div class="sl-act" style="flex:1;flex-direction:row;gap:5px" onclick="event.stopPropagation();alert('打开 ${sl.short} 的攻略原文')"><span>📖</span>攻略</div>
+            <div class="sl-act" style="flex:1;flex-direction:row;gap:5px" onclick="event.stopPropagation();alert('导航前往 ${sl.short}')"><span>🧭</span>导航</div>
+            <div class="sl-act" style="flex:1;flex-direction:row;gap:5px;background:rgba(10,89,247,.55)" onclick="event.stopPropagation();alert('打车前往 ${sl.short}')"><span>🚕</span>打车</div>
           </div>
         </div>
       </div>`;
