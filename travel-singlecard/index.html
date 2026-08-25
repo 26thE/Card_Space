@@ -467,6 +467,11 @@
   .fl-tag{font-size:9px;padding:2px 7px;border-radius:99px;background:#F0F1F5;color:#4B5563;font-weight:600}
   .fl-loop{margin:16px auto 0;width:fit-content;font-size:11px;font-weight:700;color:#0A59F7;
     background:#EAF1FF;padding:7px 18px;border-radius:99px}
+  /* ====== 一日时间轴 · 当前/下一地点进度卡 ====== */
+  .mx-next{margin-top:6px;font-size:10px;font-weight:700;color:#0A59F7;background:#EAF1FF;
+    border-radius:8px;padding:4px 8px;flex-shrink:0}
+  .mx-sw{font-size:10px;color:#8A8A8A;padding-left:4px;line-height:1.5}
+  .mx-sw b{color:#4B5563}
   /* 点击进入详情页的展开箭头（同主卡 ↗） */
   .mx-open{position:absolute;top:8px;right:10px;z-index:4;width:26px;height:26px;border-radius:50%;
     background:rgba(0,0,0,.35);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;
@@ -911,6 +916,148 @@
       </div>
     </div>
     <div class="mx-cap"><i style="background:#16A34A"></i>节奏提醒卡 · 该走了</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== 一日时间轴 · 当前/下一地点进度卡 ====== -->
+<div class="matrix">
+  <div class="mx-title">🕗 一日时间轴 · 游览中你看到的所有卡片</div>
+  <div class="mx-sub">以「早 / 午 / 晚餐 + 上午 / 下午 / 晚上各一个景点」为例：主进度卡只显示 当前 + 下一地点。切换规则 = <b>时间推算为主，手动打卡纠偏</b>——到点自动切，提前/延后就点一下卡片上的打卡按钮，无需定位与智能感知（每张卡下方标注切换到 下一张 的触发条件）</div>
+  <div class="mx-grid">
+
+    <!-- ① 08:00 早餐卡 -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light" style="background:#FFF3E0;color:#E65100">⏰ 08:00 · 早餐</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-big" style="font-size:16px;margin-top:16px">再回首 · 凉鸡米线</div>
+        <div class="mx-meta" style="color:#6B6B6B">📍 古城人民路 · 步行 5 分钟 · 你的攻略收藏</div>
+        <div class="mx-next">下一 · 苍山洗马潭 ｜ 🚠 索道建议 09:30 前到</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('导航到早餐店')">🧭 导航</div>
+          <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('已打卡：切到 ② 上午景点卡')">✓ 出发去苍山</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#FF9800"></i>① 早餐卡 · 当前：早餐店</div>
+    <div class="mx-sw">→ 切换：<b>09:00 到点自动切</b> 或 手动打卡「出发去苍山」→ ②</div>
+    </div>
+
+    <!-- ② 09:30 上午景点卡 -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light" style="background:#E3F2FD;color:#0A59F7">⏰ 09:30 · 上午景点</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-big" style="font-size:16px;margin-top:16px">苍山 · 洗马潭 游览中</div>
+        <div class="mx-meta" style="color:#6B6B6B">📖 攻略：云海栈道拐角最出片 · 已停留 40 分钟</div>
+        <div class="mx-next">下一 · 午餐 复兴路美食街 ｜ 建议 11:45 下山</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('打开收藏的苍山攻略原文')">📖 攻略</div>
+          <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('已打卡：切到 ③ 午餐卡')">✓ 下山去吃饭</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#0A59F7"></i>② 上午景点卡 · 当前：苍山</div>
+    <div class="mx-sw">→ 切换：<b>11:45 到点自动切</b> 或 手动打卡「下山去吃饭」→ ③</div>
+    </div>
+
+    <!-- ③ 12:00 午餐卡 -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light" style="background:#FFEBEE;color:#C62828">⏰ 12:00 · 午餐</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-big" style="font-size:16px;margin-top:16px">复兴路美食街 · 午餐</div>
+        <div class="mx-meta" style="color:#6B6B6B">🍜 攻略收藏 3 家店：烤乳扇 / 凉鸡米线 / 喜洲粑粑</div>
+        <div class="mx-next">下一 · 崇圣寺三塔 14:00 ｜ ⚠️ 17:30 停止入园</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('查看收藏的 3 家店')">🍜 收藏店铺</div>
+          <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('已打卡：切到 ④ 下午景点卡')">✓ 出发去三塔</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#C62828"></i>③ 午餐卡 · 当前：美食街</div>
+    <div class="mx-sw">→ 切换：<b>13:30 到点自动切</b> 或 手动打卡「出发去三塔」→ ④</div>
+    </div>
+
+    <!-- ④ 14:00 下午景点卡 -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light" style="background:#E8F5E9;color:#2E7D32">⏰ 14:00 · 下午景点</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-big" style="font-size:16px;margin-top:16px">崇圣寺三塔 · 游览中</div>
+        <div class="mx-meta" style="color:#6B6B6B">📖 攻略：三塔倒影公园机位 · ⏰ 17:30 停止入园</div>
+        <div class="mx-next">下一 · 晚餐 段公子·砂锅鱼 18:00 ｜ 已订座</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('打开收藏的三塔攻略原文')">📖 攻略</div>
+          <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('已打卡：切到 ⑤ 晚餐卡')">✓ 离园去晚餐</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#2E7D32"></i>④ 下午景点卡 · 当前：三塔</div>
+    <div class="mx-sw">→ 切换：<b>17:15 到点自动切</b>（停止入园前提醒）或 打卡「离园去晚餐」→ ⑤</div>
+    </div>
+
+    <!-- ⑤ 18:00 晚餐卡 -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light" style="background:#F3E5F5;color:#7B1FA2">⏰ 18:00 · 晚餐</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-big" style="font-size:16px;margin-top:16px">段公子 · 砂锅鱼</div>
+        <div class="mx-meta" style="color:#6B6B6B">📍 古城复兴路 · 已订座 18:00 · 招牌砂锅鱼</div>
+        <div class="mx-next">下一 · 洱海篝火晚会 20:00 ｜ 才村码头广场</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('导航到餐厅')">🧭 导航</div>
+          <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('已打卡：切到 ⑥ 晚间活动卡')">✓ 出发去晚会</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#7B1FA2"></i>⑤ 晚餐卡 · 当前：餐厅</div>
+    <div class="mx-sw">→ 切换：<b>19:30 到点自动切</b> 或 手动打卡「出发去晚会」→ ⑥</div>
+    </div>
+
+    <!-- ⑥ 20:00 晚间活动卡 -->
+    <div class="mx-item">
+    <div class="mx-card mx-light" onclick="openAppPage()">
+      <div class="mx-trig light" style="background:#E8EAF6;color:#303F9F">⏰ 20:00 · 晚间活动</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-big" style="font-size:16px;margin-top:16px">洱海篝火晚会 · 进行中</div>
+        <div class="mx-meta" style="color:#6B6B6B">🎫 已购票 · 黄金拍摄 18:50 起 · 才村码头广场</div>
+        <div class="mx-next">下一 · 回酒店 ｜ ⚠️ 末班公交 22:00 · 末班后打车约 ¥60</div>
+        <div class="mx-btns">
+          <div class="mx-btn" onclick="event.stopPropagation();alert('导航回酒店')">🧭 回酒店</div>
+          <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('已打卡：切到 ⑦ 收官卡')">✓ 离场返程</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#303F9F"></i>⑥ 晚间活动卡 · 当前：篝火晚会</div>
+    <div class="mx-sw">→ 切换：<b>21:15 到点自动切</b>（末班前 45 分钟提醒）或 打卡「离场返程」→ ⑦</div>
+    </div>
+
+    <!-- ⑦ 22:00 收官卡（深色） -->
+    <div class="mx-item">
+    <div class="mx-card mx-dark" style="background:linear-gradient(135deg,#1E2761 0%,#4A3B8C 100%)" onclick="openAppPage()">
+      <div class="mx-trig">⏰ 22:00 · 今日收官</div>
+      <div class="mx-open">↗</div>
+      <div class="mx-inner">
+        <div class="mx-big" style="font-size:16px;margin-top:16px">回酒店 · 今天走了 6 站</div>
+        <div class="mx-meta" style="opacity:.92">✅ 践行攻略 5/7 条 · 1.4 万步 · 已自动生成今日回顾</div>
+        <div class="mx-next" style="background:rgba(255,255,255,.14);color:#fff">明天 · 08:00 早餐 ｜ 已排 4 站 · 07:30 叫你起床</div>
+        <div class="mx-btns">
+          <div class="mx-btn" style="background:rgba(255,255,255,.2);color:#fff" onclick="event.stopPropagation();alert('查看明日行程')">📅 明日行程</div>
+          <div class="mx-btn" style="background:rgba(255,255,255,.2);color:#fff" onclick="event.stopPropagation();alert('打卡到酒店，今日收工')">🌙 到酒店了</div>
+        </div>
+      </div>
+    </div>
+    <div class="mx-cap"><i style="background:#1E2761"></i>⑦ 收官卡 · 当前：返程</div>
+    <div class="mx-sw">→ 切换：<b>跨天 00:00 自动翻页</b> 或 打卡「到酒店了」→ 明日 ①</div>
     </div>
 
   </div>
