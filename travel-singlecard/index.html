@@ -439,6 +439,16 @@
     .console{position:static;width:100%;max-width:384px}
     body{flex-direction:column;align-items:center}
   }
+  /* 超窄屏：手机整体等比缩小，避免卡片右侧被裁（按档位固定缩放，兼容性最好） */
+  @media(max-width:430px){
+    .phone{transform:scale(.88);transform-origin:top center;margin-bottom:-98px}
+  }
+  @media(max-width:370px){
+    .phone{transform:scale(.8);margin-bottom:-163px}
+  }
+  @media(max-width:330px){
+    .phone{transform:scale(.72);margin-bottom:-228px}
+  }
   /* ====== 游览中 · 场景卡片矩阵（食住行游购娱） ====== */
   .matrix{width:100%;max-width:1120px;margin-top:10px}
   .mx-title{font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px}
