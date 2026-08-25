@@ -70,6 +70,8 @@
   .tc-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
   .tc-bg::after{content:'';position:absolute;inset:0;
     background:linear-gradient(180deg,rgba(0,0,0,.14) 0%,rgba(0,0,0,.26) 48%,rgba(0,0,0,.46) 100%)}
+  /* 美图视图加强压暗：亮图（洱海/雪山天空）上白字仍可读 */
+  .tc-bg.scenic-bg::after{background:linear-gradient(180deg,rgba(0,0,0,.34) 0%,rgba(0,0,0,.36) 48%,rgba(0,0,0,.52) 100%)}
   /* 进度条 */
   .tc-progress{display:flex;gap:2px;padding:6px 34px 0 10px;position:relative;z-index:2;flex-shrink:0}
   .tc-progress .seg{flex:1;height:2px;border-radius:1px;background:rgba(255,255,255,.2);transition:.3s}
@@ -1262,7 +1264,7 @@ function renderCard(){
       // 原「游览中」卡片：左图（当前景点美图）右文（下一站 + 打车/导航）
       body=`
       <div class="tc-glass-panel">
-        <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:26px">
+        <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:36px">
           <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span></span>
           <span class="sub">第 ${curMoment+1}/7 张</span>
         </div>
@@ -1293,7 +1295,7 @@ function renderCard(){
     mpager+='</div>';
     body=`
       <div class="tc-glass-panel" style="gap:3px">
-        <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:26px">
+        <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:36px">
           <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span><span class="sub" style="margin-left:6px">第 ${curMoment+1}/7 张</span></span>
         </div>
         ${mpager}
@@ -1345,7 +1347,7 @@ function renderCard(){
   // 美图视图始终用实景图做卡底（白字可读）；进度视图才用渐变底
   const bgCss=m2?(stage2View==='scenic'?`url('${IMG}${m2.img||m2.fb}')`:(m2.img?`url('${IMG}${m2.img}')`:m2.bg)):`url('${s.bg}')`;
   card.innerHTML=`
-    <div class="tc-bg" style="background-image:${bgCss}"></div>
+    <div class="tc-bg ${m2&&stage2View==='scenic'?'scenic-bg':''}" style="background-image:${bgCss}"></div>
     <button class="tc-pull" onclick="event.stopPropagation();openAppPage()" title="查看全程计划">↗</button>
     ${progress}
     <div class="tc-body">${body}</div>`;
