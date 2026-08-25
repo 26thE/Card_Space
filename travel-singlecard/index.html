@@ -1332,7 +1332,8 @@ function renderCard(){
   }
 
   const m2=curStage===2?dayMoments[curMoment]:null;
-  const bgCss=m2?(m2.img?`url('${IMG}${m2.img}')`:m2.bg):`url('${s.bg}')`;
+  // 美图视图始终用实景图做卡底（白字可读）；进度视图才用渐变底
+  const bgCss=m2?(stage2View==='scenic'?`url('${IMG}${m2.img||m2.fb}')`:(m2.img?`url('${IMG}${m2.img}')`:m2.bg)):`url('${s.bg}')`;
   card.innerHTML=`
     <div class="tc-bg" style="background-image:${bgCss}"></div>
     <button class="tc-pull" onclick="event.stopPropagation();openAppPage()" title="查看全程计划">↗</button>
