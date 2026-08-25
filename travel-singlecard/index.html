@@ -329,6 +329,9 @@
   .sl-slide{position:absolute;inset:0;transition:transform .45s ease,opacity .45s ease}
   .sl-cur{position:absolute;top:6px;left:6px;z-index:2;font-size:8px;background:#0A59F7;
     color:#fff;padding:2px 6px;border-radius:6px;font-weight:700}
+  .sl-warn{position:absolute;top:6px;right:6px;z-index:2;font-size:8px;font-weight:700;
+    background:rgba(234,88,12,.92);color:#fff;padding:2px 6px;border-radius:6px;
+    backdrop-filter:blur(4px)}
   .sl-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
     background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:10px;
     padding:7px 0;font-size:10px;font-weight:700;color:#fff;cursor:pointer;backdrop-filter:blur(6px);
@@ -1167,21 +1170,29 @@ function chipHTML(stage){
 
 // ====== 一日时间轴：当前 + 下一地点进度卡（时间推算为主，手动打卡纠偏） ======
 // fb = 无实景图时刻的左图兜底；short/sub/nextName/nextMeta 供美图视图使用
+// from = 距上一地点距离（显示在滑动卡上）；warn = 当前地点硬约束（琥珀警示条，可空）
 const dayMoments=[
   {time:'08:00',period:'早餐',cur:'再回首 · 凉鸡米线',meta:'📍 古城人民路 · 步行 5 分钟 · 攻略收藏',next:'苍山洗马潭 ｜ 🚠 索道 09:30 前到',btn:'✓ 出发去苍山',img:'',bg:'linear-gradient(135deg,#FFA726 0%,#F57C00 100%)',
-    short:'再回首米线',sub:'早餐 · 古城人民路',nextName:'苍山洗马潭',nextMeta:'🚠 索道 09:30 前到',fb:'erhai.jpg'},
+    short:'再回首米线',sub:'早餐 · 古城人民路',nextName:'苍山洗马潭',nextMeta:'🚠 索道 09:30 前到',fb:'erhai.jpg',
+    from:'距 栖云客栈 300m',warn:''},
   {time:'09:30',period:'上午景点',cur:'苍山 · 洗马潭',meta:'游览中 40 分钟 · 📖 云海栈道拐角最出片',next:'午餐 复兴路美食街 ｜ 建议 11:45 下山',btn:'✓ 下山去吃饭',img:'cangshan.jpg',bg:'',
-    short:'苍山',sub:'洗马潭 · 游览中 40 分钟',nextName:'复兴路美食街',nextMeta:'午餐 · 建议 11:45 下山',fb:''},
+    short:'苍山',sub:'洗马潭 · 游览中 40 分钟',nextName:'复兴路美食街',nextMeta:'午餐 · 建议 11:45 下山',fb:'',
+    from:'距 再回首米线 8km',warn:'🚠 建议 11:45 下山'},
   {time:'12:00',period:'午餐',cur:'复兴路美食街',meta:'🍜 攻略收藏 3 家店 · 烤乳扇 / 米线 / 粑粑',next:'崇圣寺三塔 14:00 ｜ ⚠️ 17:30 停止入园',btn:'✓ 出发去三塔',img:'',bg:'linear-gradient(135deg,#FF8A65 0%,#E64A19 100%)',
-    short:'复兴路美食街',sub:'午餐 · 收藏 3 家店',nextName:'崇圣寺三塔',nextMeta:'14:00 · ⚠️ 17:30 停止入园',fb:'dali.jpg'},
+    short:'复兴路美食街',sub:'午餐 · 收藏 3 家店',nextName:'崇圣寺三塔',nextMeta:'14:00 · ⚠️ 17:30 停止入园',fb:'dali.jpg',
+    from:'距 苍山 12km',warn:''},
   {time:'14:00',period:'下午景点',cur:'崇圣寺三塔',meta:'游览中 · 📖 倒影公园机位 · 17:30 停止入园',next:'晚餐 段公子·砂锅鱼 18:00 ｜ 已订座',btn:'✓ 离园去晚餐',img:'dali.jpg',bg:'',
-    short:'崇圣寺三塔',sub:'游览中 · 17:30 停止入园',nextName:'段公子·砂锅鱼',nextMeta:'18:00 · 已订座',fb:''},
+    short:'崇圣寺三塔',sub:'游览中 · 17:30 停止入园',nextName:'段公子·砂锅鱼',nextMeta:'18:00 · 已订座',fb:'',
+    from:'距 复兴路美食街 2.4km',warn:'⚠️ 17:30 停止入园'},
   {time:'18:00',period:'晚餐',cur:'段公子 · 砂锅鱼',meta:'📍 古城复兴路 · 已订座 18:00',next:'洱海篝火晚会 20:00 ｜ 才村码头广场',btn:'✓ 出发去晚会',img:'',bg:'linear-gradient(135deg,#8E24AA 0%,#4A148C 100%)',
-    short:'段公子砂锅鱼',sub:'晚餐 · 已订座 18:00',nextName:'洱海篝火晚会',nextMeta:'20:00 · 才村码头广场',fb:'sunset.jpg'},
+    short:'段公子砂锅鱼',sub:'晚餐 · 已订座 18:00',nextName:'洱海篝火晚会',nextMeta:'20:00 · 才村码头广场',fb:'sunset.jpg',
+    from:'距 崇圣寺三塔 3.1km',warn:''},
   {time:'20:00',period:'晚间活动',cur:'洱海篝火晚会',meta:'进行中 · 已购票 · 黄金拍摄 18:50 起',next:'回酒店 ｜ ⚠️ 末班公交 22:00',btn:'✓ 离场返程',img:'sunset.jpg',bg:'',
-    short:'洱海篝火晚会',sub:'进行中 · 才村码头广场',nextName:'回酒店',nextMeta:'⚠️ 末班公交 22:00',fb:''},
+    short:'洱海篝火晚会',sub:'进行中 · 才村码头广场',nextName:'回酒店',nextMeta:'⚠️ 末班公交 22:00',fb:'',
+    from:'距 段公子砂锅鱼 2.6km',warn:'⚠️ 末班公交 22:00'},
   {time:'22:00',period:'今日收官',cur:'回酒店 · 走了 6 站',meta:'✅ 践行攻略 5/7 · 1.4 万步 · 今日回顾已生成',next:'明天 08:00 早餐 ｜ 已排 4 站',btn:'🌙 到酒店了',img:'',bg:'linear-gradient(135deg,#1E2761 0%,#4A3B8C 100%)',
-    short:'回酒店',sub:'今日收官 · 走了 6 站',nextName:'明日早餐',nextMeta:'08:00 · 已排 4 站',fb:'lijiang.jpg'},
+    short:'回酒店',sub:'今日收官 · 走了 6 站',nextName:'明日早餐',nextMeta:'08:00 · 已排 4 站',fb:'lijiang.jpg',
+    from:'距 才村码头 4.2km',warn:''},
 ];
 let curMoment=1;
 let stage2View='progress';   // progress=一日进度卡 / scenic=美图分栏卡（原游览中卡片）
@@ -1295,8 +1306,10 @@ function renderCard(){
         slides+=`<div class="sl-slide" style="transform:translateX(${(i-slideIdx)*106}%);opacity:${i===slideIdx?1:0}">
           <div class="vl-img" style="background-image:url('${IMG}${d.img||d.fb}')"></div>
           ${i===curMoment?'<div class="sl-cur">当前</div>':''}
-          <div class="vl-tag" style="font-size:13px;bottom:32px">${d.short}</div>
-          <div class="vl-sub" style="bottom:19px">${d.time} · ${d.period}</div>
+          ${d.warn?`<div class="sl-warn">${d.warn}</div>`:''}
+          <div class="vl-tag" style="font-size:13px;bottom:44px">${d.short}</div>
+          <div class="vl-sub" style="bottom:31px">${d.time} · ${d.period}</div>
+          <div class="vl-sub" style="bottom:18px">📏 ${d.from}</div>
         </div>`;
       });
       let dots='';
