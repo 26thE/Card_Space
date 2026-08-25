@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PRD · 单卡旅行助手 · 五阶段状态机</title>
+<title>PRD · 单卡旅行助手 · 三阶段状态机</title>
 <style>
   :root{
     --bg:#FAFBFC; --card:#FFFFFF; --text:#1A1A1A; --sub:#6B6B6B; --line:#EAEAEA;
@@ -37,8 +37,10 @@
   .kep-num{font-size:32px;font-weight:800;color:var(--accent);opacity:.15;
     position:absolute;right:20px;top:8px}
   .kep-title{font-size:18px;font-weight:700;margin-bottom:6px}
-  .kep-desc{font-size:14px;color:var(--sub);line-height:1.7}
-  .kep-desc b{color:var(--text)}
+  .kep-block{margin:8px 0 0;font-size:14px;color:var(--sub);line-height:1.7}
+  .kep-block b{color:var(--text)}
+  .kep-lab{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);
+    background:var(--accent-bg);border-radius:6px;padding:1px 8px;margin-right:6px}
   table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
   th{background:var(--accent-bg);color:var(--accent);font-weight:600;
     padding:10px 12px;text-align:left;border-bottom:2px solid var(--accent)}
@@ -54,26 +56,10 @@
   .callout{background:var(--accent-bg);border-left:4px solid var(--accent);
     padding:16px 20px;border-radius:0 12px 12px 0;margin:16px 0;font-size:14px}
   .callout b{color:var(--accent)}
-  .stage-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}
-  .stage-cell{border-radius:10px;padding:14px 10px;text-align:center;
-    border:1px solid var(--line);transition:.2s}
-  .stage-cell:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-  .stage-cell .ico{font-size:28px;margin-bottom:6px}
-  .stage-cell .name{font-size:13px;font-weight:700}
-  .stage-cell .sig{font-size:10px;color:var(--sub);margin-top:4px;line-height:1.4}
-  .s1{border-top:3px solid #0A59F7} .s2{border-top:3px solid #0A84FF}
-  .s3{border-top:3px solid #34C759} .s4{border-top:3px solid #FF6B35}
+  .s1{border-top:3px solid #0A59F7} .s3{border-top:3px solid #34C759}
   .s5{border-top:3px solid #BF5AF2}
-  .flow-arrow{text-align:center;font-size:20px;color:#ccc;margin:-4px 0}
   code{background:#F5F6FA;padding:2px 6px;border-radius:4px;font-size:13px;
     font-family:"Cascadia Code","Fira Code",monospace;color:#D63384}
-  pre{background:#1A1A2E;color:#E4E4E7;padding:16px 20px;border-radius:12px;
-    overflow-x:auto;font-size:13px;line-height:1.6;margin:12px 0}
-  pre .kw{color:#FF6B6B} pre .str{color:#69DB7C} pre .cmt{color:#868E96}
-  .metric-row{display:flex;gap:24px;margin:12px 0}
-  .metric-row .m{text-align:center;flex:1}
-  .metric-row .m b{font-size:28px;font-weight:800;color:var(--accent);display:block}
-  .metric-row .m span{font-size:12px;color:var(--sub)}
   .toc{background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:20px 28px;margin:24px 0}
   .toc-title{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--sub)}
@@ -103,10 +89,6 @@
   .fl-arrow small{font-size:10px;color:var(--sub)}
   .fl-down{text-align:center;font-size:12px;color:var(--sub)}
   .fl-sig{font-size:10px;color:var(--sub);text-align:center;margin-top:-2px}
-  .kep-block{margin:8px 0 0;font-size:14px;color:var(--sub);line-height:1.7}
-  .kep-block b{color:var(--text)}
-  .kep-lab{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);
-    background:var(--accent-bg);border-radius:6px;padding:1px 8px;margin-right:6px}
 </style>
 </head>
 <body>
@@ -116,27 +98,24 @@
 <h1>单卡旅行助手 · 产品需求文档</h1>
 <div class="doc-meta">
   <span class="tag">HarmonyOS NEXT</span>
-  <span class="tag">桌面卡片</span>
-  <span>版本 v1.3</span>
+  <span class="tag">桌面卡片 2×4</span>
+  <span>版本 v2.0（按当前 Demo 重写）</span>
   <span>更新：2026-08-25</span>
   <span>状态：评审中</span>
-  <span>作者：Product Strategy Team</span>
 </div>
 
 <!-- ====== 目录 ====== -->
 <div class="toc">
   <div class="toc-title">目录</div>
   <ol>
-    <li><a href="#overview">产品概述</a> — 背景问题、产品定位、目标用户、体验全流程图</li>
-    <li><a href="#kep">KEP · 关键体验原则</a> — 九条核心设计准则（原则定义 / 本版本落地 / 验收标准）</li>
-    <li><a href="#fr">功能需求</a> — FR1~FR9 逐项拆解</li>
-    <li><a href="#state">状态机设计</a> — 五阶段触发信号与流转规则</li>
-    <li><a href="#trigger">用户体验规格 · 卡片触发逻辑</a> — 信号源矩阵、置信度分级、决策流程、异常处理</li>
-    <li><a href="#addcard">加桌引导 · 卡片发现与添加</a> — 触发场景、引导通道、文案设计、频次控制</li>
-    <li><a href="#data">数据结构</a> — 卡片数据模型与接口定义</li>
-    <li><a href="#spec">交互与视觉规范</a> — 网格、配色、动画</li>
-    <li><a href="#roadmap">迭代规划</a> — MVP → V1 → V2 三阶段</li>
+    <li><a href="#overview">产品概述</a> — 定位、卡窗分工、范围说明</li>
+    <li><a href="#flow">用户体验路径</a> — 全流程图 + 游览子流程图</li>
+    <li><a href="#kep">KEP · 关键体验原则</a> — 八条（原则定义 / 本版本落地 / 验收标准）</li>
+    <li><a href="#fr">功能需求</a> — FR1~FR7</li>
+    <li><a href="#cards">卡片规格</a> — 手机框内四张卡逐一拆解</li>
+    <li><a href="#data">数据结构</a> — dayMoments / chipState / stages</li>
     <li><a href="#ac">验收标准</a> — 可量化检查项</li>
+    <li><a href="#appendix">附录</a> — 术语表、Demo 索引</li>
   </ol>
 </div>
 
@@ -144,110 +123,88 @@
 <h2 id="overview"><span class="num">1</span>产品概述</h2>
 
 <h3>1.1 背景与问题</h3>
-<p>旅行场景的用户痛点集中在「信息分散」与「时机错位」：</p>
 <ul>
-  <li><b>信息分散</b>：航班信息在短信、酒店在 OTA App、行程在日历、照片在相册——用户需要跨 5+ 应用拼凑行程。</li>
-  <li><b>时机错位</b>：出发当天才想起看航班号，到了目的地才查天气，返程时忘了退房时间——每个环节都有「最后一刻才发现」的风险。</li>
-  <li><b>回忆断层</b>：旅行结束后照片沉睡在相册，缺少行程回顾的触发点和仪式感。</li>
+  <li><b>攻略白做</b>：用户出行前刷大量攻略、收藏一堆店铺和机位，到了现场却想不起来看——收藏夹与当下场景脱节。</li>
+  <li><b>时机错位</b>：出门忘带房卡、索道快停运才想起来下山、离开了才发现不好打车——每个环节都有「最后一刻才发现」的风险。</li>
+  <li><b>信息分散</b>：航班在短信、酒店在 OTA、行程在脑海——需要跨多个应用拼凑当天安排。</li>
 </ul>
 
-<h3>1.2 产品定位与牵引目标</h3>
+<h3>1.2 产品定位</h3>
 <div class="callout">
-  <b>一句话定义</b>：鸿蒙桌面 4×2 单卡旅行助手，以<b>五阶段状态机</b>驱动，根据旅行时间线自动切换卡片内容，在出行前/交通/游览/返程/回忆五个节点提供<b>恰时、恰需、恰好</b>的信息服务。
+  <b>一句话定义</b>：鸿蒙桌面 2×4 单卡旅行助手，以<b>三阶段状态机</b>（出行前 → 游览中 → 回忆）驱动，在桌面提供「当前地点 + 下一地点」的恰时提醒，并把用户收藏的攻略素材在正确的时间地点重新送回眼前。
 </div>
-<p>卡片不是另一个旅行 App，而是将旅行信息<b>折叠到桌面</b>——用户无需打开任何应用，在桌面即可获取当前阶段最关键的 Top 2 信息，需要详情时右上角 ↗ 拉起全程计划应用页。</p>
+<p>Slogan：<b>让卡片不再是一个人的便利贴</b>——攻略可一人制作、多人跟随，卡片可分享给同行者。</p>
 
-<div class="callout" style="background:var(--green-bg);border-color:var(--green)">
-  <b>产品牵引目标</b>：帮助旅行计划用户<b>更好地完成行程规划</b>（输出结构规整的行程计划，支持增删改查）+ <b>更直观地查看计划</b>（桌面卡片 Top 2 核心信息 + 应用页全程按天浏览）。
-</div>
-
-<h3>1.3 目标用户</h3>
+<h3>1.3 卡窗分工（重要边界）</h3>
 <div class="callout" style="background:var(--orange-bg);border-color:var(--orange)">
-  <b>核心画像</b>：计划 <b>3 天及以上</b>长途旅行的用户，<b>需要做行程规划</b>且<b>做行程规划有难度</b>——信息分散在多个平台，不知从何下手，难以拼凑成完整可执行的行程。
+  <b>卡片只放「提醒级」数据</b>：行程计划、当前/下一地点、清单、硬约束警示——静态、计划级、低刷新。
+  <br><b>航班/火车的实时动态不放在卡片</b>：值机、登机口、延误、检票口、晚点等实时信息，届时由系统<b>实况窗</b>（Live Window）承载，卡片不重复建设。卡片至多保留「08:45 起飞」这类出发提醒文字。
 </div>
+
+<h3>1.4 范围说明</h3>
+<div class="callout" style="background:var(--green-bg);border-color:var(--green)">
+  本 PRD <b>仅覆盖手机框内的桌面卡片</b>：三阶段卡片（含游览双视图）与 ↗ 拉起的全程计划应用页。
+  <br>Demo 页面中<b>画在手机框外的场景展示卡</b>（美食街多店推荐、住宿票据、观光巴士、出门检查等六张）属于设计探索素材，<b>本期不考虑</b>，不进需求范围。
+</div>
+
+<h3>1.5 目标用户</h3>
 <table>
   <tr><th>用户特征</th><th>痛点</th><th>产品解法</th></tr>
   <tr>
-    <td>长途旅行（≥3天）</td>
-    <td>行程跨度大，信息量大，无法靠记忆管理</td>
-    <td>五阶段状态机自动分阶段呈现，每阶段只看当前最关键的 Top 2</td>
+    <td>计划 ≥3 天长途旅行</td>
+    <td>行程跨度大，无法靠记忆管理</td>
+    <td>三阶段状态机自动分阶段呈现，只看当前最关键的 Top 2</td>
   </tr>
   <tr>
-    <td>需要做行程规划</td>
-    <td>机票/酒店/景点/餐厅分散在短信、OTA、攻略帖，拼不齐</td>
-    <td>多源信号自动汇聚为结构化行程，按天×分类组织，支持增删改查</td>
+    <td>做攻略但执行时忘看</td>
+    <td>收藏的店铺/机位/注意事项到现场想不起来</td>
+    <td>攻略素材入口统一收存，游览中到点浮现（📖 攻略按钮 + 卡片内嵌提示）</td>
   </tr>
   <tr>
-    <td>规划有难度</td>
-    <td>不知道怎么排顺序、时间冲突、遗漏关键节点</td>
-    <td>应用页提供按天时间线 + 距离统计 + 四分类配色，结构规整一目了然</td>
+    <td>一人做攻略多人跟随</td>
+    <td>同行者看不到攻略，反复问「待会去哪」</td>
+    <td>卡片可分享，同行者桌面同步当前站与下一站</td>
   </tr>
 </table>
 
-<h3>1.4 核心落地要求</h3>
-<table>
-  <tr><th>#</th><th>要求</th><th>具体定义</th><th>对应功能</th></tr>
-  <tr>
-    <td>①</td>
-    <td><b>行程计划输出结构规整</b></td>
-    <td>按天×按时段×按分类（景点/美食/交通/住宿）组织，每天标注总距离，每个地点含时间、图标、名称、详情、距离、分类标签</td>
-    <td>FR4 应用页、FR8 行程 CRUD</td>
-  </tr>
-  <tr>
-    <td>②</td>
-    <td><b>可以增删改查</b></td>
-    <td>新增地点、删除地点、修改时间/名称/详情、按天/分类/关键词查询筛选——卡片与应用页双端同步</td>
-    <td>FR8 行程 CRUD</td>
-  </tr>
-  <tr>
-    <td>③</td>
-    <td><b>展示用户核心关注的 Top 2</b></td>
-    <td>桌面卡片每阶段只展示当前最关注的 2 条核心信息（而非铺满 3~4 条），其余信息在应用页查看</td>
-    <td>FR9 Top 2 智能排序</td>
-  </tr>
-</table>
-
-<div class="metric-row">
-  <div class="m"><b>≥3天</b><span>目标用户旅行时长</span></div>
-  <div class="m"><b>Top 2</b><span>每阶段核心信息条数</span></div>
-  <div class="m"><b>CRUD</b><span>行程计划增删改查</span></div>
-  <div class="m"><b>4×2</b><span>桌面网格尺寸</span></div>
-</div>
-
-<h3>1.5 用户体验全流程</h3>
-<p>从「系统发现出行意图」到「旅行结束归档」的完整体验流程。阶段间由<b>信号自动流转</b>（先到者触发），顶部 5 段进度条任何时候都可<b>手动切换</b>。</p>
+<!-- ====== 2. 用户体验路径 ====== -->
+<h2 id="flow"><span class="num">2</span>用户体验路径</h2>
+<p>从「系统发现出行意图」到「旅行结束归档」的完整路径。阶段间由<b>信号自动流转</b>，卡片顶部 3 段进度条任何时候都可<b>手动切换</b>。</p>
 
 <div class="fl-wrap">
   <div class="fl-row">
     <div class="fl-node" style="border-top:3px solid var(--purple)">
       <div class="t">入口 A · 主动规划</div>
-      <div class="d">对小艺说「我要去大理旅行」<br>→ 直接建卡（✨ 小艺创建徽章）</div>
+      <div class="d">对小艺说「我要去大理旅行」<br>→ 小艺解析意图</div>
     </div>
     <div class="fl-node" style="border-top:3px solid var(--orange)">
       <div class="t">入口 B · 被动识别</div>
-      <div class="d">机票短信 / 日历 / 酒店预订<br>→ 通知 + 证据 chips → 用户确认建卡</div>
+      <div class="d">机票短信 / 日历 / 酒店预订<br>→ 通知 + 证据 chips → 用户确认</div>
     </div>
   </div>
-  <div class="fl-down">↓ 创建卡片并添加到桌面（加桌引导：通知 / 小艺 / 卡片中心）</div>
+  <div class="fl-down">↓</div>
   <div class="fl-row">
-    <div class="fl-node s1"><div class="t">🧳 ① 出行前</div><div class="d">倒计时大字<br>可交互清单</div></div>
-    <div class="fl-arrow">→</div>
-    <div class="fl-node s2"><div class="t">✈️ ② 交通</div><div class="d">航线 + 航班号<br>五步状态流</div></div>
-    <div class="fl-arrow">→</div>
-    <div class="fl-node s3"><div class="t">🗺️ ③ 游览</div><div class="d">当前地点<br>+ 下一站预告</div></div>
-    <div class="fl-arrow">→</div>
-    <div class="fl-node s4"><div class="t">🛫 ④ 返程</div><div class="d">出发倒计时<br>退房清单</div></div>
-    <div class="fl-arrow">→</div>
-    <div class="fl-node s5"><div class="t">📸 ⑤ 回忆</div><div class="d">照片网格<br>统计 + 足迹图</div></div>
+    <div class="fl-node" style="border-top:3px solid var(--accent)">
+      <div class="t">✨ 生成式预览 · 创建过程即导览</div>
+      <div class="d">左侧文字逐段讲解、右侧手机框内卡片逐张浮现<br>用户在创建过程中就对「会有哪些卡片」建立预期<br>确认后一键添加到桌面</div>
+    </div>
   </div>
-  <div class="fl-sig">①→② 出发前 2h / 到机场 &nbsp;·&nbsp; ②→③ 降落 / 到目的地 &nbsp;·&nbsp; ③→④ 最后一天 / 返程前 12h &nbsp;·&nbsp; ④→⑤ 返程降落</div>
+  <div class="fl-down">↓ 添加完成，进入阶段流转</div>
+  <div class="fl-row">
+    <div class="fl-node s1"><div class="t">🧳 ① 出行前</div><div class="d">倒计时大字<br>双城天气 + 可交互清单<br>📖 攻略素材入口</div></div>
+    <div class="fl-arrow">→<br><small>出发当天</small></div>
+    <div class="fl-node s3"><div class="t">🗺️ ② 游览中</div><div class="d">当前地点 + 下一站预告<br>双视图切换<br>打卡纠偏</div></div>
+    <div class="fl-arrow">→<br><small>行程最后一天</small></div>
+    <div class="fl-node s5"><div class="t">📸 ③ 回忆</div><div class="d">照片网格<br>统计 + 精彩瞬间</div></div>
+  </div>
+  <div class="fl-sig">旁路：航班 / 火车实时动态（值机、登机口、延误、检票口）→ 由系统实况窗呈现，不占用卡片</div>
   <div class="fl-down">↓ 回忆阶段持续 7 天后</div>
   <div class="fl-row">
     <div class="fl-node" style="border-top:3px solid #8E8E93"><div class="t">📦 自动归档</div><div class="d">卡片从桌面移除，行程转入旅行回忆录</div></div>
   </div>
 </div>
 
-<h4>游览阶段（v1.3）体验子流程</h4>
+<h3>2.1 游览中 · 双视图子流程</h3>
 <div class="fl-wrap">
   <div class="fl-row">
     <div class="fl-node s3"><div class="t">进入游览阶段</div><div class="d">默认展示「一日进度」视图</div></div>
@@ -276,1071 +233,298 @@
   <div class="fl-sig">天气 / 步数为信息格（步数随站点递增）· 攻略 / 计划 / 导航 / 打车为操作格（打车蓝色高亮，作用于滑动区当前站点）</div>
 </div>
 
-<!-- ====== 2. KEP ====== -->
-<h2 id="kep"><span class="num">2</span>KEP · 关键体验原则</h2>
-<p>KEP（Key Experience Principles，关键体验原则）是贯穿整个产品的<b>九条</b>核心设计准则。每条原则按三段书写——<b>原则定义</b>（为什么）→ <b>本版本落地</b>（Demo v1.3 中具体怎么做）→ <b>验收标准</b>（怎么算做到），全部可量化、可回归验证。</p>
+<h3>2.2 攻略素材的存与用</h3>
+<div class="fl-wrap">
+  <div class="fl-row">
+    <div class="fl-node" style="border-top:3px solid var(--orange)">
+      <div class="t">出行前 · 存</div>
+      <div class="d">刷到攻略（小红书/点评/朋友分享）<br>→ 通过卡片 📖 攻略入口收存<br>→ 按「地点 + 类型」归档为素材</div>
+    </div>
+    <div class="fl-arrow">→</div>
+    <div class="fl-node" style="border-top:3px solid var(--green)">
+      <div class="t">游览中 · 用</div>
+      <div class="d">到达对应地点 → 卡片浮现关联素材<br>景点：拍照机位 / 注意事项<br>美食街：收藏的店 + 位置<br>用户自己决定要不要去</div>
+    </div>
+    <div class="fl-arrow">→</div>
+    <div class="fl-node" style="border-top:3px solid var(--purple)">
+      <div class="t">回忆 · 收束</div>
+      <div class="d">践行统计（攻略 5/7）<br>未去成的素材转入<br>「下次再去」清单</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 3. KEP ====== -->
+<h2 id="kep"><span class="num">3</span>KEP · 关键体验原则</h2>
+<p>KEP（Key Experience Principles，关键体验原则）是贯穿整个产品的<b>八条</b>核心设计准则。每条按三段书写——<b>原则定义</b>（为什么）→ <b>本版本落地</b>（Demo v2.0 中具体怎么做）→ <b>验收标准</b>（怎么算做到），全部可量化、可回归验证。</p>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">01</div>
-  <div class="kep-title">恰时 · 信息随阶段而至</div>
-  <div class="kep-block"><span class="kep-lab">原则</span>卡片内容不是静态的「一屏展示所有信息」，而是<b>随旅行时间线自动流转</b>——处于什么阶段，就只看什么信息，用户不需要翻找。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span>五个阶段各有独立信息架构：出行前看倒计时和清单，交通看航班状态流，<b>游览看当前地点 + 下一地点预告</b>（一日进度视图），也可切换为站点滑动浏览（景点美图视图），返程看出发倒计时和退房提醒，回忆看照片和统计。</div>
-  <div class="kep-block"><span class="kep-lab">验收</span>阶段切换由<b>时间/位置/航班状态</b>信号自动触发（先到者逻辑），用户无需手动翻页即可获取当前阶段信息；进度条 5 段可点击手动切换，但默认跟随信号。</div>
+  <div class="kep-title">恰时 · 三阶段自动流转</div>
+  <div class="kep-block"><span class="kep-lab">原则</span>卡片内容不是静态的「一屏展示所有信息」，而是<b>随旅行时间线自动流转</b>——处于什么阶段，就只看什么信息。</div>
+  <div class="kep-block"><span class="kep-lab">落地</span>三个阶段各有独立信息架构：<b>出行前</b>看倒计时、双城天气和清单；<b>游览中</b>看当前地点 + 下一地点预告（一日进度视图），可切换站点滑动浏览（景点美图视图）；<b>回忆</b>看照片和统计。游览阶段内部再按「一日三餐 + 上午/下午/晚上各一个景点」拆为 7 个时刻，一天 7 次切换。</div>
+  <div class="kep-block"><span class="kep-lab">验收</span>阶段切换由信号自动触发（出发当天 → 游览；行程最后一天 → 回忆；结束后 7 天 → 归档）；顶部 3 段进度条可点击手动切换，但默认跟随信号；游览内部 7 时刻以时间推算为主、打卡纠偏为辅。</div>
 </div>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">02</div>
   <div class="kep-title">恰需 · 每阶段只展示 Top 2 核心关注</div>
-  <div class="kep-block"><span class="kep-lab">原则</span>4×2 卡片可用高度约 152px，减去进度条（8px）、Header（22px）、间距后，内容区约 110px。每阶段<b>只展示当前用户最关注的 2 条核心信息</b>（Top 2），其余信息收起到应用页——杜绝信息过载，让用户一眼就看到最重要的内容。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span><b>Top 2 定义规则</b>：按阶段信息预算排序，取每个阶段关注优先级最高的 2 条：
+  <div class="kep-block"><span class="kep-lab">原则</span>2×4 卡片内容区高度有限，每阶段<b>只展示当前最关注的 2 条核心信息</b>，其余收起到应用页——杜绝信息过载。</div>
+  <div class="kep-block"><span class="kep-lab">落地</span>
     <table style="margin-top:8px">
       <tr><th>阶段</th><th>Top 1（最关注）</th><th>Top 2（次关注）</th><th>其余（速览与操作）</th></tr>
-      <tr><td>出行前</td><td>倒计时大字「3天」</td><td>可交互 checklist（机票✓酒店✓身份证✓防晒霜✗）</td><td>出发日时间线、双城天气</td></tr>
-      <tr><td>交通</td><td>航线视觉+航班号+登机口</td><td>五步状态进度条（当前步骤高亮）</td><td>距起飞倒计时、座位号</td></tr>
-      <tr><td>游览</td><td>当前地点+时段+距上站距离</td><td>下一地点预告+硬约束警示</td><td>天气/步数速览、六宫格操作（攻略/计划/导航/打车）、出门提醒、已游 N 站进度</td></tr>
-      <tr><td>返程</td><td>出发时间大字「明天15:30」</td><td>可交互 checklist（证件✓手机✓房卡✗伴手✗）</td><td>退房提醒、上午安排</td></tr>
-      <tr><td>回忆</td><td>照片网格（主图+2侧图）</td><td>迷你 SVG 足迹地图</td><td>行程统计、归档按钮</td></tr>
+      <tr><td>出行前</td><td>倒计时大字「3 天」</td><td>可交互清单（机票✓酒店✓身份证✓防晒霜✗）</td><td>出发日提醒、双城天气、攻略素材入口</td></tr>
+      <tr><td>游览中</td><td>当前地点 + 时段 + 距上站距离</td><td>下一地点预告 + 硬约束警示</td><td>天气/步数速览、六宫格操作、出门提醒、已游进度</td></tr>
+      <tr><td>回忆</td><td>照片网格（主图 + 2 侧图）</td><td>行程统计</td><td>精彩瞬间标记、归档按钮</td></tr>
     </table>
   </div>
-  <div class="kep-block"><span class="kep-lab">验收</span>每阶段桌面态可见核心信息 ≤ 2 条（Top 1 + Top 2）；其余信息仅应用页可见；Top 2 优先级可由系统根据时间/位置自动调整（如航班延误时，Top 1 切换为延误提示）。</div>
+  <div class="kep-block"><span class="kep-lab">验收</span>每阶段桌面态可见核心信息 ≤ 2 条；其余信息仅应用页可见；异常（如下一节点临近）时 Top 2 自动让位于警示。</div>
 </div>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">03</div>
-  <div class="kep-title">恰好 · 单卡足够、拉起才深</div>
-  <div class="kep-block"><span class="kep-lab">原则</span>卡片桌面态<b>只做信息概览</b>，不试图在 4×2 空间内塞入完整行程。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span>需要看全程计划时，右上角 <code>↗</code> 按钮拉起<b>全屏应用页</b>（路线地图、按天 Tab、分类地点卡片），提供类似圆周旅记的深度浏览体验。游览阶段双视图同样受控：一日进度视图 = 当前 + 下一站两条；景点美图视图 = 左侧滑动区 + 右侧六宫格，不堆叠文字。层级设计：桌面卡片（概要）→ 应用页（按天×地点完整行程）→ 地点详情页（导航/门票/评论）。</div>
-  <div class="kep-block"><span class="kep-lab">验收</span>桌面态可见信息条数 ≤ 4；应用页信息量 ≥ 卡片态的 5 倍；两层之间有明确的视觉过渡动画。</div>
+  <div class="kep-title">素材先存 · 攻略是帮记素材的入口</div>
+  <div class="kep-block"><span class="kep-lab">原则</span>攻略的价值不在「看过」，而在「到点能用上」。前期攻略不是阅读行为，而是<b>替未来的自己存素材</b>——卡片是这个收集行为的统一入口。</div>
+  <div class="kep-block"><span class="kep-lab">落地</span>出行前阶段卡片提供 📖 攻略入口：用户刷到攻略（小红书/点评/朋友分享）后收存进来，按「地点 + 类型」归档（店铺、机位、注意事项）。游览中到达对应地点时，卡片浮现关联素材——景点给「云海栈道拐角最出片」，美食街给「收藏 3 家店」，用户自己决定要不要去。</div>
+  <div class="kep-block"><span class="kep-lab">验收</span>收存的素材必须绑定到具体地点；游览中对应站点卡片展示素材摘要（一日进度视图 meta 行 + 六宫格 📖 攻略打开原文）；回忆阶段输出践行统计（攻略 5/7）。</div>
 </div>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">04</div>
-  <div class="kep-title">可交互 · 清单不是只读标签</div>
-  <div class="kep-block"><span class="kep-lab">原则</span> checklist 是用户的随身核对工具，必须<b>可操作</b>而非静态展示。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span>出行前和返程阶段的 checklist chips <b>支持点击切换 ✓ / ×</b>：绿色 chip = 已完成（机票✓ 酒店✓），橙色 chip = 待办（防晒霜✗ 房卡退还✗），点击实时切换并跨阶段保留。游览阶段的蓝色<b>打卡按钮</b>同样可交互（点按纠偏当前站）。交互细节：<code>cursor:pointer</code> + hover 缩放 1.03 + active 缩放 0.97，<code>event.stopPropagation()</code> 防止误触卡片其他事件。</div>
-  <div class="kep-block"><span class="kep-lab">验收</span>所有 chip 可点击切换；切换后状态跨阶段持久化；视觉上有明确的 done/todo 差异（颜色+图标+文案）。</div>
+  <div class="kep-title">先一步 · 当前地点永远带着下一站</div>
+  <div class="kep-block"><span class="kep-lab">原则</span>游览中用户最常问的不是「这是哪」，而是「<b>待会去哪、要注意什么</b>」。卡片必须同时回答现在 + 下一步，把容易遗忘的约束主动顶到眼前。</div>
+  <div class="kep-block"><span class="kep-lab">落地</span>① 一日进度视图底部固定「下一 · XX」预告条（含下一节点硬约束，如「建议 11:45 下山」）；② 景点美图视图每个站点带「📏 距上一地点 Nm」距离行；③ <b>硬约束警示条</b>（琥珀色，右上角）：索道停运、停止入园、末班公交等；④ <b>出门提醒</b>（蓝色 note，右上角同位）：早餐后第一站提示「🔑 房卡 · 🧥 外套 别忘带」；⑤ <b>打卡纠偏</b>：走快走慢点一下蓝色打卡钮，当前站与进度重新对齐。</div>
+  <div class="kep-block"><span class="kep-lab">验收</span>每个站点都有下一地点预告；有硬约束的站点必须展示警示条且不遮挡站点名称；出门提醒仅出现在离开住宿后的第一个站点；打卡后当前站、「当前」蓝标与 7 段进度条同步更新。</div>
 </div>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">05</div>
-  <div class="kep-title">双入口 · 主动规划 + 被动识别</div>
-  <div class="kep-block"><span class="kep-lab">原则</span>卡片的创建既不能全靠用户记得去开，也不能由系统自作主张——<b>主动有入口，被动有确认</b>。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span><b>主动规划路径</b>：用户对小艺说「我要去大理旅行」→ 小艺解析意图 → 自动创建卡片，卡片上显示「✨ 通过小艺创建」徽章。<b>被动识别路径</b>：系统检测到机票短信/日历事件/酒店预订等多源信号 → 弹出顶部通知（含证据 chips：✈️机票短信 / 📅日历事件 / 🏨酒店预订）→ 用户轻确认「创建卡片」或「稍后」→ 不直接建卡。</div>
-  <div class="kep-block"><span class="kep-lab">验收</span>被动路径必须经过用户确认，不可静默建卡；通知中展示触发信号的来源证据；主动路径有明确的创建来源标识。</div>
+  <div class="kep-title">可交互 · 清单与打卡都不是只读标签</div>
+  <div class="kep-block"><span class="kep-lab">原则</span>清单是随身核对工具，进度是会被现实打乱的计划——都必须<b>可操作</b>而非静态展示。</div>
+  <div class="kep-block"><span class="kep-lab">落地</span>出行前清单 chips <b>点击切换 ✓ / ×</b>（绿 = 已完成，橙 = 待办），状态跨阶段保留；游览中蓝色打卡按钮点按即推进当前站；7 段迷你进度条点按直接跳站。交互细节：<code>cursor:pointer</code> + hover 缩放 1.03 + active 缩放 0.97，<code>event.stopPropagation()</code> 防止误触。</div>
+  <div class="kep-block"><span class="kep-lab">验收</span>所有 chip 可点击切换且状态持久化；打卡/跳站后当前站、「当前」蓝标、进度条、背景图四处同步更新。</div>
 </div>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">06</div>
-  <div class="kep-title">情绪收束 · 从信息卡到情绪卡</div>
-  <div class="kep-block"><span class="kep-lab">原则</span>旅行的终点不是信息，而是回忆——最后阶段要从理性服务转向情绪价值。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span>前四个阶段是<b>信息卡</b>（理性、准确、密度高），第五阶段回忆转为<b>情绪卡</b>：照片网格铺满主体区域、行程统计唤起成就感、迷你 SVG 足迹地图提供空间记忆、归档按钮提供仪式感收束。</div>
-  <div class="kep-block"><span class="kep-lab">验收</span>回忆阶段照片区域 ≥ 卡片内容区 50%；统计数字突出（3天·12景点·248张·42km）；足迹地图为真实示意 SVG（非占位图）；归档按钮为唯一底部操作。</div>
+  <div class="kep-title">卡窗分工 · 提醒在卡、实时在窗</div>
+  <div class="kep-block"><span class="kep-lab">原则</span>桌面卡片和实况窗各司其职：卡片做<b>计划级提醒</b>（低频、主动看一眼就够），实况窗做<b>实时动态</b>（高频刷新、强时效）。卡片不重复造实况窗的轮子。</div>
+  <div class="kep-block"><span class="kep-lab">落地</span>卡片内不出现值机状态、登机口变更、延误、检票口等实时信息；至多保留「08:45 起飞」「建议 13:00 出发」这类计划级提醒文字。航班/火车实时动态届时由系统实况窗呈现，卡片与实况窗同源于一份行程数据。</div>
+  <div class="kep-block"><span class="kep-lab">验收</span>卡片任何阶段无实时状态组件（无状态进度流、无刷新倒计时）；行程数据改动（如改签）后，卡片提醒文字与实况窗信息一致。</div>
 </div>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">07</div>
-  <div class="kep-title">可编辑 · 行程计划结构规整、增删改查</div>
-  <div class="kep-block"><span class="kep-lab">原则</span>行程计划不是一次性只读数据，而是<b>用户可自主维护的活文档</b>。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span>全程计划应用页提供<b>增删改查</b>四项操作：<b>增</b>（指定日期/时段新增地点，自动插入正确位置并重排时间线）、<b>删</b>（左滑/长按删除，后续地点自动前移）、<b>改</b>（修改时间/名称/详情/分类，实时重排并重算当天总距离）、<b>查</b>（按天 Tab / 分类 chip / 关键词搜索）。<b>结构规整保证</b>：任何增删改操作后，行程自动保持「按天分组 → 按时间排序 → 四分类着色 → 距离重算」四步一致性。</div>
-  <div class="kep-block"><span class="kep-lab">验收</span>增删改查四项操作均可通过应用页完成；操作后行程自动重排（时间升序+距离重算）；卡片与应用页数据双端同步（应用页改了，卡片 Top 2 同步更新）。</div>
+  <div class="kep-title">生成式预览 · 创建过程即产品导览</div>
+  <div class="kep-block"><span class="kep-lab">原则</span>用户答应加桌之前，先要知道「这张卡片能给我什么」。创建过程本身就是最好的介绍位——<b>边看边生成，生成即理解</b>。</div>
+  <div class="kep-block"><span class="kep-lab">落地</span>创建流程采用<b>左文字右卡片</b>的生成式布局：左侧文字逐段讲解（出行前能干什么 → 游览中能干什么 → 回忆能干什么），右侧手机框内对应卡片逐张实时浮现（三阶段卡 + 游览双视图）。用户在确认加桌前就对完整卡片集合建立预期，确认后一键添加到桌面。</div>
+  <div class="kep-block"><span class="kep-lab">验收</span>创建流程中每一张卡片都有对应的左侧讲解文字；卡片浮现顺序与旅程时间线一致；跳过预览也可直接加桌，但默认展示完整预览。</div>
 </div>
 
 <div class="kep-card" style="position:relative">
   <div class="kep-num">08</div>
-  <div class="kep-title">Top 2 智能排序 · 最关注信息优先</div>
-  <div class="kep-block"><span class="kep-lab">原则</span>Top 2 不是固定写死，而是<b>由系统根据上下文智能排序</b>——外部条件变化时，卡片始终展示当前最值得关注的信息。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span>排序规则（优先级从高到低）：<b>异常事件</b>（航班延误 → Top 1 切换为延误提示+新起飞时间）＞ <b>时间临近</b>（距下一节点 &lt; 30 分钟 → Top 1 切换为该节点倒计时）＞ <b>位置触发</b>（GPS 到达某地点 200m 内 → Top 1 切换为该地点详情）＞ <b>默认优先</b>（无异常时按预设 Top 1/Top 2 展示）。</div>
-  <div class="kep-block"><span class="kep-lab">验收</span>Top 2 自动排序可在设置中关闭（回退为固定优先）；排序切换有 fade 过渡动画（200ms）；每次 Top 2 变化记录日志，用户可在应用页查看「Top 2 变化历史」。</div>
+  <div class="kep-title">情绪收束 · 从信息卡到情绪卡</div>
+  <div class="kep-block"><span class="kep-lab">原则</span>旅行的终点不是信息，而是回忆——最后阶段从理性服务转向情绪价值。</div>
+  <div class="kep-block"><span class="kep-lab">落地</span>前两个阶段是<b>信息卡</b>（理性、准确、密度高），第三阶段回忆转为<b>情绪卡</b>：照片网格铺满主体区域、行程统计唤起成就感（3天·12景点·248张·42km）、精彩瞬间标记、归档按钮提供仪式感收束。</div>
+  <div class="kep-block"><span class="kep-lab">验收</span>回忆阶段照片区域 ≥ 卡片内容区 50%；统计数字突出；归档按钮为唯一底部操作；未践行素材转入「下次再去」清单。</div>
 </div>
 
-<div class="kep-card" style="position:relative">
-  <div class="kep-num">09</div>
-  <div class="kep-title">先一步 · 当前地点永远带着下一站</div>
-  <div class="kep-block"><span class="kep-lab">原则</span>游览中用户最常问的不是「这是哪」，而是「<b>待会去哪、要注意什么</b>」。卡片必须同时回答现在 + 下一步，把容易遗忘的约束主动顶到眼前，而不是等用户想起来。</div>
-  <div class="kep-block"><span class="kep-lab">落地</span>① 一日进度视图底部固定「下一 · XX」预告条（含下一节点硬约束，如「建议 11:45 下山」）；② 景点美图视图每个站点带「📏 距上一地点 Nm」距离行；③ <b>硬约束警示条</b>（琥珀色，右上角）：索道 16:30 停运、建议 11:45 下山等；④ <b>出门提醒</b>（蓝色 note，右上角，与警示条同位）：早餐后第一站提示「🔑 房卡 · 🧥 外套 别忘带」；⑤ <b>打卡纠偏</b>：走快走慢点一下蓝色打卡钮，当前站与进度重新对齐。</div>
-  <div class="kep-block"><span class="kep-lab">验收</span>每个站点都有下一地点预告；有硬约束的站点必须展示警示条且不遮挡站点名称；出门提醒仅出现在离开住宿后的第一个站点；打卡后当前站、「当前」蓝标与 7 段进度条同步更新。</div>
-</div>
+<!-- ====== 4. 功能需求 ====== -->
+<h2 id="fr"><span class="num">4</span>功能需求</h2>
 
-<!-- ====== 3. 功能需求 ====== -->
-<h2 id="fr"><span class="num">3</span>功能需求</h2>
-
-<h3>FR1 · 五阶段状态机卡片</h3>
-<p>卡片以<b>五阶段状态机</b>驱动，每阶段有独立背景图、配色、信息架构和触发信号。</p>
-<div class="stage-grid">
-  <div class="stage-cell s1">
-    <div class="ico">🧳</div>
-    <div class="name">出行前</div>
-    <div class="sig">出发前 2h / 到达机场 → 交通</div>
-  </div>
-  <div class="flow-arrow">→</div>
-  <div class="stage-cell s2">
-    <div class="ico">✈️</div>
-    <div class="name">交通</div>
-    <div class="sig">航班降落 / 到达目的地 → 游览</div>
-  </div>
-  <div class="flow-arrow">→</div>
-  <div class="stage-cell s3">
-    <div class="ico">🗺️</div>
-    <div class="name">游览</div>
-    <div class="sig">最后一天 / 返程前 12h → 返程</div>
-  </div>
-  <div class="flow-arrow">→</div>
-  <div class="stage-cell s4">
-    <div class="ico">🛫</div>
-    <div class="name">返程</div>
-    <div class="sig">返程航班降落 → 回忆</div>
-  </div>
-  <div class="flow-arrow">→</div>
-  <div class="stage-cell s5">
-    <div class="ico">📸</div>
-    <div class="name">回忆</div>
-    <div class="sig">旅行结束后 7 天 → 自动归档</div>
-  </div>
-</div>
-
-<h4>阶段1 · 出行前</h4>
+<h3>FR1 · 三阶段状态机卡片</h3>
+<table>
+  <tr><th>阶段</th><th>核心内容</th><th>切换信号（先到者触发）</th></tr>
+  <tr><td><span class="badge badge-blue">① 出行前</span></td><td>倒计时大字、出发日提醒、双城天气、可交互清单、攻略素材入口</td><td>出发当天 → 游览中</td></tr>
+  <tr><td><span class="badge badge-green">② 游览中</span></td><td>当前地点 + 下一站预告（双视图，见 FR2）</td><td>行程最后一天 → 回忆；阶段内一天 7 次时刻切换（时间推算 + 打卡纠偏）</td></tr>
+  <tr><td><span class="badge badge-purple">③ 回忆</span></td><td>照片网格、行程统计、精彩瞬间、归档按钮</td><td>结束后 7 天 → 自动归档</td></tr>
+</table>
 <ul>
-  <li>倒计时大字「3 天」（34px）+ 目的地标签</li>
-  <li>出发日时间线预告：07:15 出门 → 07:45 到机场 → 08:15 值机截止 → 08:45 起飞</li>
-  <li>双城天气：出发城市 + 目的地城市</li>
-  <li>可交互 checklist：机票 ✓ / 酒店 ✓ / 身份证 ✓ / 防晒霜 ✗</li>
+  <li>顶部 3 段进度条：已完成 = 半透明、当前 = 纯白发光、未到达 = 低透明；点击可手动切换</li>
+  <li>阶段切换动画：fade-out（250ms）→ 内容替换 → cardIn（400ms），动画期间禁用交互</li>
 </ul>
 
-<h4>阶段2 · 交通</h4>
+<h3>FR2 · 游览中双视图</h3>
 <ul>
-  <li>航线视觉：出发城市代码 → ✈️ 虚线 → 目的地城市代码</li>
-  <li>航班信息：航班号 + 登机口 + 座位号</li>
-  <li>登机/起飞时间 + 距登机倒计时</li>
-  <li>五步状态进度条：值机 ✓ → 安检 ✓ → 登机 ●（当前） → 起飞 → 到达</li>
+  <li><b>一日进度视图</b>（默认）：时间+时段（第 N/7 站）、7 段迷你进度条（点按跳站）、当前地点大字+状态行、底部「下一 · XX」预告条、📖 攻略 + 蓝色打卡按钮</li>
+  <li><b>景点美图视图</b>：左侧方形滑动区（7 站 4s 轮播、手动滑动暂停 8s、圆点指示器、「当前」蓝标、琥珀警示条、出门提醒、「📏 距上一地点 Nm」）+ 右侧 2×3 六宫格（☀️天气 / 👣步数 ｜ 📖攻略 / 🗓️计划 ｜ 🧭导航 / 🚕打车）</li>
+  <li>左侧说明区「卡片视图」按钮切换两视图；卡底背景跟随滑动位置切换实景图</li>
 </ul>
 
-<h4>阶段3 · 游览（v1.3 双视图）</h4>
-<p>游览阶段提供<b>双视图</b>，由左侧说明区「卡片视图」按钮切换，默认一日进度：</p>
+<h3>FR3 · 攻略素材收集与到点浮现</h3>
 <ul>
-  <li><b>一日进度视图</b>（默认）：当前时间+时段（第 N/7 站）、7 段迷你进度条（点按跳站）、当前地点大字+状态行、底部固定「下一 · XX」预告条、📖 攻略 + 蓝色打卡按钮（走快走慢点按纠偏）</li>
-  <li><b>景点美图视图</b>：左侧方形滑动区——7 个站点 4s 自动轮播、手动滑动暂停 8s、圆点指示器、当前站「当前」蓝标、琥珀色硬约束警示条、出门提醒（早餐卡：🔑 房卡 · 🧥 外套 别忘带）、名称+时段+「📏 距上一地点 Nm」</li>
-  <li><b>右侧 2×3 六宫格</b>：☀️ 天气 / 👣 步数（信息格，步数随站点递增）+ 📖 攻略 / 🗓️ 计划 / 🧭 导航 / 🚕 打车（操作格，打车蓝色高亮，作用于滑动区当前站点）</li>
-  <li>卡底背景跟随滑动位置切换实景图</li>
+  <li><b>存</b>：出行前卡片 📖 攻略入口收存素材，字段 = 地点 + 类型（店铺/机位/注意事项）+ 原文链接 + 备注</li>
+  <li><b>用</b>：游览中对应站点的 meta 行展示素材摘要（如「🍜 攻略收藏 3 家店」「📖 云海栈道拐角最出片」），📖 攻略按钮打开素材原文</li>
+  <li><b>收束</b>：回忆阶段输出践行统计（攻略 5/7），未践行素材转入「下次再去」清单</li>
 </ul>
 
-<h4>阶段4 · 返程</h4>
-<ul>
-  <li>返程航线视觉（方向反转：DLU → KMG）+ 航班号同行</li>
-  <li>出发时间大字「明天 15:30」（26px）</li>
-  <li>退房提醒 + 上午安排建议</li>
-  <li>可交互 checklist：证件 ✓ / 手机 ✓ / 房卡退还 ✗ / 伴手礼 ✗</li>
-</ul>
-
-<h4>阶段5 · 回忆</h4>
-<ul>
-  <li>精彩瞬间标题 + 最爱标记</li>
-  <li>行程统计：3天 · 12景点 · 248张 · 42km · 最高3800m</li>
-  <li>照片网格：主图（2份宽）+ 2张侧图，带标签</li>
-  <li>最后一行：迷你 SVG 足迹地图（84×28，5 彩色点+虚线轨迹）+ 归档按钮</li>
-</ul>
-
-<h3>FR2 · 双入口路径</h3>
+<h3>FR4 · 双入口 + 生成式预览创建</h3>
 <table>
   <tr><th>路径</th><th>触发方式</th><th>创建流程</th><th>UI 标识</th></tr>
   <tr>
     <td>主动规划</td>
-    <td>用户对小艺说「我要去 XX 旅行」</td>
-    <td>小艺解析意图 → 直接创建卡片</td>
+    <td>对小艺说「我要去 XX 旅行」</td>
+    <td>小艺解析意图 → 进入生成式预览</td>
     <td>「✨ 通过小艺创建」徽章（2.5s 后淡出）</td>
   </tr>
   <tr>
     <td>被动识别</td>
     <td>检测到机票短信/日历事件/酒店预订</td>
-    <td>顶部通知 → 用户确认 → 创建卡片</td>
+    <td>顶部通知（证据 chips）→ 用户确认 → 进入生成式预览</td>
     <td>通知含证据 chips（信号来源展示）</td>
   </tr>
 </table>
-
-<h3>FR3 · 可交互 Checklist</h3>
 <ul>
-  <li><b>数据模型</b>：<code>chipState = { 1: {机票:true, 酒店:true, ...}, 4: {证件:true, ...} }</code></li>
-  <li><b>切换逻辑</b>：<code>toggleChip(stage, item)</code> 翻转布尔值 → 重新渲染卡片</li>
-  <li><b>视觉反馈</b>：done = 绿色背景 + ✓ 图标；todo = 橙色背景 + ✗ 图标</li>
-  <li><b>持久化</b>：状态跨阶段保留（切走再切回来状态不变）</li>
-  <li><b>事件隔离</b>：<code>event.stopPropagation()</code> 防止误触卡片跳转</li>
+  <li><b>生成式预览</b>：左文字右卡片布局，三阶段卡片 + 游览双视图逐张浮现并配讲解，确认后一键加桌；被动路径必须经用户确认，不可静默建卡</li>
 </ul>
 
-<h3>FR4 · 全程计划应用页（圆周旅记风格）</h3>
-<p>右上角 <code>↗</code> 按钮拉起全屏应用页，提供深度行程浏览：</p>
+<h3>FR5 · 可交互清单与打卡</h3>
 <ul>
-  <li><b>顶部概览卡</b>：蓝紫渐变背景 + 标题 + 3 个统计数字（天数/景点数/照片数）</li>
-  <li><b>SVG 路线地图</b>（320×140）：地形底图 + 洱海椭圆 + 苍山多边形 + 航班虚线路径 + 本地实线路径 + 7 个地点圆点+标签</li>
-  <li><b>按天 Tab</b>：总览 + Day 1/2/3，每 Tab 标注当日距离（24km / 42km / 15km）</li>
-  <li><b>地点卡片</b>：时间(50px) | 分类图标(36px 方形) | 名称+详情+距离 | 分类 chip</li>
-  <li><b>四类配色</b>：景点(spot)=绿 / 美食(food)=橙 / 交通(transport)=蓝 / 住宿(hotel)=紫</li>
+  <li>清单 chips 点击切换 ✓/×，绿 = done、橙 = todo，状态跨阶段持久化</li>
+  <li>打卡按钮推进当前站；7 段进度条点按跳站；切换后当前站/蓝标/进度条/背景四处同步</li>
 </ul>
 
-<h3>FR5 · 进度条导航</h3>
+<h3>FR6 · 全程计划应用页（↗ 拉起）</h3>
 <ul>
-  <li>卡片顶部 5 段进度条，对应 5 个阶段</li>
-  <li>已完成阶段 = 半透明白色；当前阶段 = 纯白 + 发光；未到达 = 低透明度</li>
-  <li>每段可点击，手动切换到对应阶段</li>
+  <li>右上角 <code>↗</code> 拉起全屏应用页：顶部概览卡 + SVG 路线地图 + 按天 Tab（标注当日距离）+ 分类地点卡片</li>
+  <li>四类配色：景点绿 / 美食橙 / 交通蓝 / 住宿紫</li>
+  <li>行程支持增删改查，操作后自动保持「按天分组 → 时间升序 → 四分类着色 → 距离重算」</li>
 </ul>
 
-<h3>FR6 · 阶段切换动画</h3>
+<h3>FR7 · 实况窗联动（边界说明）</h3>
 <ul>
-  <li>切换时 <code>fade-out</code>（opacity:0 + scale:0.96, 250ms）→ 内容替换 → <code>cardIn</code>（opacity:0→1 + scale:0.94→1, 400ms）</li>
-  <li>动画期间禁用交互，防止快速连点</li>
+  <li>卡片不含航班/火车实时状态组件；实时动态由系统实况窗承载</li>
+  <li>卡片与实况窗共享同一份行程数据源；改签/取消后卡片提醒文字同步更新</li>
+  <li>Demo 阶段以静态数据演示，实况窗接口字段预留</li>
 </ul>
 
-<h3>FR7 · 被动识别通知</h3>
+<!-- ====== 5. 卡片规格 ====== -->
+<h2 id="cards"><span class="num">5</span>卡片规格（手机框内）</h2>
+<p>仅覆盖手机框内实际渲染的卡片。画在框外的场景展示卡本期不考虑（见 1.4）。</p>
+
+<h3>5.1 出行前卡</h3>
+<table>
+  <tr><th>区域</th><th>元素</th><th>交互</th></tr>
+  <tr><td>主体</td><td>倒计时大字「3 天」+ 出发日提醒（8月21日 周四 · 08:45 起飞）</td><td>—</td></tr>
+  <tr><td>天气行</td><td>双城天气（出发城市 + 目的地）</td><td>—</td></tr>
+  <tr><td>清单</td><td>chips：机票 / 酒店 / 身份证 / 防晒霜</td><td>点击切换 ✓/×，跨阶段保留</td></tr>
+  <tr><td>入口</td><td>📖 攻略素材入口（收存攻略）</td><td>点击拉起素材收存/列表</td></tr>
+</table>
+
+<h3>5.2 游览中 · 一日进度视图（默认）</h3>
+<table>
+  <tr><th>区域</th><th>元素</th><th>交互</th></tr>
+  <tr><td>顶部</td><td>⏰ 时间 · 时段 + 第 N/7 站</td><td>—</td></tr>
+  <tr><td>进度条</td><td>7 段迷你进度条（已过=半透、当前=纯白、未到=低透）</td><td>点按跳站</td></tr>
+  <tr><td>主体</td><td>当前地点大字 + meta 状态行（攻略素材摘要/步行/订座等）</td><td>—</td></tr>
+  <tr><td>预告条</td><td>「下一 · XX ｜ 硬约束」毛玻璃条</td><td>—</td></tr>
+  <tr><td>按钮</td><td>📖 攻略 + 蓝色打卡钮（文案随场景：✓ 出发去苍山…）</td><td>打卡推进当前站</td></tr>
+</table>
+
+<h3>5.3 游览中 · 景点美图视图</h3>
+<table>
+  <tr><th>区域</th><th>元素</th><th>交互</th></tr>
+  <tr><td>左 · 方形滑动区</td><td>7 站实景轮播（4s）+ 圆点指示器 + 「当前」蓝标 + 琥珀警示条（warn）+ 蓝色出门提醒（note，仅首站）+ 名称/时段/「📏 距上一地点 Nm」</td><td>手动滑动切站，暂停自动轮播 8s</td></tr>
+  <tr><td>右 · 六宫格</td><td>☀️ 天气 / 👣 步数（信息格）｜ 📖 攻略 / 🗓️ 计划 / 🧭 导航 / 🚕 打车（操作格，打车蓝色高亮）</td><td>操作作用于滑动区当前站点</td></tr>
+  <tr><td>卡底</td><td>背景跟随滑动位置切换实景图</td><td>—</td></tr>
+</table>
+
+<h3>5.4 回忆卡</h3>
+<table>
+  <tr><th>区域</th><th>元素</th><th>交互</th></tr>
+  <tr><td>标题行</td><td>精彩瞬间标题 + 🏆 最爱标记</td><td>—</td></tr>
+  <tr><td>统计行</td><td>3天 · 12景点 · 248张 · 42km · 最高3800m</td><td>—</td></tr>
+  <tr><td>照片网格</td><td>主图（2 份宽）+ 2 张侧图，带地点标签</td><td>点击查看照片</td></tr>
+  <tr><td>底部</td><td>📦 归档行程（唯一底部操作）</td><td>点击归档，转入旅行回忆录</td></tr>
+</table>
+
+<!-- ====== 6. 数据结构 ====== -->
+<h2 id="data"><span class="num">6</span>数据结构</h2>
+
+<h3>6.1 游览时刻（dayMoments × 7）</h3>
+<p>游览阶段的 7 个时刻（一日三餐 + 上午/下午/晚上景点 + 收官），是双视图共同的数据源：</p>
+<table>
+  <tr><th>字段</th><th>含义</th><th>示例</th></tr>
+  <tr><td><code>time / period</code></td><td>时刻与时段</td><td>09:30 / 上午景点</td></tr>
+  <tr><td><code>cur / meta</code></td><td>当前地点与状态行（含攻略素材摘要）</td><td>苍山 · 洗马潭 / 游览中 40 分钟 · 📖 云海栈道拐角最出片</td></tr>
+  <tr><td><code>next / btn</code></td><td>下一地点预告与打卡按钮文案</td><td>午餐 复兴路美食街 ｜ 建议 11:45 下山 / ✓ 下山去吃饭</td></tr>
+  <tr><td><code>short / sub</code></td><td>美图视图短名称与副标题</td><td>苍山 / 洗马潭 · 游览中 40 分钟</td></tr>
+  <tr><td><code>from</code></td><td>距上一地点距离行</td><td>距 再回首米线 8km</td></tr>
+  <tr><td><code>warn</code></td><td>硬约束警示条（可空）</td><td>⚠️ 17:30 停止入园</td></tr>
+  <tr><td><code>note</code></td><td>出门提醒（仅首站）</td><td>🔑 房卡 · 🧥 外套 别忘带</td></tr>
+  <tr><td><code>img / fb / bg</code></td><td>实景图 / 兜底图 / 渐变底</td><td>cangshan.jpg</td></tr>
+</table>
+
+<h3>6.2 清单状态（chipState）</h3>
 <ul>
-  <li>顶部下拉式通知（<code>translateY(-200%) → 0</code>，400ms cubic-bezier）</li>
-  <li>通知含：图标 + 标题 + 正文 + 证据 chips + 双按钮（创建卡片 / 稀后）</li>
-  <li>点击「创建卡片」→ 通知消失 → 卡片以 <code>cardIn</code> 动画入场</li>
+  <li><code>chipState = { 1: {机票:true, 酒店:true, 身份证:true, 防晒霜:false} }</code>，<code>toggleChip()</code> 翻转后重渲染，跨阶段保留</li>
 </ul>
 
-<h3>FR8 · 行程计划增删改查（CRUD）</h3>
-<p>全程计划应用页支持完整的<b>增删改查</b>四项操作，确保用户可以在旅行全程中灵活调整行程，输出始终结构规整。</p>
-
-<h4>增（Add）</h4>
+<h3>6.3 阶段定义（stages × 3）</h3>
 <ul>
-  <li><b>入口</b>：应用页某天 Tab 下，长按空白区域或点击底部「+ 添加地点」按钮</li>
-  <li><b>表单</b>：名称（必填）+ 时间（必填）+ 分类（景点/美食/交通/住宿四选一）+ 详情（选填）+ 预估距离（选填，可调用地图 API 自动计算）</li>
-  <li><b>插入逻辑</b>：按时间自动插入正确位置，后续地点后移；当天总距离重算</li>
-  <li><b>卡片同步</b>：若新增地点成为当前阶段的 Top 1 或 Top 2，卡片自动更新</li>
+  <li><code>stages = { 1:出行前, 2:游览中, 3:回忆 }</code>，各含名称/图标/配色/背景/描述/切换信号</li>
+  <li>顶部进度条按 3 段渲染；<code>curStage</code> 驱动整体切换</li>
 </ul>
 
-<h4>删（Delete）</h4>
-<ul>
-  <li><b>入口</b>：地点卡片左滑出现删除按钮，或长按弹出菜单 → 「删除地点」</li>
-  <li><b>二次确认</b>：弹窗提示「确认删除「XX」？该操作不可撤销」+ 确认/取消</li>
-  <li><b>删除后</b>：后续地点自动前移；当天总距离重算；若删除的是当前卡片 Top 2 中的地点，卡片自动补位下一个优先级</li>
-</ul>
+<!-- ====== 7. 验收标准 ====== -->
+<h2 id="ac"><span class="num">7</span>验收标准</h2>
 
-<h4>改（Modify）</h4>
-<ul>
-  <li><b>入口</b>：点击地点卡片 → 进入编辑态（字段变为可输入）</li>
-  <li><b>可改字段</b>：时间、名称、详情、分类、距离</li>
-  <li><b>重排触发</b>：修改时间后自动重排当天时间线；修改分类后自动更新配色和图标</li>
-  <li><b>冲突检测</b>：两地点时间间隔 < 15 分钟时提示「时间过近，是否调整？」</li>
-</ul>
-
-<h4>查（Query）</h4>
-<ul>
-  <li><b>按天筛选</b>：Day Tab 切换（总览 / Day 1 / Day 2 / Day 3...）</li>
-  <li><b>按分类筛选</b>：分类 chip 切换（全部 / 景点 / 美食 / 交通 / 住宿）</li>
-  <li><b>关键词搜索</b>：顶部搜索框按名称模糊匹配，结果高亮</li>
-  <li><b>距离排序</b>：可切换按时间排序或按距离排序（查看哪天行程最紧凑）</li>
-</ul>
-
-<h4>结构规整保证</h4>
-<div class="callout">
-  任何 CRUD 操作后，行程自动执行四步一致性保证：
-  <br><b>① 按天分组</b> → <b>② 按时间排序</b>（升序） → <b>③ 四分类着色</b>（spot绿/food橙/transport蓝/hotel紫） → <b>④ 距离重算</b>（当天总距离更新到 Tab 标签）
-  <br>不会出现时间倒挂、分类混乱、距离不匹配。
-</div>
-
-<h3>FR9 · Top 2 智能排序</h3>
-<p>桌面卡片每阶段的内容不是静态写死，而是<b>由系统根据上下文智能排序</b>，始终展示当前最值得关注的 Top 2。</p>
-<table>
-  <tr><th>排序优先级</th><th>触发条件</th><th>Top 1 切换为</th><th>Top 2 切换为</th></tr>
-  <tr>
-    <td><span class="badge badge-red">P0</span> 异常事件</td>
-    <td>航班延误/取消</td>
-    <td>延误提示 + 新起飞时间</td>
-    <td>原 Top 1 降级为 Top 2</td>
-  </tr>
-  <tr>
-    <td><span class="badge badge-orange">P1</span> 时间临近</td>
-    <td>距下一节点 < 30 分钟</td>
-    <td>该节点倒计时（如「距登机 25 分钟」）</td>
-    <td>原 Top 1 降级为 Top 2</td>
-  </tr>
-  <tr>
-    <td><span class="badge badge-blue">P2</span> 位置触发</td>
-    <td>GPS 到达某地点 200m 内</td>
-    <td>该地点详情（名称+导航）</td>
-    <td>原 Top 1 降级为 Top 2</td>
-  </tr>
-  <tr>
-    <td><span class="badge badge-gray">P3</span> 默认</td>
-    <td>无异常/临近/到达</td>
-    <td>阶段预设 Top 1</td>
-    <td>阶段预设 Top 2</td>
-  </tr>
-</table>
-<div class="callout">
-  <b>用户控制</b>：Top 2 自动排序可在设置中关闭（回退为固定优先）；每次 Top 2 变化在应用页有「变更历史」可回看。
-</div>
-
-<!-- ====== 4. 状态机设计 ====== -->
-<h2 id="state"><span class="num">4</span>状态机设计</h2>
-
-<h3>4.1 阶段流转规则</h3>
-<table>
-  <tr><th>当前阶段</th><th>触发信号</th><th>目标阶段</th><th>信号类型</th></tr>
-  <tr><td>出行前</td><td>出发前 2 小时 / GPS 到达机场</td><td>交通</td><td><span class="badge badge-blue">时间+位置</span></td></tr>
-  <tr><td>交通</td><td>航班状态=降落 / GPS 到达目的地</td><td>游览</td><td><span class="badge badge-green">航班状态</span></td></tr>
-  <tr><td>游览</td><td>旅行最后一天 / 返程前 12 小时</td><td>返程</td><td><span class="badge badge-blue">时间</span></td></tr>
-  <tr><td>返程</td><td>返程航班状态=降落</td><td>回忆</td><td><span class="badge badge-green">航班状态</span></td></tr>
-  <tr><td>回忆</td><td>旅行结束后 7 天</td><td>归档（卡片消失）</td><td><span class="badge badge-purple">时间</span></td></tr>
-</table>
-
-<h3>4.2 手动切换</h3>
-<p>用户可通过两种方式手动切换阶段：</p>
-<ol>
-  <li>点击进度条对应段（5 段均可点）</li>
-  <li>控制台阶段按钮（Demo 演示用，正式版移除）</li>
-</ol>
-<p>手动切换后，若下一个自动信号到达，仍会自动跳转——手动切换是临时预览，不改变状态机的自动流转逻辑。</p>
-
-<!-- ====== 5. 用户体验规格 · 卡片触发逻辑 ====== -->
-<h2 id="trigger"><span class="num">5</span>用户体验规格 · 卡片触发逻辑</h2>
-
-<p>本章将状态机中的「触发信号」展开为<b>完整的用户体验规格</b>——定义每个阶段何时、由什么信号、以什么置信度触发，以及在异常场景下的降级策略。</p>
-
-<h3>5.1 信号源矩阵</h3>
-<p>卡片阶段流转依赖三类信号源，每类信号有不同的采集方式和置信度：</p>
-<table>
-  <tr>
-    <th>信号类型</th>
-    <th>信号源</th>
-    <th>采集方式</th>
-    <th>置信度</th>
-    <th>说明</th>
-  </tr>
-  <tr>
-    <td rowspan="3"><span class="badge badge-blue">时间信号</span></td>
-    <td>航班起飞时间</td>
-    <td>机票订单 / 短信解析</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>出发前 2h 自动切换到交通阶段；返程前 12h 切换到返程阶段</td>
-  </tr>
-  <tr>
-    <td>酒店退房时间</td>
-    <td>OTA 订单 / 日历事件</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>退房当天 08:00 提醒退房，进入返程准备</td>
-  </tr>
-  <tr>
-    <td>旅行结束时间</td>
-    <td>返程航班到达时间 + 7d</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>触发回忆阶段 → 7 天后自动归档</td>
-  </tr>
-  <tr>
-    <td rowspan="3"><span class="badge badge-green">位置信号</span></td>
-    <td>GPS 到达机场</td>
-    <td>系统围栏（机场 POI 半径 2km）</td>
-    <td><span class="badge badge-orange">中</span></td>
-    <td>与时间信号取<strong>先到者</strong>触发阶段切换</td>
-  </tr>
-  <tr>
-    <td>GPS 到达目的地</td>
-    <td>系统围栏（目的地城市中心）</td>
-    <td><span class="badge badge-orange">中</span></td>
-    <td>航班降落 OR 到达目的地，满足任一即切游览阶段</td>
-  </tr>
-  <tr>
-    <td>GPS 离开目的地</td>
-    <td>系统围栏（目的地城市 → 机场方向移动）</td>
-    <td><span class="badge badge-gray">低</span></td>
-    <td>辅助信号，用于返程阶段提前提示出发</td>
-  </tr>
-  <tr>
-    <td rowspan="2"><span class="badge badge-purple">航班状态信号</span></td>
-    <td>航班状态变更</td>
-    <td>航旅纵横 / 航司 API 实时推送</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>状态变更（值机开放/开始登机/已起飞/已降落）驱动阶段内子状态更新</td>
-  </tr>
-  <tr>
-    <td>航班延误/取消</td>
-    <td>航司 API 推送</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>触发卡片内容紧急更新 + 通知用户</td>
-  </tr>
-</table>
-
-<h3>5.2 阶段切换决策流程</h3>
-<p>每个阶段切换都是一个决策点，系统按以下流程判断是否切换：</p>
-
-<h4>阶段 1 → 2（出行前 → 交通）</h4>
-<table>
-  <tr><th>步骤</th><th>判断条件</th><th>动作</th></tr>
-  <tr><td>①</td><td>当前时间 ≥ 航班起飞时间 - 2h</td><td>→ 切换到交通阶段</td></tr>
-  <tr><td>②</td><td>GPS 进入机场围栏（半径 2km）</td><td>→ 切换到交通阶段（即使时间未到 2h）</td></tr>
-  <tr><td>③</td><td>以上两者取<strong>先到者</strong></td><td>触发 fade-out → cardIn 动画</td></tr>
-  <tr><td>④</td><td>用户手动点击进度条第 2 段</td><td>→ 临时切换（下一信号到达时自动校正）</td></tr>
-</table>
-<div class="callout">
-  <b>设计意图</b>：用「先到者」逻辑确保用户不会错过关键信息——即使 GPS 不精确，时间信号兜底；即使时间记错，到达机场也能触发。
-</div>
-
-<h4>阶段 2 → 3（交通 → 游览）</h4>
-<table>
-  <tr><th>步骤</th><th>判断条件</th><th>动作</th></tr>
-  <tr><td>①</td><td>航班状态 = 已降落</td><td>→ 切换到游览阶段</td></tr>
-  <tr><td>②</td><td>GPS 到达目的地城市中心围栏</td><td>→ 切换到游览阶段（即使航班状态未更新）</td></tr>
-  <tr><td>③</td><td>无航班数据时：GPS 到达目的地 + 时间超过预计到达</td><td>→ 切换到游览阶段（降级模式）</td></tr>
-</table>
-
-<h4>阶段 3 → 4（游览 → 返程）</h4>
-<table>
-  <tr><th>步骤</th><th>判断条件</th><th>动作</th></tr>
-  <tr><td>①</td><td>当前日期 = 旅行最后一天</td><td>→ 当天 08:00 切换到返程阶段</td></tr>
-  <tr><td>②</td><td>当前时间 ≥ 返程航班起飞 - 12h</td><td>→ 切换到返程阶段</td></tr>
-  <tr><td>③</td><td>无返程航班数据时：酒店退房日当天</td><td>→ 08:00 切换到返程阶段（降级模式）</td></tr>
-</table>
-
-<h4>阶段 4 → 5（返程 → 回忆）</h4>
-<table>
-  <tr><th>步骤</th><th>判断条件</th><th>动作</th></tr>
-  <tr><td>①</td><td>返程航班状态 = 已降落</td><td>→ 切换到回忆阶段</td></tr>
-  <tr><td>②</td><td>GPS 到达出发城市围栏</td><td>→ 切换到回忆阶段</td></tr>
-  <tr><td>③</td><td>回忆阶段持续 7 天后</td><td>→ 卡片自动归档（从桌面移除）</td></tr>
-</table>
-
-<h3>5.3 阶段内动态更新规则</h3>
-<p>阶段切换后，卡片内容并非静态——在同一个阶段内，子状态会随信号实时更新：</p>
-
-<h4>阶段 2（交通）状态流实时更新</h4>
-<table>
-  <tr><th>子状态</th><th>触发信号</th><th>卡片变化</th></tr>
-  <tr>
-    <td>值机开放</td>
-    <td>航司推送 OR 起飞前 3h</td>
-    <td>状态进度条第 1 步亮绿 ✓，显示「值机已开放」</td>
-  </tr>
-  <tr>
-    <td>安检完成</td>
-    <td>GPS 离开值机区域 / 手动标记</td>
-    <td>第 2 步亮绿 ✓，当前步骤切到「登机」</td>
-  </tr>
-  <tr>
-    <td>开始登机</td>
-    <td>航司推送 OR 起飞前 30min</td>
-    <td>第 3 步亮白 ●（脉冲动画），显示登机口和座位</td>
-  </tr>
-  <tr>
-    <td>已起飞</td>
-    <td>航班状态 = 已起飞</td>
-    <td>第 4 步亮绿 ✓，显示「飞行中 · 预计 XX:XX 降落」</td>
-  </tr>
-  <tr>
-    <td>已降落</td>
-    <td>航班状态 = 已降落</td>
-    <td>第 5 步亮绿 ✓ → 触发阶段 2→3 切换</td>
-  </tr>
-</table>
-
-<h4>阶段 1（出行前）倒计时滚动</h4>
-<table>
-  <tr><th>时间窗口</th><th>大字内容</th><th>信息架构变化</th></tr>
-  <tr><td>出发前 ≥ 7 天</td><td>「N 天」</td><td>天气 + 清单为主</td></tr>
-  <tr><td>出发前 2~7 天</td><td>「N 天」</td><td>加入出发日时间线预告</td></tr>
-  <tr><td>出发前 < 2h</td><td>→ 切换到交通阶段</td><td>—</td></tr>
-</table>
-
-<h4>阶段 3（游览）附近推荐刷新</h4>
-<ul>
-  <li>每 30 分钟刷新一次附近推荐列表（基于当前 GPS）</li>
-  <li>已游览的景点自动从推荐中排除</li>
-  <li>日落/日出前 1 小时优先推荐观景类地点</li>
-  <li>用餐时段（11:00-13:00 / 17:00-19:00）优先推荐美食类地点</li>
-</ul>
-
-<h3>5.4 信号优先级与冲突处理</h3>
-<p>当多个信号同时到达或矛盾时，按以下优先级处理：</p>
-<table>
-  <tr><th>优先级</th><th>信号类型</th><th>理由</th></tr>
-  <tr><td>P0（最高）</td><td>航班状态 API</td><td>权威数据源，实时性最强</td></tr>
-  <tr><td>P1</td><td>时间信号</td><td>确定性高，不依赖网络</td></tr>
-  <tr><td>P2</td><td>GPS 位置信号</td><td>可能受室内/信号弱影响</td></tr>
-  <tr><td>P3（最低）</td><td>用户手动切换</td><td>临时预览，不改变自动流转</td></tr>
-</table>
-<div class="callout">
-  <b>冲突示例</b>：航班 API 显示已降落（P0），但 GPS 仍在高空（P2 数据异常）→ 以 P0 为准，切换到游览阶段。
-</div>
-
-<h3>5.5 边界与异常处理</h3>
-
-<h4>场景 A：无 GPS 权限</h4>
-<table>
-  <tr><th>受影响信号</th><th>降级策略</th></tr>
-  <tr><td>到达机场围栏</td><td>仅依赖时间信号（起飞前 2h）触发阶段切换</td></tr>
-  <tr><td>到达目的地围栏</td><td>仅依赖航班状态（已降落）触发</td></tr>
-  <tr><td>附近推荐刷新</td><td>使用酒店地址作为静态参考点，不实时刷新</td></tr>
-</table>
-
-<h4>场景 B：无航班 API 接入</h4>
-<table>
-  <tr><th>受影响信号</th><th>降级策略</th></tr>
-  <tr><td>航班状态变更</td><td>仅依赖机票订单上的计划时间 + GPS 辅助</td></tr>
-  <tr><td>状态流子状态</td><td>不显示实时进度条，只显示计划时间</td></tr>
-  <tr><td>航班延误/取消</td><td>无法实时感知，由用户手动查看</td></tr>
-</table>
-
-<h4>场景 C：离线场景</h4>
-<table>
-  <tr><th>受影响信号</th><th>降级策略</th></tr>
-  <tr><td>所有在线信号</td><td>使用最后一次同步的缓存数据驱动阶段流转</td></tr>
-  <tr><td>附近推荐</td><td>展示离线前缓存的推荐，标注「离线数据」</td></tr>
-  <tr><td>天气</td><td>展示离线前最后一次天气数据，标注更新时间</td></tr>
-</table>
-
-<h4>场景 D：多程旅行</h4>
-<table>
-  <tr><th>场景</th><th>处理方式</th></tr>
-  <tr><td>A → B → C 多目的地</td><td>每个航段独立的阶段 2→3 循环，游览阶段拆分为多个子段</td></tr>
-  <tr><td>中转航班</td><td>交通阶段内增加中转节点显示，到达中转城市时短暂进入「中转等待」子状态</td></tr>
-  <tr><td>高铁替代航班</td><td>信号源切换为高铁时刻表 + 车站围栏，逻辑结构不变</td></tr>
-</table>
-
-<h4>场景 E：行程变更/取消</h4>
-<table>
-  <tr><th>场景</th><th>处理方式</th></tr>
-  <tr><td>航班改签</td><td>检测到新航班信息 → 更新时间信号 → 重新计算阶段触发时间</td></tr>
-  <tr><td>行程取消</td><td>检测到退票/取消 → 弹出确认通知「行程已取消，是否移除卡片？」</td></tr>
-  <tr><td>提前结束</td><td>用户手动归档 → 直接跳到回忆阶段</td></tr>
-</table>
-
-<!-- ====== 6. 加桌引导 · 卡片发现与添加 ====== -->
-<h2 id="addcard"><span class="num">6</span>加桌引导 · 卡片发现与添加</h2>
-
-<p>卡片的核心挑战不是功能本身，而是<b>在用户最需要的时候被发现</b>。本章定义系统在什么场景下、通过什么通道、以什么方式提醒用户「可以加一张旅行卡片到桌面」。</p>
-
-<h3>6.1 触发场景矩阵</h3>
-<p>系统检测到以下信号时，触发加桌引导：</p>
-<table>
-  <tr>
-    <th>#</th>
-    <th>触发信号</th>
-    <th>信号来源</th>
-    <th>置信度</th>
-    <th>引导时机</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td>机票预订确认</td>
-    <td>短信解析（含「航班」「起飞」「确认」关键词）</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>短信到达后 5 分钟</td>
-  </tr>
-  <tr>
-    <td>2</td>
-    <td>酒店预订确认</td>
-    <td>短信/邮件解析（含「酒店」「入住」「确认号」）</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>预订确认后即时</td>
-  </tr>
-  <tr>
-    <td>3</td>
-    <td>日历事件（旅行类）</td>
-    <td>日历标题含「旅行」「出差」「机票」「酒店」</td>
-    <td><span class="badge badge-orange">中</span></td>
-    <td>事件创建后 / 出发前 3 天</td>
-  </tr>
-  <tr>
-    <td>4</td>
-    <td>高铁/火车票预订</td>
-    <td>12306 短信 / 邮件解析</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>订票成功后 5 分钟</td>
-  </tr>
-  <tr>
-    <td>5</td>
-    <td>OTA 行程同步</td>
-    <td>携程/飞猪/去哪儿 App 推送行程</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>OTA 推送到达后即时</td>
-  </tr>
-  <tr>
-    <td>6</td>
-    <td>小艺语音创建</td>
-    <td>用户说「我要去 XX 旅行」</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>即时（主动路径，不需二次确认）</td>
-  </tr>
-  <tr>
-    <td>7</td>
-    <td>多信号交叉确认</td>
-    <td>同时检测到 2+ 信号（如机票短信 + 日历事件）</td>
-    <td><span class="badge badge-green">高</span></td>
-    <td>最后一个信号到达后即时</td>
-  </tr>
-  <tr>
-    <td>8</td>
-    <td>出发前 3 天未加卡</td>
-    <td>已检测到行程但用户未加卡</td>
-    <td><span class="badge badge-orange">中</span></td>
-    <td>出发前 3 天上午 09:00</td>
-  </tr>
-  <tr>
-    <td>9</td>
-    <td>出发前 1 天未加卡</td>
-    <td>同上，最后一次提醒</td>
-    <td><span class="badge badge-orange">中</span></td>
-    <td>出发前 1 天晚间 20:00</td>
-  </tr>
-</table>
-
-<div class="callout">
-  <b>设计原则</b>：引导是<b>建议</b>而非强制——每次引导必须包含「创建卡片」「稍后」「不再提醒」三个选项，用户始终保有控制权。
-</div>
-
-<h3>6.2 引导通道</h3>
-<p>根据信号置信度和用户上下文，选择最合适的引导通道：</p>
-
-<table>
-  <tr>
-    <th>通道</th>
-    <th>展示形式</th>
-    <th>适用场景</th>
-    <th>频次限制</th>
-  </tr>
-  <tr>
-    <td><b>系统通知</b></td>
-    <td>下拉通知栏，含证据 chips + 创建/稍后按钮</td>
-    <td>置信度高的首次触发（机票短信/酒店预订）</td>
-    <td>每次行程最多 1 次</td>
-  </tr>
-  <tr>
-    <td><b>小艺建议气泡</b></td>
-    <td>桌面/负一屏小艺入口处弹出建议</td>
-    <td>用户有使用小艺习惯时</td>
-    <td>每次行程最多 1 次</td>
-  </tr>
-  <tr>
-    <td><b>卡片中心推荐</b></td>
-    <td>长按桌面 → 卡片中心 → 顶部推荐位</td>
-    <td>用户主动进入卡片中心时</td>
-    <td>无频次限制（用户主动）</td>
-  </tr>
-  <tr>
-    <td><b>出发前提醒</b></td>
-    <td>系统通知，标注「明天出发」</td>
-    <td>已检测到行程但未加卡，出发前 3 天/1 天</td>
-    <td>最多 2 次（3 天 + 1 天）</td>
-  </tr>
-  <tr>
-    <td><b>OTA 应用内推荐</b></td>
-    <td>携程/飞猪 App 完成页底部推荐位</td>
-    <td>用户在 OTA App 完成预订时</td>
-    <td>每次行程最多 1 次</td>
-  </tr>
-</table>
-
-<h3>6.3 引导文案与交互设计</h3>
-
-<h4>场景 1：机票短信触发（置信度高）</h4>
-<div class="ref-block">
-  <div class="rt">系统通知 · 机票预订确认</div>
-  <div style="margin:8px 0;font-size:13px">
-    <div style="font-weight:700">🧳 检测到出行计划</div>
-    <div style="color:var(--sub);margin-top:4px">8月21日 昆明→大理，是否创建旅行卡片到桌面？</div>
-    <div style="display:flex;gap:6px;margin-top:8px">
-      <span class="badge badge-blue">✈️ 机票短信</span>
-      <span class="badge badge-blue">📅 日历事件</span>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <span class="badge badge-green" style="cursor:pointer">✓ 创建卡片</span>
-      <span class="badge badge-gray" style="cursor:pointer">稍后</span>
-      <span class="badge badge-gray" style="cursor:pointer">不再提醒</span>
-    </div>
-  </div>
-  <div style="font-size:12px;color:var(--sub);margin-top:8px">
-    <b>文案要点</b>：① 标题点明「检测到出行计划」② 正文给出关键信息（日期+路线）③ 证据 chips 展示信号来源 ④ 三按钮给用户控制权
-  </div>
-</div>
-
-<h4>场景 2：出发前 3 天提醒（未加卡）</h4>
-<div class="ref-block">
-  <div class="rt">系统通知 · 出发前提醒</div>
-  <div style="margin:8px 0;font-size:13px">
-    <div style="font-weight:700">🧳 3 天后出发去大理</div>
-    <div style="color:var(--sub);margin-top:4px">加一张旅行卡片到桌面，出行信息一目了然</div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <span class="badge badge-green" style="cursor:pointer">✓ 添加到桌面</span>
-      <span class="badge badge-gray" style="cursor:pointer">稍后</span>
-    </div>
-  </div>
-  <div style="font-size:12px;color:var(--sub);margin-top:8px">
-    <b>文案要点</b>：① 标题倒计时营造紧迫感 ② 正文一句话说清价值 ③ 只给两个选项（不加「不再提醒」——因为这是最后一次提醒）
-  </div>
-</div>
-
-<h4>场景 3：小艺语音创建（主动路径）</h4>
-<div class="ref-block">
-  <div class="rt">小艺对话 · 主动创建</div>
-  <div style="margin:8px 0;font-size:13px">
-    <div style="color:var(--sub)">用户：「我要去大理旅行」</div>
-    <div style="margin-top:8px">
-      <div style="font-weight:700">小艺：好的，我来帮你创建大理旅行卡片 🧳</div>
-      <div style="color:var(--sub);margin-top:4px">已添加到桌面，出行前会自动提醒你</div>
-    </div>
-    <div style="margin-top:10px">
-      <span class="badge badge-blue">✨ 通过小艺创建</span>
-    </div>
-  </div>
-  <div style="font-size:12px;color:var(--sub);margin-top:8px">
-    <b>文案要点</b>：① 直接创建，不需二次确认 ② 卡片上显示「✨ 通过小艺创建」徽章 2.5s 后淡出 ③ 小艺承诺后续自动提醒
-  </div>
-</div>
-
-<h4>场景 4：卡片中心推荐位</h4>
-<div class="ref-block">
-  <div class="rt">桌面长按 → 卡片中心</div>
-  <div style="margin:8px 0;font-size:13px">
-    <div style="display:flex;gap:12px;align-items:center">
-      <div style="width:60px;height:30px;background:linear-gradient(135deg,#0A59F7,#8A5CF6);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;flex-shrink:0">旅行助手</div>
-      <div>
-        <div style="font-weight:700;font-size:13px">单卡旅行助手 <span class="badge badge-green" style="font-size:9px">推荐</span></div>
-        <div style="color:var(--sub);font-size:11px;margin-top:2px">检测到大理行程 · 4×2 桌面卡片</div>
-      </div>
-    </div>
-  </div>
-  <div style="font-size:12px;color:var(--sub);margin-top:8px">
-    <b>文案要点</b>：① 推荐位顶部展示 ② 标注「推荐」徽章 ③ 副标题点明已检测到具体行程 ④ 点击直接添加到桌面
-  </div>
-</div>
-
-<h3>6.4 频次控制与免打扰</h3>
-<table>
-  <tr><th>规则</th><th>限制</th><th>理由</th></tr>
-  <tr>
-    <td>每次行程通知上限</td>
-    <td>最多 3 次（首次检测 + 出发前 3 天 + 出发前 1 天）</td>
-    <td>避免过度打扰，3 次覆盖「刚订票」「临近出发」「最后机会」三个节点</td>
-  </tr>
-  <tr>
-    <td>免打扰时段</td>
-    <td>22:00 ~ 08:00 不推送加桌引导</td>
-    <td>夜间不打扰用户休息</td>
-  </tr>
-  <tr>
-    <td>已加卡后停止</td>
-    <td>用户加卡后立即停止所有后续提醒</td>
-    <td>目标已达成，不再打扰</td>
-  </tr>
-  <tr>
-    <td>「不再提醒」尊重</td>
-    <td>用户点击「不再提醒」后，该行程不再推送</td>
-    <td>用户控制权优先</td>
-  </tr>
-  <tr>
-    <td>跨行程独立计数</td>
-    <td>不同行程独立计数，不累计</td>
-    <td>避免因上次行程拒绝而影响本次</td>
-  </tr>
-  <tr>
-    <td>同信号去重</td>
-    <td>机票短信 + 日历事件指向同一行程时合并为一次</td>
-    <td>避免重复打扰</td>
-  </tr>
-</table>
-
-<h3>6.5 添加流程</h3>
-<p>用户点击「创建卡片」/「添加到桌面」后的交互流程：</p>
-<table>
-  <tr><th>步骤</th><th>动作</th><th>动画</th><th>耗时</th></tr>
-  <tr><td>①</td><td>通知消失</td><td>slide-up 淡出</td><td>200ms</td></tr>
-  <tr><td>②</td><td>卡片在桌面 4×2 位置以 cardIn 动画入场</td><td>opacity 0→1, scale 0.94→1</td><td>400ms</td></tr>
-  <tr><td>③</td><td>显示「✨ 通过小艺创建」徽章（主动路径时）</td><td>opacity 0→1</td><td>300ms</td></tr>
-  <tr><td>④</td><td>徽章 2.5s 后淡出</td><td>opacity 1→0</td><td>300ms</td></tr>
-  <tr><td>⑤</td><td>卡片进入阶段 1（出行前）初始状态</td><td>—</td><td>—</td></tr>
-</table>
-
-<div class="callout">
-  <b>验收标准</b>：从用户点击「创建卡片」到卡片完全渲染 ≤ 1s；整个过程无白屏/闪烁；卡片入场动画流畅无卡顿。
-</div>
-
-<!-- ====== 7. 数据结构 ====== -->
-<h2 id="data"><span class="num">7</span>数据结构</h2>
-
-<h3>7.1 卡片核心数据</h3>
-<pre><span class="cmt">// 阶段定义</span>
-stages = {
-  1: { name:'出行前', icon:'🧳', color:'#0A59F7', bg:'lijiang.jpg',
-       desc:'行前倒计时+天气+清单', signal:'出发前2h/到达机场' },
-  2: { name:'出行中', icon:'✈️', color:'#0A84FF', bg:'sky.jpg',
-       desc:'航班信息+登机口+状态流', signal:'航班降落/到达目的地' },
-  3: { name:'游览中', icon:'🗺️', color:'#34C759', bg:'dali.jpg',
-       desc:'下一目的地+附近推荐', signal:'最后一天/返程前12h' },
-  4: { name:'返程',   icon:'🛫', color:'#FF6B35', bg:'sunset.jpg',
-       desc:'返程倒计时+离店清单', signal:'返程航班降落' },
-  5: { name:'回忆',   icon:'📸', color:'#BF5AF2', bg:'lijiang.jpg',
-       desc:'照片+统计+归档', signal:'结束后7天→归档' },
-}
-
-<span class="cmt">// Checklist 状态（可交互）</span>
-chipState = {
-  1: { '机票':true, '酒店':true, '身份证':true, '防晒霜':false },
-  4: { '证件':true, '手机':true, '房卡退还':false, '伴手礼':false }
-}
-
-<span class="cmt">// 附近推荐（游览阶段）</span>
-nearby = [
-  { name:'洱海公园', dist:'1.2km', cat:'公园', reason:'日落最佳' },
-  { name:'大理古城', dist:'2.5km', cat:'古镇', reason:'白族建筑' },
-  { name:'苍山索道', dist:'12km',  cat:'索道', reason:'俯瞰全景' },
-]
-
-<span class="cmt">// 按天行程（应用页 · 可增删改查）</span>
-tripDays = [
-  { day:1, label:'Day 1', date:'8月21日', dist:'24km', locs:[
-    { id:'d1l1', cat:'transport', ico:'✈️', name:'昆明✈大理',  time:'08:45', detail:'MU5731·1h35m·23A' },
-    { id:'d1l2', cat:'hotel',     ico:'🏨', name:'古城客栈',    time:'11:00', detail:'入住·2晚·¥320' },
-    { id:'d1l3', cat:'spot',      ico:'🏛️', name:'崇圣寺三塔',  time:'14:00', detail:'¥75·1.5h' },
-    { id:'d1l4', cat:'food',      ico:'🍜', name:'人民路小吃街',time:'18:00', detail:'砂锅鱼·¥80' },
-  ]},
-  <span class="cmt">// ... Day 2, Day 3 同结构</span>
-]</pre>
-
-<h3>7.2 分类配色体系</h3>
-<table>
-  <tr><th>分类</th><th>key</th><th>背景色</th><th>文字色</th><th>典型场景</th></tr>
-  <tr><td>景点</td><td><code>spot</code></td><td><span class="badge badge-green">#E8F5E9</span></td><td>#2E7D32</td><td>崇圣寺三塔、苍山、洱海公园</td></tr>
-  <tr><td>美食</td><td><code>food</code></td><td><span class="badge badge-orange">#FFF3E0</span></td><td>#E65100</td><td>人民路小吃街、喜洲粑粑</td></tr>
-  <tr><td>交通</td><td><code>transport</code></td><td><span class="badge badge-blue">#E3F2FD</span></td><td>#0A59F7</td><td>航班、高铁、打车</td></tr>
-  <tr><td>住宿</td><td><code>hotel</code></td><td><span class="badge badge-purple">#F3E5F5</span></td><td>#7B1FA2</td><td>客栈入住、续住</td></tr>
-</table>
-
-<h3>7.3 行程计划 CRUD 数据模型</h3>
-<pre><span class="cmt">// 行程计划 · 支持增删改查的数据结构</span>
-tripPlan = {
-  tripId: 'trip_20260821_dali',
-  title: '大理 3 日游',
-  startDate: '2026-08-21',
-  endDate: '2026-08-23',
-  days: [
-    {
-      day: 1, label: 'Day 1', date: '8月21日',
-      dist: '24km',  <span class="cmt">// 自动重算</span>
-      locs: [
-        {
-          id: 'd1l1',           <span class="cmt">// 唯一 ID，用于删改定位</span>
-          cat: 'transport',      <span class="cmt">// spot/food/transport/hotel 四选一</span>
-          ico: '✈️',             <span class="cmt">// 由 cat 自动映射</span>
-          name: '昆明✈大理',     <span class="cmt">// 必填</span>
-          time: '08:45',         <span class="cmt">// 必填，HH:mm 格式</span>
-          detail: 'MU5731·1h35m·23A', <span class="cmt">// 选填</span>
-          dist: '15km',          <span class="cmt">// 选填，可调地图 API 自动算</span>
-        },
-        <span class="cmt">// ... 更多地点</span>
-      ]
-    },
-    <span class="cmt">// ... Day 2, Day 3</span>
-  ],
-  filter: { day:'all', cat:'all', kw:'' },  <span class="cmt">// 查询状态</span>
-  top2History: [],  <span class="cmt">// Top 2 变更日志</span>
-}
-
-<span class="cmt">// CRUD 操作函数签名</span>
-addLoc(dayNum, { name, time, cat, detail?, dist? }) → newLocId
-removeLoc(locId) → boolean
-updateLoc(locId, { name?, time?, cat?, detail?, dist? }) → boolean
-queryLocs({ day?, cat?, keyword? }) → [loc, ...]
-reorderByTime(dayNum) → void    <span class="cmt">// 时间升序重排</span>
-recalcDist(dayNum) → string     <span class="cmt">// 重算当天总距离</span>
-reorderTop2(stage) → [top1, top2]  <span class="cmt">// Top 2 智能排序</span>
-</pre>
-
-<div class="callout">
-  <b>双端同步</b>：任何 CRUD 操作在应用页执行后，卡片桌面态同步更新——若修改的地点恰为当前阶段 Top 1 或 Top 2，卡片立即刷新渲染。同步延迟 ≤ 200ms。
-</div>
-
-<!-- ====== 6. 交互与视觉规范 ====== -->
-<h2 id="spec"><span class="num">8</span>交互与视觉规范</h2>
-
-<h3>8.1 卡片网格</h3>
-<table>
-  <tr><th>属性</th><th>值</th><th>说明</th></tr>
-  <tr><td>网格位置</td><td><code>grid-column:1/span 4; grid-row:1/span 2</code></td><td>4列×2行，横铺桌面顶部</td></tr>
-  <tr><td>圆角</td><td>20px</td><td>外层容器</td></tr>
-  <tr><td>背景</td><td>全屏图片 + 底部渐变遮罩</td><td><code>linear-gradient(180deg, .15→.28→.5)</code></td></tr>
-  <tr><td>内容层</td><td>毛玻璃面板 <code>backdrop-filter:blur(20px)</code></td><td>深色半透明，圆角 18px</td></tr>
-</table>
-
-<h3>8.2 阶段配色</h3>
-<table>
-  <tr><th>阶段</th><th>主色</th><th>背景图</th><th>语义</th></tr>
-  <tr><td>出行前</td><td><code>#0A59F7</code> 蓝</td><td>雪山/城市</td><td>理性·准备</td></tr>
-  <tr><td>交通</td><td><code>#0A84FF</code> 亮蓝</td><td>天空/云</td><td>流动·高空</td></tr>
-  <tr><td>游览</td><td><code>#34C759</code> 绿</td><td>目的地风景</td><td>活力·探索</td></tr>
-  <tr><td>返程</td><td><code>#FF6B35</code> 橙</td><td>日落</td><td>温暖·收束</td></tr>
-  <tr><td>回忆</td><td><code>#BF5AF2</code> 紫</td><td>旅行高光</td><td>情绪·纪念</td></tr>
-</table>
-
-<h3>8.3 动画规范</h3>
-<table>
-  <tr><th>动画</th><th>触发</th><th>参数</th><th>时长</th></tr>
-  <tr><td>cardIn</td><td>卡片首次渲染/阶段切换后</td><td>opacity 0→1, scale 0.94→1</td><td>400ms ease</td></tr>
-  <tr><td>fade-out</td><td>阶段切换前</td><td>opacity→0, scale→0.96</td><td>250ms</td></tr>
-  <tr><td>sbPulse</td><td>交通阶段当前步骤</td><td>scale 1→1.18→1</td><td>1.8s infinite</td></tr>
-  <tr><td>pulse</td><td>应用页时间线当前节点</td><td>box-shadow 扩散</td><td>2s infinite</td></tr>
-  <tr><td>apSlide</td><td>应用页打开</td><td>translateY 24→0, opacity .3→1</td><td>300ms ease</td></tr>
-  <tr><td>chip hover</td><td>鼠标悬停 chip</td><td>scale 1.03, brightness 1.15</td><td>150ms</td></tr>
-  <tr><td>chip active</td><td>点击 chip</td><td>scale 0.97</td><td>150ms</td></tr>
-</table>
-
-<h3>8.4 字号体系</h3>
-<table>
-  <tr><th>用途</th><th>class</th><th>字号</th><th>场景</th></tr>
-  <tr><td>超大数字</td><td><code>.tc-big</code></td><td>34px / 800</td><td>出行前倒计时</td></tr>
-  <tr><td>中大数字</td><td><code>.tc-big.sm</code></td><td>22px</td><td>登机/起飞时间</td></tr>
-  <tr><td>阶段4大字</td><td>inline 26px</td><td>26px / 800</td><td>返程出发时间（压缩防溢出）</td></tr>
-  <tr><td>正文</td><td><code>.tc-text</code></td><td>11px</td><td>航班信息、天气、统计</td></tr>
-  <tr><td>标签</td><td><code>.tc-label</code></td><td>10px</td><td>字段标题</td></tr>
-  <tr><td>chip</td><td><code>.tc-chip</code></td><td>10px</td><td>checklist 标签</td></tr>
-  <tr><td>城市代码</td><td><code>.rv-code</code></td><td>11px / 800</td><td>KMG / DLU 航线视觉</td></tr>
-</table>
-
-<!-- ====== 7. 迭代规划 ====== -->
-<h2 id="roadmap"><span class="num">9</span>迭代规划</h2>
-
-<table>
-  <tr><th>版本</th><th>范围</th><th>核心功能</th><th>验收标志</th></tr>
-  <tr>
-    <td><span class="badge badge-blue">MVP</span></td>
-    <td>五阶段状态机 + 出行前/交通/游览/返程/回忆卡片</td>
-    <td>阶段自动切换、进度条手动切换、毛玻璃面板、被动识别通知</td>
-    <td>5 阶段截图全部内容完整无溢出</td>
-  </tr>
-  <tr>
-    <td><span class="badge badge-green">V1</span></td>
-    <td>可交互 Checklist + 全程计划应用页 + 行程 CRUD</td>
-    <td>chip 点击切换 ✓/×、应用页路线地图+按天 Tab+分类地点卡片、圆周旅记风格、行程计划增删改查+结构规整、Top 2 智能排序</td>
-    <td>chip 切换状态持久化；应用页 3 天行程完整渲染；CRUD 操作后自动重排+双端同步</td>
-  </tr>
-  <tr>
-    <td><span class="badge badge-purple">V2</span></td>
-    <td>真实信号接入 + 多行程管理</td>
-    <td>航班 API 实时状态、GPS 位置触发、多行程切换、足迹地图真实轨迹数据、照片自动归类</td>
-    <td>真实出行场景端到端跑通，阶段切换由真实信号触发</td>
-  </tr>
-</table>
-
-<div class="callout">
-  <b>当前 Demo 对应版本</b>：MVP + V1（卡片态+应用页）已完成；<b>v1.3</b> 游览阶段升级为双视图（一日进度 + 景点美图：左侧 7 站滑动区 / 右侧 2×3 六宫格），并落地 KEP-09（下一站预告、硬约束警示、出门提醒、打卡纠偏）。FR8 行程 CRUD + FR9 Top 2 智能排序为 V1 规划功能，Demo 中数据结构已预留 <code>id</code> 字段和 CRUD 函数签名，待鸿蒙卡片框架交互能力支撑后实现。V2 需要系统级集成（航班 API、GPS、短信解析）。
-</div>
-
-<!-- ====== 8. 验收标准 ====== -->
-<h2 id="ac"><span class="num">10</span>验收标准</h2>
-
-<h3>10.1 KEP 验收</h3>
+<h3>7.1 KEP 验收</h3>
 <ul class="check-list">
-  <li class="done">KEP-01 恰时：5 阶段均有独立信息架构，阶段间有自动切换信号定义</li>
-  <li class="done">KEP-02 恰需：每阶段桌面态只展示 Top 2 核心信息（游览=当前地点+下一地点预告），其余收起至应用页</li>
-  <li class="done">KEP-03 恰好：桌面态只概览，应用页才深度；两层有明确过渡动画</li>
-  <li class="done">KEP-04 可交互：chip 可点击切换 ✓/×，状态跨阶段保留</li>
-  <li class="done">KEP-05 双入口：主动路径有「小艺创建」徽章；被动路径有证据+确认</li>
-  <li class="done">KEP-06 情绪收束：回忆阶段照片 ≥ 50% 内容区，归档按钮为唯一底部操作</li>
-  <li>KEP-07 可编辑：行程计划应用页支持增删改查四项操作，操作后自动重排+重算</li>
-  <li>KEP-08 Top 2 排序：Top 2 可由异常/时间临近/位置触发自动调整，可在设置中关闭</li>
-  <li class="done">KEP-09 先一步：每站点含下一地点预告+距上站距离；硬约束站点展示警示条；出门提醒仅在首站；打卡纠偏同步进度</li>
+  <li class="done">KEP-01 恰时：3 阶段均有独立信息架构，阶段间有自动切换信号定义</li>
+  <li class="done">KEP-02 恰需：每阶段桌面态只展示 Top 2 核心信息，其余收起至应用页</li>
+  <li class="done">KEP-03 素材先存：素材绑定地点；游览中对应站点展示素材摘要；回忆输出践行统计</li>
+  <li class="done">KEP-04 先一步：每站点含下一地点预告+距上站距离；硬约束站点展示警示条；出门提醒仅首站；打卡纠偏同步进度</li>
+  <li class="done">KEP-05 可交互：chip 可点击切换且跨阶段保留；打卡/跳站后四处同步</li>
+  <li class="done">KEP-06 卡窗分工：卡片无实时状态组件，航班/火车实时信息不出现</li>
+  <li>KEP-07 生成式预览：创建流程左文字右卡片，每张卡有讲解，顺序与旅程一致</li>
+  <li class="done">KEP-08 情绪收束：回忆阶段照片 ≥ 50% 内容区，归档按钮为唯一底部操作</li>
 </ul>
 
-<h3>10.2 功能验收</h3>
+<h3>7.2 功能验收</h3>
 <ul class="check-list">
-  <li class="done">FR1 五阶段卡片内容完整，每阶段截图无溢出/空白</li>
-  <li class="done">FR2 主动规划路径展示小艺徽章；被动识别路径展示通知+证据 chips</li>
-  <li class="done">FR3 出行前 4 项 chip + 返程 4 项 chip 均可点击切换</li>
-  <li class="done">FR4 应用页：概览卡+路线地图+按天 Tab（3 天+总览）+分类地点卡片</li>
-  <li class="done">FR5 进度条 5 段可点击切换阶段</li>
-  <li class="done">FR6 阶段切换有 fade-out → cardIn 动画</li>
-  <li class="done">FR7 被动通知含证据 chips + 双按钮</li>
-  <li>FR8 增：应用页可新增地点，按时间自动插入正确位置，当天距离重算</li>
-  <li>FR8 删：左滑/长按删除地点，二次确认，后续地点自动前移</li>
-  <li>FR8 改：点击地点进入编辑态，改时间后自动重排，改分类后自动更新配色</li>
-  <li>FR8 查：按天 Tab + 分类 chip + 关键词搜索三种筛选方式均可用</li>
-  <li>FR8 结构规整：任何 CRUD 操作后行程保持按天分组+时间升序+四分类着色+距离重算</li>
-  <li>FR8 双端同步：应用页 CRUD 后卡片 Top 2 同步刷新（延迟 ≤ 200ms）</li>
-  <li>FR9 Top 2 默认排序：每阶段 Top 1 + Top 2 按预设优先级展示</li>
-  <li>FR9 异常升序：航班延误时 Top 1 切换为延误提示，原 Top 1 降级</li>
-  <li>FR9 时间临近：距下一节点 < 30 分钟时 Top 1 切换为倒计时</li>
-  <li>FR9 用户控制：可在设置中关闭 Top 2 自动排序，回退固定优先</li>
+  <li class="done">FR1 三阶段卡片内容完整，每阶段截图无溢出/空白；进度条 3 段可点击</li>
+  <li class="done">FR2 双视图可切换；滑动区轮播/暂停/圆点/警示/距离行正常；六宫格六格完整无遮挡</li>
+  <li class="done">FR3 攻略按钮出现在两视图；素材摘要随站点变化</li>
+  <li>FR4 双入口路径可走通；被动路径有证据 chips + 用户确认；生成式预览逐张浮现</li>
+  <li class="done">FR5 chip 切换持久化；打卡推进、跳站同步</li>
+  <li class="done">FR6 应用页：概览卡+路线地图+按天 Tab+分类地点卡片；CRUD 后自动重排</li>
+  <li>FR7 改签/取消后卡片提醒文字同步更新（待实况窗接口接入后验证）</li>
 </ul>
 
-<h3>10.3 视觉验收</h3>
+<h3>7.3 视觉验收</h3>
 <ul class="check-list">
-  <li class="done">卡片 4×2 横铺，圆角 20px，背景图+渐变遮罩</li>
-  <li class="done">毛玻璃面板 backdrop-filter:blur(20px)，深色半透明</li>
-  <li class="done">5 阶段主色：蓝/亮蓝/绿/橙/紫</li>
-  <li class="done">四分类配色：景点绿/美食橙/交通蓝/住宿紫</li>
-  <li class="done">回忆阶段足迹地图为真实 SVG（5 彩色点+虚线轨迹+城市标签）</li>
-  <li class="done">应用页路线地图为 320×140 SVG（洱海椭圆+苍山多边形+航班虚线+7 地点）</li>
+  <li class="done">卡片 2×4 横铺，圆角 20px，背景图+渐变遮罩，毛玻璃面板 blur(20px)</li>
+  <li class="done">三阶段主色：蓝 / 绿 / 紫；四分类配色：景点绿/美食橙/交通蓝/住宿紫</li>
+  <li class="done">警示条琥珀色、出门提醒蓝色、打卡/打车按钮蓝色高亮，语义一致</li>
 </ul>
 
-<h3>10.4 触发逻辑验收</h3>
-<ul class="check-list">
-  <li>阶段 1→2：出发前 2h 和 GPS 到达机场取先到者触发</li>
-  <li>阶段 2→3：航班降落 OR GPS 到达目的地，任一信号即切换</li>
-  <li>阶段 3→4：旅行最后一天 OR 返程前 12h，先到者触发</li>
-  <li>阶段 4→5：返程航班降落 OR GPS 到达出发城市</li>
-  <li>阶段 5→归档：回忆阶段持续 7 天后自动移除</li>
-  <li>信号优先级：航班 API > 时间 > GPS > 用户手动</li>
-  <li>无 GPS 时降级为纯时间驱动，卡片不报错</li>
-  <li>无航班 API 时降级为计划时间+GPS，状态流进度条隐藏</li>
-  <li>离线时使用缓存数据，标注「离线数据」</li>
-  <li>多程旅行支持多段阶段 2→3 循环</li>
-  <li>航班改签后自动重新计算阶段触发时间</li>
-  <li>行程取消后弹出确认通知，不静默删除</li>
-</ul>
+<!-- ====== 8. 附录 ====== -->
+<h2 id="appendix"><span class="num">8</span>附录</h2>
 
-<h3>10.5 加桌引导验收</h3>
-<ul class="check-list">
-  <li>机票短信触发后 5 分钟内弹出加桌引导通知</li>
-  <li>酒店预订触发后即时弹出加桌引导通知</li>
-  <li>多信号指向同一行程时合并为一次通知（去重）</li>
-  <li>通知含证据 chips（✈️机票短信 / 📅日历事件 / 🏨酒店预订）</li>
-  <li>通知三按钮：创建卡片 / 稀后 / 不再提醒</li>
-  <li>出发前 3 天未加卡 → 上午 09:00 推送提醒</li>
-  <li>出发前 1 天未加卡 → 晚间 20:00 推送最后一次提醒</li>
-  <li>22:00~08:00 免打扰时段不推送</li>
-  <li>用户加卡后立即停止所有后续提醒</li>
-  <li>用户点「不再提醒」后该行程不再推送</li>
-  <li>卡片中心推荐位展示旅行卡片 + 行程信息</li>
-  <li>小艺语音创建路径直接建卡，无需二次确认</li>
-  <li>从点击「创建卡片」到卡片渲染完成 ≤ 1s</li>
-</ul>
-
-<!-- ====== 附录 ====== -->
-<h2><span class="num">11</span>附录</h2>
-
-<h3>11.1 Demo 文件索引</h3>
+<h3>8.1 Demo 文件索引</h3>
 <div class="ref-block">
   <div class="rt">card-space/travel-singlecard/index.html</div>
-  完整 Demo（924 行），含控制台 + 手机模拟器 + 五阶段卡片 + 应用页。支持 URL hash：<code>#stage=N</code> 选阶段、<code>#app=1</code> 打开应用页。
-</div>
-<div class="ref-block">
-  <div class="rt">card-space/travel-singlecard/screenshots/</div>
-  6 张终稿截图：<code>final_s1.png</code> ~ <code>final_s5.png</code>（五阶段）+ <code>final_apppage.png</code>（应用页）。
+  完整 Demo，含左侧控制台 + 手机模拟器 + 三阶段卡片 + 应用页。支持 URL hash：<code>#stage=N</code> 选阶段、<code>#app=1</code> 打开应用页。
 </div>
 
-<h3>11.2 术语表</h3>
+<h3>8.2 术语表</h3>
 <table>
   <tr><th>术语</th><th>定义</th></tr>
-  <tr><td>KEP</td><td>Key Experience Principles，关键体验原则。从 Demo 交互中提炼的九条核心设计准则，按「原则定义 → 本版本落地 → 验收标准」三段书写，可量化验收。</td></tr>
-  <tr><td>双视图</td><td>游览阶段提供的两种卡片形态：一日进度视图（当前+下一站，默认）与景点美图视图（左滑动区+右六宫格），由左侧「卡片视图」按钮切换。</td></tr>
-  <tr><td>六宫格</td><td>景点美图视图右侧的 2×3 操作/信息网格：☀️天气 / 👣步数（信息格）+ 📖攻略 / 🗓️计划 / 🧭导航 / 🚕打车（操作格，打车蓝色高亮）。</td></tr>
-  <tr><td>硬约束警示</td><td>景点美图视图站点上的琥珀色提示条（右上角），提示该站点的硬性时间/票务约束，如「索道 16:30 停运」「建议 11:45 下山」。</td></tr>
-  <tr><td>出门提醒</td><td>离开住宿后第一个站点上的蓝色 note 提示（右上角，与硬约束警示条同位），如早餐卡「🔑 房卡 · 🧥 外套 别忘带」，仅首站出现。</td></tr>
-  <tr><td>打卡纠偏</td><td>一日进度视图的蓝色打卡按钮：实际走得比计划快/慢时点按，当前站、「当前」蓝标与 7 段进度条同步更新对齐。</td></tr>
-  <tr><td>状态机</td><td>卡片内容的五阶段流转模型，由时间/位置/航班状态信号驱动自动切换。</td></tr>
-  <tr><td>毛玻璃面板</td><td>卡片内容区容器，<code>backdrop-filter:blur(20px)</code> + 深色半透明背景，使文字在风景图上可读。</td></tr>
-  <tr><td>圆周旅记风格</td><td>参考圆周旅记 App 的交互模式：顶部路线地图 + 按天分 Tab + 地点卡片（分类图标+时间+距离）。</td></tr>
+  <tr><td>KEP</td><td>Key Experience Principles，关键体验原则。从 Demo 交互中提炼的八条核心设计准则，按「原则定义 → 本版本落地 → 验收标准」三段书写，可量化验收。</td></tr>
+  <tr><td>三阶段状态机</td><td>卡片内容的流转模型：出行前 → 游览中 → 回忆，由信号驱动自动切换，顶部 3 段进度条可手动切换。</td></tr>
+  <tr><td>卡窗分工</td><td>桌面卡片承载计划级提醒（静态、低频），实况窗（Live Window）承载航班/火车实时动态（高频、强时效），两者同源不同责。</td></tr>
+  <tr><td>攻略素材</td><td>用户前期收存的攻略内容（店铺/机位/注意事项），绑定到具体地点，游览中到点浮现。</td></tr>
+  <tr><td>生成式预览</td><td>创建卡片时的左文字右卡片布局：左侧逐段讲解，右侧手机框内卡片逐张浮现，创建过程即产品导览。</td></tr>
+  <tr><td>双视图</td><td>游览阶段的两种卡片形态：一日进度视图（当前+下一站，默认）与景点美图视图（左滑动区+右六宫格）。</td></tr>
+  <tr><td>六宫格</td><td>景点美图视图右侧的 2×3 网格：☀️天气 / 👣步数（信息格）+ 📖攻略 / 🗓️计划 / 🧭导航 / 🚕打车（操作格）。</td></tr>
+  <tr><td>硬约束警示</td><td>站点上的琥珀色提示条（右上角），提示硬性时间/票务约束，如「⚠️ 17:30 停止入园」。</td></tr>
+  <tr><td>出门提醒</td><td>离开住宿后第一个站点的蓝色 note（右上角，与警示条同位），如「🔑 房卡 · 🧥 外套 别忘带」。</td></tr>
+  <tr><td>打卡纠偏</td><td>一日进度视图的蓝色打卡按钮：实际走得比计划快/慢时点按，当前站、「当前」蓝标与 7 段进度条同步更新。</td></tr>
   <tr><td>归档</td><td>回忆阶段后 7 天，卡片自动从桌面移除，行程数据转入旅行回忆录。</td></tr>
-  <tr><td>信号源</td><td>驱动卡片阶段流转的数据来源，分为三类：时间信号（航班起飞/退房/结束）、位置信号（GPS 围栏）、航班状态信号（API 推送）。</td></tr>
-  <tr><td>先到者逻辑</td><td>阶段切换时，多个触发信号取最先到达者执行——确保不因单一信号缺失而阻塞。</td></tr>
-  <tr><td>降级模式</td><td>当某类信号不可用时，卡片自动切换到仅依赖可用信号的运转模式，不报错、不中断。</td></tr>
-  <tr><td>加桌引导</td><td>系统检测到出行信号后，通过通知/小艺/卡片中心等通道提醒用户将旅行卡片添加到桌面的机制。</td></tr>
-  <tr><td>证据 chips</td><td>加桌引导通知中展示的信号来源标签（如 ✈️机票短信 / 📅日历事件 / 🏨酒店预订），让用户知道系统为何认为其有出行计划。</td></tr>
-  <tr><td>免打扰时段</td><td>22:00~08:00 期间不推送加桌引导通知，尊重用户休息时间。</td></tr>
-  <tr><td>Top 2</td><td>桌面卡片每阶段只展示的 2 条核心信息，由系统按优先级排序——异常事件 > 时间临近 > 位置触发 > 默认预设。</td></tr>
-  <tr><td>增删改查 (CRUD)</td><td>行程计划的四项可编辑操作：增（新增地点）、删（删除地点）、改（修改详情）、查（筛选浏览）。操作后行程自动保持结构规整。</td></tr>
-  <tr><td>结构规整</td><td>行程计划输出的四步一致性保证：按天分组 → 按时间升序排序 → 四分类着色 → 距离重算，确保 CRUD 后不会出现混乱。</td></tr>
-  <tr><td>双端同步</td><td>应用页 CRUD 操作后，卡片桌面态 Top 2 在 200ms 内同步刷新，保持信息一致。</td></tr>
 </table>
 
 <div class="footer">
-  本 PRD 基于 travel-singlecard Demo v1.3 的实际交互提炼而成（2026-08-25 更新）。Demo 已提交 GitCode / GitHub 双仓库同步。
+  本 PRD 基于 travel-singlecard Demo 当前版本重写（v2.0，2026-08-25），仅覆盖手机框内卡片体验。Demo 已提交 GitCode / GitHub 双仓库同步。
 </div>
 
 </div>
