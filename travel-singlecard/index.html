@@ -1134,25 +1134,35 @@ function chipHTML(stage){
 }
 
 // ====== 一日时间轴：当前 + 下一地点进度卡（时间推算为主，手动打卡纠偏） ======
+// fb = 无实景图时刻的左图兜底；short/sub/nextName/nextMeta 供美图视图使用
 const dayMoments=[
-  {time:'08:00',period:'早餐',cur:'再回首 · 凉鸡米线',meta:'📍 古城人民路 · 步行 5 分钟 · 攻略收藏',next:'苍山洗马潭 ｜ 🚠 索道 09:30 前到',btn:'✓ 出发去苍山',img:'',bg:'linear-gradient(135deg,#FFA726 0%,#F57C00 100%)'},
-  {time:'09:30',period:'上午景点',cur:'苍山 · 洗马潭',meta:'游览中 40 分钟 · 📖 云海栈道拐角最出片',next:'午餐 复兴路美食街 ｜ 建议 11:45 下山',btn:'✓ 下山去吃饭',img:'cangshan.jpg',bg:''},
-  {time:'12:00',period:'午餐',cur:'复兴路美食街',meta:'🍜 攻略收藏 3 家店 · 烤乳扇 / 米线 / 粑粑',next:'崇圣寺三塔 14:00 ｜ ⚠️ 17:30 停止入园',btn:'✓ 出发去三塔',img:'',bg:'linear-gradient(135deg,#FF8A65 0%,#E64A19 100%)'},
-  {time:'14:00',period:'下午景点',cur:'崇圣寺三塔',meta:'游览中 · 📖 倒影公园机位 · 17:30 停止入园',next:'晚餐 段公子·砂锅鱼 18:00 ｜ 已订座',btn:'✓ 离园去晚餐',img:'dali.jpg',bg:''},
-  {time:'18:00',period:'晚餐',cur:'段公子 · 砂锅鱼',meta:'📍 古城复兴路 · 已订座 18:00',next:'洱海篝火晚会 20:00 ｜ 才村码头广场',btn:'✓ 出发去晚会',img:'',bg:'linear-gradient(135deg,#8E24AA 0%,#4A148C 100%)'},
-  {time:'20:00',period:'晚间活动',cur:'洱海篝火晚会',meta:'进行中 · 已购票 · 黄金拍摄 18:50 起',next:'回酒店 ｜ ⚠️ 末班公交 22:00',btn:'✓ 离场返程',img:'sunset.jpg',bg:''},
-  {time:'22:00',period:'今日收官',cur:'回酒店 · 走了 6 站',meta:'✅ 践行攻略 5/7 · 1.4 万步 · 今日回顾已生成',next:'明天 08:00 早餐 ｜ 已排 4 站',btn:'🌙 到酒店了',img:'',bg:'linear-gradient(135deg,#1E2761 0%,#4A3B8C 100%)'},
+  {time:'08:00',period:'早餐',cur:'再回首 · 凉鸡米线',meta:'📍 古城人民路 · 步行 5 分钟 · 攻略收藏',next:'苍山洗马潭 ｜ 🚠 索道 09:30 前到',btn:'✓ 出发去苍山',img:'',bg:'linear-gradient(135deg,#FFA726 0%,#F57C00 100%)',
+    short:'再回首米线',sub:'早餐 · 古城人民路',nextName:'苍山洗马潭',nextMeta:'🚠 索道 09:30 前到',fb:'erhai.jpg'},
+  {time:'09:30',period:'上午景点',cur:'苍山 · 洗马潭',meta:'游览中 40 分钟 · 📖 云海栈道拐角最出片',next:'午餐 复兴路美食街 ｜ 建议 11:45 下山',btn:'✓ 下山去吃饭',img:'cangshan.jpg',bg:'',
+    short:'苍山',sub:'洗马潭 · 游览中 40 分钟',nextName:'复兴路美食街',nextMeta:'午餐 · 建议 11:45 下山',fb:''},
+  {time:'12:00',period:'午餐',cur:'复兴路美食街',meta:'🍜 攻略收藏 3 家店 · 烤乳扇 / 米线 / 粑粑',next:'崇圣寺三塔 14:00 ｜ ⚠️ 17:30 停止入园',btn:'✓ 出发去三塔',img:'',bg:'linear-gradient(135deg,#FF8A65 0%,#E64A19 100%)',
+    short:'复兴路美食街',sub:'午餐 · 收藏 3 家店',nextName:'崇圣寺三塔',nextMeta:'14:00 · ⚠️ 17:30 停止入园',fb:'dali.jpg'},
+  {time:'14:00',period:'下午景点',cur:'崇圣寺三塔',meta:'游览中 · 📖 倒影公园机位 · 17:30 停止入园',next:'晚餐 段公子·砂锅鱼 18:00 ｜ 已订座',btn:'✓ 离园去晚餐',img:'dali.jpg',bg:'',
+    short:'崇圣寺三塔',sub:'游览中 · 17:30 停止入园',nextName:'段公子·砂锅鱼',nextMeta:'18:00 · 已订座',fb:''},
+  {time:'18:00',period:'晚餐',cur:'段公子 · 砂锅鱼',meta:'📍 古城复兴路 · 已订座 18:00',next:'洱海篝火晚会 20:00 ｜ 才村码头广场',btn:'✓ 出发去晚会',img:'',bg:'linear-gradient(135deg,#8E24AA 0%,#4A148C 100%)',
+    short:'段公子砂锅鱼',sub:'晚餐 · 已订座 18:00',nextName:'洱海篝火晚会',nextMeta:'20:00 · 才村码头广场',fb:'sunset.jpg'},
+  {time:'20:00',period:'晚间活动',cur:'洱海篝火晚会',meta:'进行中 · 已购票 · 黄金拍摄 18:50 起',next:'回酒店 ｜ ⚠️ 末班公交 22:00',btn:'✓ 离场返程',img:'sunset.jpg',bg:'',
+    short:'洱海篝火晚会',sub:'进行中 · 才村码头广场',nextName:'回酒店',nextMeta:'⚠️ 末班公交 22:00',fb:''},
+  {time:'22:00',period:'今日收官',cur:'回酒店 · 走了 6 站',meta:'✅ 践行攻略 5/7 · 1.4 万步 · 今日回顾已生成',next:'明天 08:00 早餐 ｜ 已排 4 站',btn:'🌙 到酒店了',img:'',bg:'linear-gradient(135deg,#1E2761 0%,#4A3B8C 100%)',
+    short:'回酒店',sub:'今日收官 · 走了 6 站',nextName:'明日早餐',nextMeta:'08:00 · 已排 4 站',fb:'lijiang.jpg'},
 ];
 let curMoment=1;
+let stage2View='progress';   // progress=一日进度卡 / scenic=美图分栏卡（原游览中卡片）
 function jumpMoment(i){curMoment=i;renderCard();}
 function checkinMoment(){curMoment=(curMoment+1)%dayMoments.length;renderCard();}
+function setStage2View(v){stage2View=v;renderCard();}
 
 const stages={
   1:{name:'出行前',icon:'🧳',color:'var(--s1)',bg:IMG+'lijiang.jpg',
     desc:'行前倒计时+天气预览+清单进度。维持查看习惯，建立出发预期。',
     signal:'出发当天 → 切换到游览'},
   2:{name:'游览中',icon:'🗺️',color:'var(--s3)',bg:IMG+'dali.jpg',
-    desc:'一日进度卡：只显示当前 + 下一地点。到点自动切换，走快走慢点蓝色打卡钮纠偏（点一下试试）。顶部细条可直跳任意时段。',
+    desc:'一日进度卡：只显示当前 + 下一地点。到点自动切换，走快走慢点蓝色打卡钮纠偏（点一下试试）；右上角可切回经典「左图右文」美图视图。',
     signal:'一天 7 次切换：时间推算 + 手动打卡 · 行程最后一天 → 切换到回忆'},
   3:{name:'回忆',icon:'📸',color:'var(--s5)',bg:IMG+'lijiang.jpg',
     desc:'照片网格+行程统计+精彩瞬间。从信息卡转为情绪卡。',
@@ -1228,6 +1238,34 @@ function renderCard(){
   }
   else if(curStage===2){
     const m=dayMoments[curMoment];
+    const toggle=`<span class="sub" style="cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();setStage2View('${stage2View==='progress'?'scenic':'progress'}')">${stage2View==='progress'?'🖼️ 美图视图':'🕗 进度视图'}</span>`;
+    if(stage2View==='scenic'){
+      // 原「游览中」卡片：左图（当前景点美图）右文（下一站 + 打车/导航）
+      body=`
+      <div class="tc-glass-panel">
+        <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:26px">
+          <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span></span>
+          ${toggle}
+        </div>
+        <div style="flex:1;display:flex;gap:10px;min-height:0">
+          <div class="vis-left" onclick="event.stopPropagation();openAppPage()">
+            <div class="vl-img" style="background-image:url('${IMG}${m.img||m.fb}')"></div>
+            <div class="vl-tag">${m.short}</div>
+            <div class="vl-sub">${m.sub}</div>
+          </div>
+          <div class="vis-right">
+            <div class="vr-label">下一站</div>
+            <div class="vr-name">${m.nextName}</div>
+            <div class="vr-meta">${m.nextMeta}</div>
+            <div class="vr-meta" style="color:#FFE08A;cursor:pointer" onclick="event.stopPropagation();alert('打开收藏的攻略原文')">📖 攻略原文 · 收藏于 3 天前</div>
+            <div class="tc-action-btns" style="margin-top:auto">
+              <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
+              <div class="tc-action-btn" onclick="event.stopPropagation();alert('导航')"><span class="ab-ico">🧭</span>导航</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }else{
     let mpager='<div style="display:flex;gap:2px;margin:1px 0 0">';
     for(let i=0;i<dayMoments.length;i++){
       const c=i<curMoment?'rgba(255,255,255,.55)':(i===curMoment?'#fff':'rgba(255,255,255,.22)');
@@ -1237,8 +1275,8 @@ function renderCard(){
     body=`
       <div class="tc-glass-panel" style="gap:3px">
         <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:26px">
-          <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span></span>
-          <span class="sub">第 ${curMoment+1}/7 张 · 点蓝钮打卡切换</span>
+          <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span><span class="sub" style="margin-left:6px">第 ${curMoment+1}/7 张</span></span>
+          ${toggle}
         </div>
         ${mpager}
         <div class="tc-big sm" style="font-size:19px;margin-top:1px">${m.cur}</div>
@@ -1249,6 +1287,7 @@ function renderCard(){
           <div class="tc-action-btn" style="background:rgba(10,89,247,.65);padding:5px 0" onclick="event.stopPropagation();checkinMoment()">${m.btn}</div>
         </div>
       </div>`;
+    }
   }
   else if(curStage===3){
     const photos=[
