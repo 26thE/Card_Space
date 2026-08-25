@@ -325,6 +325,16 @@
     text-shadow:0 1px 4px rgba(0,0,0,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .vis-right .vr-meta{font-size:10px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.4)}
   .vis-right .tc-action-btns{margin-top:auto}
+  /* ====== 美图视图：左侧方形地点滑动区 ====== */
+  .sl-slide{position:absolute;inset:0;transition:transform .45s ease,opacity .45s ease}
+  .sl-cur{position:absolute;top:6px;left:6px;z-index:2;font-size:8px;background:#0A59F7;
+    color:#fff;padding:2px 6px;border-radius:6px;font-weight:700}
+  .sl-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:10px;
+    padding:7px 0;font-size:10px;font-weight:700;color:#fff;cursor:pointer;backdrop-filter:blur(6px);
+    transition:.15s;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .sl-act span{font-size:15px}
+  .sl-act:hover{background:rgba(255,255,255,.28)}
   /* 阶段3：附近卡片标签 */
   .nb-card .nb-cat{font-size:7px;color:rgba(255,255,255,.9);background:rgba(0,0,0,.35);
     padding:1px 4px;border-radius:5px;position:absolute;top:3px;left:3px;z-index:1;backdrop-filter:blur(2px)}
@@ -1175,9 +1185,26 @@ const dayMoments=[
 ];
 let curMoment=1;
 let stage2View='progress';   // progress=一日进度卡 / scenic=美图分栏卡（原游览中卡片）
+let slideIdx=1, slideHold=0, slideX0=null;   // 左侧方形滑动区：浏览位置 / 交互后暂停自动轮播
 function jumpMoment(i){curMoment=i;renderCard();}
-function checkinMoment(){curMoment=(curMoment+1)%dayMoments.length;renderCard();}
+function checkinMoment(){curMoment=(curMoment+1)%dayMoments.length;slideIdx=curMoment;renderCard();}
 function setStage2View(v){stage2View=v;renderCard();}
+function slideStart(e){slideX0=e.clientX;}
+function slideEnd(e){
+  if(slideX0===null) return;
+  const dx=e.clientX-slideX0; slideX0=null;
+  if(Math.abs(dx)>24){
+    slideIdx=(slideIdx+(dx<0?1:-1)+dayMoments.length)%dayMoments.length;
+    slideHold=Date.now()+8000;
+    renderCard();
+  }
+}
+// 自动轮播：仅在 游览中·美图视图 且 8 秒内无手动滑动时转动
+setInterval(function(){
+  if(curStage===2&&stage2View==='scenic'&&Date.now()>slideHold){
+    slideIdx=(slideIdx+1)%dayMoments.length;renderCard();
+  }
+},4000);
 
 const stages={
   1:{name:'出行前',icon:'🧳',color:'var(--s1)',bg:IMG+'lijiang.jpg',
@@ -1261,27 +1288,37 @@ function renderCard(){
   else if(curStage===2){
     const m=dayMoments[curMoment];
     if(stage2View==='scenic'){
-      // 原「游览中」卡片：左图（当前景点美图）右文（下一站 + 打车/导航）
+      // 参考鸿蒙负一屏：左侧方形区域滑动展示每个地点，右侧固定按钮组（打车/导航/攻略/打卡）
+      const sl=dayMoments[slideIdx];
+      let slides='';
+      dayMoments.forEach((d,i)=>{
+        slides+=`<div class="sl-slide" style="transform:translateX(${(i-slideIdx)*106}%);opacity:${i===slideIdx?1:0}">
+          <div class="vl-img" style="background-image:url('${IMG}${d.img||d.fb}')"></div>
+          ${i===curMoment?'<div class="sl-cur">当前</div>':''}
+          <div class="vl-tag" style="font-size:13px;bottom:32px">${d.short}</div>
+          <div class="vl-sub" style="bottom:19px">${d.time} · ${d.period}</div>
+        </div>`;
+      });
+      let dots='';
+      dayMoments.forEach((_,i)=>{dots+=`<span style="width:4px;height:4px;border-radius:50%;background:${i===slideIdx?'#fff':'rgba(255,255,255,.45)'}"></span>`;});
       body=`
       <div class="tc-glass-panel">
         <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:36px">
-          <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span></span>
-          <span class="sub">第 ${curMoment+1}/7 张</span>
+          <span><span class="ico">⏰</span><span class="val">${sl.time} · ${sl.period}</span></span>
+          <span class="sub">左滑切换地点 · 当前在第 ${curMoment+1}/7 站</span>
         </div>
         <div style="flex:1;display:flex;gap:10px;min-height:0">
-          <div class="vis-left" onclick="event.stopPropagation();openAppPage()">
-            <div class="vl-img" style="background-image:url('${IMG}${m.img||m.fb}')"></div>
-            <div class="vl-tag">${m.short}</div>
-            <div class="vl-sub">${m.sub}</div>
+          <div class="vis-left" id="locSlider" style="flex:none;width:116px;cursor:grab"
+            onpointerdown="slideStart(event)" onpointerup="slideEnd(event)">
+            ${slides}
+            <div style="position:absolute;bottom:6px;left:0;right:0;z-index:2;display:flex;gap:4px;justify-content:center">${dots}</div>
           </div>
           <div class="vis-right">
-            <div class="vr-label">下一站</div>
-            <div class="vr-name">${m.nextName}</div>
-            <div class="vr-meta">${m.nextMeta}</div>
-            <div class="vr-meta" style="color:#FFE08A;cursor:pointer" onclick="event.stopPropagation();alert('打开收藏的攻略原文')">📖 攻略原文 · 收藏于 3 天前</div>
-            <div class="tc-action-btns" style="margin-top:auto">
-              <div class="tc-action-btn" onclick="event.stopPropagation();alert('打车')"><span class="ab-ico">🚕</span>打车</div>
-              <div class="tc-action-btn" onclick="event.stopPropagation();alert('导航')"><span class="ab-ico">🧭</span>导航</div>
+            <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;align-content:stretch">
+              <div class="sl-act" onclick="event.stopPropagation();alert('打车前往 ${sl.short}')"><span>🚕</span>打车</div>
+              <div class="sl-act" onclick="event.stopPropagation();alert('导航前往 ${sl.short}')"><span>🧭</span>导航</div>
+              <div class="sl-act" onclick="event.stopPropagation();alert('打开 ${sl.short} 的攻略原文')"><span>📖</span>攻略</div>
+              <div class="sl-act" onclick="event.stopPropagation();${slideIdx===curMoment?'checkinMoment()':`jumpMoment(${slideIdx})`}"><span>✓</span>${slideIdx===curMoment?'打卡':'设为当前'}</div>
             </div>
           </div>
         </div>
@@ -1344,8 +1381,8 @@ function renderCard(){
   }
 
   const m2=curStage===2?dayMoments[curMoment]:null;
-  // 美图视图始终用实景图做卡底（白字可读）；进度视图才用渐变底
-  const bgCss=m2?(stage2View==='scenic'?`url('${IMG}${m2.img||m2.fb}')`:(m2.img?`url('${IMG}${m2.img}')`:m2.bg)):`url('${s.bg}')`;
+  // 美图视图始终用实景图做卡底（跟随左侧滑动位置）；进度视图才用渐变底
+  const bgCss=m2?(stage2View==='scenic'?`url('${IMG}${dayMoments[slideIdx].img||dayMoments[slideIdx].fb}')`:(m2.img?`url('${IMG}${m2.img}')`:m2.bg)):`url('${s.bg}')`;
   card.innerHTML=`
     <div class="tc-bg ${m2&&stage2View==='scenic'?'scenic-bg':''}" style="background-image:${bgCss}"></div>
     <button class="tc-pull" onclick="event.stopPropagation();openAppPage()" title="查看全程计划">↗</button>
