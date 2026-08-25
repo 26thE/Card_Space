@@ -590,6 +590,12 @@
     <button data-stage="3">📸 回忆</button>
   </div>
 
+  <div class="seg-label" style="margin-top:12px">卡片视图 <span style="font-weight:400;color:#B0B0B0">（游览中阶段）</span></div>
+  <div class="btn-group" id="view-btns">
+    <button class="on" data-view="progress">🕗 一日进度</button>
+    <button data-view="scenic">🖼️ 景点美图</button>
+  </div>
+
   <div class="stage-info" id="stage-info"></div>
 
   <div class="notes">
@@ -947,20 +953,22 @@
     <div class="mx-sw">→ 切换：<b>09:00 到点自动切</b> 或 手动打卡「出发去苍山」→ ②</div>
     </div>
 
-    <!-- ② 09:30 上午景点卡（苍山实景图底） -->
+    <!-- ② 09:30 上午景点卡（左图右文分栏：苍山实景） -->
     <div class="mx-item">
-    <div class="mx-card mx-dark" style="background-image:url('../travel-fork/images/cangshan.jpg')" onclick="openAppPage()">
-      <div class="mx-trig">⏰ 09:30 · 上午景点</div>
-      <div class="mx-open">↗</div>
-      <div class="mx-inner">
-        <div class="mx-big" style="font-size:16px;margin-top:16px">苍山 · 洗马潭 游览中</div>
-        <div class="mx-meta">📖 攻略：云海栈道拐角最出片 · 已停留 40 分钟</div>
-        <div class="mx-next">下一 · 午餐 复兴路美食街 ｜ 建议 11:45 下山</div>
+    <div class="mx-card mx-split" onclick="openAppPage()">
+      <div class="mx-photo" style="background-image:url('../travel-fork/images/cangshan.jpg')">
+        <div class="ph-label">⏰ 09:30 · 上午景点</div>
+      </div>
+      <div class="mx-side">
+        <div class="mx-big" style="font-size:16px;margin-top:0">苍山 · 洗马潭 游览中</div>
+        <div class="mx-meta" style="color:#6B6B6B">📖 攻略：云海栈道拐角最出片 · 已停留 40 分钟</div>
+        <div class="mx-next" style="font-size:9px">下一 · 午餐 复兴路美食街 ｜ 建议 11:45 下山</div>
         <div class="mx-btns">
-          <div class="mx-btn" onclick="event.stopPropagation();alert('打开收藏的苍山攻略原文')">📖 攻略</div>
+          <div class="mx-btn" style="background:#F0F4FF;color:#0A59F7" onclick="event.stopPropagation();alert('打开收藏的苍山攻略原文')">📖 攻略</div>
           <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('已打卡：切到 ③ 午餐卡')">✓ 下山去吃饭</div>
         </div>
       </div>
+      <div class="mx-open" style="background:rgba(0,0,0,.18)">↗</div>
     </div>
     <div class="mx-cap"><i style="background:#0A59F7"></i>② 上午景点卡 · 当前：苍山</div>
     <div class="mx-sw">→ 切换：<b>11:45 到点自动切</b> 或 手动打卡「下山去吃饭」→ ③</div>
@@ -985,20 +993,22 @@
     <div class="mx-sw">→ 切换：<b>13:30 到点自动切</b> 或 手动打卡「出发去三塔」→ ④</div>
     </div>
 
-    <!-- ④ 14:00 下午景点卡（古城实景图底） -->
+    <!-- ④ 14:00 下午景点卡（左图右文分栏：三塔实景） -->
     <div class="mx-item">
-    <div class="mx-card mx-dark" style="background-image:url('../travel-fork/images/dali.jpg')" onclick="openAppPage()">
-      <div class="mx-trig">⏰ 14:00 · 下午景点</div>
-      <div class="mx-open">↗</div>
-      <div class="mx-inner">
-        <div class="mx-big" style="font-size:16px;margin-top:16px">崇圣寺三塔 · 游览中</div>
-        <div class="mx-meta">📖 攻略：三塔倒影公园机位 · ⏰ 17:30 停止入园</div>
-        <div class="mx-next">下一 · 晚餐 段公子·砂锅鱼 18:00 ｜ 已订座</div>
+    <div class="mx-card mx-split" onclick="openAppPage()">
+      <div class="mx-photo" style="background-image:url('../travel-fork/images/dali.jpg')">
+        <div class="ph-label">⏰ 14:00 · 下午景点</div>
+      </div>
+      <div class="mx-side">
+        <div class="mx-big" style="font-size:16px;margin-top:0">崇圣寺三塔 · 游览中</div>
+        <div class="mx-meta" style="color:#6B6B6B">📖 攻略：三塔倒影公园机位 · ⏰ 17:30 停止入园</div>
+        <div class="mx-next" style="font-size:9px">下一 · 晚餐 段公子·砂锅鱼 18:00 ｜ 已订座</div>
         <div class="mx-btns">
-          <div class="mx-btn" onclick="event.stopPropagation();alert('打开收藏的三塔攻略原文')">📖 攻略</div>
+          <div class="mx-btn" style="background:#F0F4FF;color:#0A59F7" onclick="event.stopPropagation();alert('打开收藏的三塔攻略原文')">📖 攻略</div>
           <div class="mx-btn" style="background:#0A59F7;color:#fff" onclick="event.stopPropagation();alert('已打卡：切到 ⑤ 晚餐卡')">✓ 离园去晚餐</div>
         </div>
       </div>
+      <div class="mx-open" style="background:rgba(0,0,0,.18)">↗</div>
     </div>
     <div class="mx-cap"><i style="background:#2E7D32"></i>④ 下午景点卡 · 当前：三塔</div>
     <div class="mx-sw">→ 切换：<b>17:15 到点自动切</b>（停止入园前提醒）或 打卡「离园去晚餐」→ ⑤</div>
@@ -1162,7 +1172,7 @@ const stages={
     desc:'行前倒计时+天气预览+清单进度。维持查看习惯，建立出发预期。',
     signal:'出发当天 → 切换到游览'},
   2:{name:'游览中',icon:'🗺️',color:'var(--s3)',bg:IMG+'dali.jpg',
-    desc:'一日进度卡：只显示当前 + 下一地点。到点自动切换，走快走慢点蓝色打卡钮纠偏（点一下试试）；右上角可切回经典「左图右文」美图视图。',
+    desc:'一日进度卡：只显示当前 + 下一地点。到点自动切换，走快走慢点蓝色打卡钮纠偏（点一下试试）；左侧「卡片视图」可切回经典左图右文美图卡。',
     signal:'一天 7 次切换：时间推算 + 手动打卡 · 行程最后一天 → 切换到回忆'},
   3:{name:'回忆',icon:'📸',color:'var(--s5)',bg:IMG+'lijiang.jpg',
     desc:'照片网格+行程统计+精彩瞬间。从信息卡转为情绪卡。',
@@ -1238,14 +1248,13 @@ function renderCard(){
   }
   else if(curStage===2){
     const m=dayMoments[curMoment];
-    const toggle=`<span class="sub" style="cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();setStage2View('${stage2View==='progress'?'scenic':'progress'}')">${stage2View==='progress'?'🖼️ 美图视图':'🕗 进度视图'}</span>`;
     if(stage2View==='scenic'){
       // 原「游览中」卡片：左图（当前景点美图）右文（下一站 + 打车/导航）
       body=`
       <div class="tc-glass-panel">
         <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:26px">
           <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span></span>
-          ${toggle}
+          <span class="sub">第 ${curMoment+1}/7 张</span>
         </div>
         <div style="flex:1;display:flex;gap:10px;min-height:0">
           <div class="vis-left" onclick="event.stopPropagation();openAppPage()">
@@ -1276,7 +1285,6 @@ function renderCard(){
       <div class="tc-glass-panel" style="gap:3px">
         <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:26px">
           <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span><span class="sub" style="margin-left:6px">第 ${curMoment+1}/7 张</span></span>
-          ${toggle}
         </div>
         ${mpager}
         <div class="tc-big sm" style="font-size:19px;margin-top:1px">${m.cur}</div>
@@ -1725,6 +1733,13 @@ function updateClock(){
 // ====== 事件绑定 ======
 document.getElementById('stage-btns').addEventListener('click',e=>{
   if(e.target.tagName==='BUTTON') switchStage(parseInt(e.target.dataset.stage));
+});
+// 卡片视图切换（一日进度 / 景点美图），仅游览中阶段；点了会自动跳到游览中
+document.getElementById('view-btns').addEventListener('click',e=>{
+  if(e.target.tagName!=='BUTTON') return;
+  stage2View=e.target.dataset.view;
+  document.querySelectorAll('#view-btns button').forEach(b=>b.classList.toggle('on',b.dataset.view===stage2View));
+  if(curStage!==2) switchStage(2); else renderCard();
 });
 document.getElementById('path-btns').addEventListener('click',e=>{
   if(e.target.tagName==='BUTTON') switchPath(e.target.dataset.path);
