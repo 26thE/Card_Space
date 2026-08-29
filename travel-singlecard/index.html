@@ -621,12 +621,6 @@
     <button data-stage="3">📸 回忆</button>
   </div>
 
-  <div class="seg-label" style="margin-top:12px">卡片视图 <span style="font-weight:400;color:#B0B0B0">（游览中阶段）</span></div>
-  <div class="btn-group" id="view-btns">
-    <button class="on" data-view="progress">🕗 一日进度</button>
-    <button data-view="scenic">🖼️ 景点美图</button>
-  </div>
-
   <div class="stage-info" id="stage-info"></div>
 
   <div class="notes">
@@ -634,7 +628,7 @@
     <div class="ni">• <b>2×4 桌面卡片</b>，右上角↗拉起全程时间线</div>
     <div class="ni">• 三阶段<b>自动切换</b>：出发前 → 游览中 → 回忆</div>
     <div class="ni">• 出发前：天数+起飞时间+天气胶囊+✓/✗ 清单</div>
-    <div class="ni">• 游览阶段：顶部行程进度+天气人流，左侧当前景点美图（游览中状态），右侧下一站（时间/距离/购票状态/拍照攻略）+ 打车/导航</div>
+    <div class="ni">• 游览阶段：左侧方形滑动区浏览 7 站（4s 轮播、手动滑动暂停），右侧天气/步数 + 攻略/计划/导航/打车；<b>滑到自己所在站点，点一下即打卡纠偏</b></div>
     <div class="ni">• 回忆阶段：信息卡→<b>情绪卡</b>（照片+统计+分享）</div>
   </div>
 </div>
@@ -1201,11 +1195,9 @@ const dayMoments=[
     from:'距 才村码头 4.2km',warn:''},
 ];
 let curMoment=1;
-let stage2View='progress';   // progress=一日进度卡 / scenic=美图分栏卡（原游览中卡片）
 let slideIdx=1, slideHold=0, slideX0=null;   // 左侧方形滑动区：浏览位置 / 交互后暂停自动轮播
-function jumpMoment(i){curMoment=i;renderCard();}
+function jumpMoment(i){curMoment=i;slideIdx=i;renderCard();}
 function checkinMoment(){curMoment=(curMoment+1)%dayMoments.length;slideIdx=curMoment;renderCard();}
-function setStage2View(v){stage2View=v;renderCard();}
 function slideStart(e){slideX0=e.clientX;}
 function slideEnd(e){
   if(slideX0===null) return;
@@ -1214,11 +1206,16 @@ function slideEnd(e){
     slideIdx=(slideIdx+(dx<0?1:-1)+dayMoments.length)%dayMoments.length;
     slideHold=Date.now()+8000;
     renderCard();
+  }else if(slideIdx!==curMoment){
+    // 点按（未滑动）= 在该站打卡纠偏：当前站与「当前」蓝标对齐到浏览位置
+    curMoment=slideIdx;
+    slideHold=Date.now()+8000;
+    renderCard();
   }
 }
-// 自动轮播：仅在 游览中·美图视图 且 8 秒内无手动滑动时转动
+// 自动轮播：仅在 游览中阶段 且 8 秒内无手动滑动时转动
 setInterval(function(){
-  if(curStage===2&&stage2View==='scenic'&&Date.now()>slideHold){
+  if(curStage===2&&Date.now()>slideHold){
     slideIdx=(slideIdx+1)%dayMoments.length;renderCard();
   }
 },4000);
@@ -1228,8 +1225,8 @@ const stages={
     desc:'行前倒计时+天气预览+清单进度。维持查看习惯，建立出发预期。',
     signal:'出发当天 → 切换到游览'},
   2:{name:'游览中',icon:'🗺️',color:'var(--s3)',bg:IMG+'dali.jpg',
-    desc:'一日进度卡：只显示当前 + 下一地点。到点自动切换，走快走慢点蓝色打卡钮纠偏（点一下试试）；左侧「卡片视图」可切回经典左图右文美图卡。',
-    signal:'一天 7 次切换：时间推算 + 手动打卡 · 行程最后一天 → 切换到回忆'},
+    desc:'景点美图卡：左侧方形滑动区 4s 轮播 7 站，滑到自己所在站点点一下即打卡纠偏；右侧天气/步数速览 + 攻略/计划/导航/打车。',
+    signal:'一天 7 次切换：时间推算 + 点按打卡 · 行程最后一天 → 切换到回忆'},
   3:{name:'回忆',icon:'📸',color:'var(--s5)',bg:IMG+'lijiang.jpg',
     desc:'照片网格+行程统计+精彩瞬间。从信息卡转为情绪卡。',
     signal:'旅行结束后7天 → 卡片自动归档'},
@@ -1303,26 +1300,24 @@ function renderCard(){
       </div>`;
   }
   else if(curStage===2){
-    const m=dayMoments[curMoment];
-    if(stage2View==='scenic'){
-      // 参考鸿蒙负一屏：左侧方形区域滑动展示每个地点，右侧固定按钮组（打车/导航/攻略/打卡）
-      const sl=dayMoments[slideIdx];
-      let slides='';
-      dayMoments.forEach((d,i)=>{
-        slides+=`<div class="sl-slide" style="transform:translateX(${(i-slideIdx)*106}%);opacity:${i===slideIdx?1:0}">
-          <div class="vl-img" style="background-image:url('${IMG}${d.img||d.fb}')"></div>
-          ${i===curMoment?'<div class="sl-cur">当前</div>':''}
-          ${d.warn?`<div class="sl-warn">${d.warn}</div>`:''}
-          ${d.note?`<div class="sl-note">${d.note}</div>`:''}
-          <div class="vl-tag" style="font-size:13px;bottom:44px">${d.short}</div>
-          <div class="vl-sub" style="bottom:31px">${d.time} · ${d.period}</div>
-          <div class="vl-sub" style="bottom:18px">📏 ${d.from}</div>
-        </div>`;
-      });
-      let dots='';
-      dayMoments.forEach((_,i)=>{dots+=`<span style="width:4px;height:4px;border-radius:50%;background:${i===slideIdx?'#fff':'rgba(255,255,255,.45)'}"></span>`;});
-      const stepsArr=['0.2','0.6','0.9','1.1','1.2','1.3','1.4'];
-      body=`
+    // 参考鸿蒙负一屏：左侧方形区域滑动展示每个地点，右侧固定按钮组（打车/导航/攻略/计划）
+    const sl=dayMoments[slideIdx];
+    let slides='';
+    dayMoments.forEach((d,i)=>{
+      slides+=`<div class="sl-slide" style="transform:translateX(${(i-slideIdx)*106}%);opacity:${i===slideIdx?1:0}">
+        <div class="vl-img" style="background-image:url('${IMG}${d.img||d.fb}')"></div>
+        ${i===curMoment?'<div class="sl-cur">当前</div>':''}
+        ${d.warn?`<div class="sl-warn">${d.warn}</div>`:''}
+        ${d.note?`<div class="sl-note">${d.note}</div>`:''}
+        <div class="vl-tag" style="font-size:13px;bottom:44px">${d.short}</div>
+        <div class="vl-sub" style="bottom:31px">${d.time} · ${d.period}</div>
+        <div class="vl-sub" style="bottom:18px">📏 ${d.from}</div>
+      </div>`;
+    });
+    let dots='';
+    dayMoments.forEach((_,i)=>{dots+=`<span style="width:4px;height:4px;border-radius:50%;background:${i===slideIdx?'#fff':'rgba(255,255,255,.45)'}"></span>`;});
+    const stepsArr=['0.2','0.6','0.9','1.1','1.2','1.3','1.4'];
+    body=`
       <div class="tc-glass-panel">
         <div style="flex:1;display:flex;gap:10px;min-height:0">
           <div class="vis-left" id="locSlider" style="flex:1.5;cursor:grab"
@@ -1340,28 +1335,6 @@ function renderCard(){
           </div>
         </div>
       </div>`;
-    }else{
-    let mpager='<div style="display:flex;gap:2px;margin:1px 0 0">';
-    for(let i=0;i<dayMoments.length;i++){
-      const c=i<curMoment?'rgba(255,255,255,.55)':(i===curMoment?'#fff':'rgba(255,255,255,.22)');
-      mpager+=`<div style="flex:1;height:2px;border-radius:1px;background:${c};cursor:pointer" onclick="event.stopPropagation();jumpMoment(${i})" title="${dayMoments[i].time} ${dayMoments[i].period}"></div>`;
-    }
-    mpager+='</div>';
-    body=`
-      <div class="tc-glass-panel" style="gap:3px">
-        <div class="tc-row" style="justify-content:space-between;font-size:10px;padding-right:36px">
-          <span><span class="ico">⏰</span><span class="val">${m.time} · ${m.period}</span><span class="sub" style="margin-left:6px">第 ${curMoment+1}/7 张</span></span>
-        </div>
-        ${mpager}
-        <div class="tc-big sm" style="font-size:19px;margin-top:1px">${m.cur}</div>
-        <div class="tc-text" style="font-size:9px;color:rgba(255,255,255,.88)">${m.meta}</div>
-        <div style="margin-top:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(8px);border-radius:8px;padding:3px 8px;font-size:9px;font-weight:600;color:#fff">下一 · ${m.next}</div>
-        <div class="tc-action-btns" style="margin-top:4px">
-          <div class="tc-action-btn" style="padding:5px 0" onclick="event.stopPropagation();alert('打开收藏的攻略原文')"><span class="ab-ico">📖</span>攻略</div>
-          <div class="tc-action-btn" style="background:rgba(10,89,247,.65);padding:5px 0" onclick="event.stopPropagation();checkinMoment()">${m.btn}</div>
-        </div>
-      </div>`;
-    }
   }
   else if(curStage===3){
     const photos=[
@@ -1398,10 +1371,10 @@ function renderCard(){
   }
 
   const m2=curStage===2?dayMoments[curMoment]:null;
-  // 美图视图始终用实景图做卡底（跟随左侧滑动位置）；进度视图才用渐变底
-  const bgCss=m2?(stage2View==='scenic'?`url('${IMG}${dayMoments[slideIdx].img||dayMoments[slideIdx].fb}')`:(m2.img?`url('${IMG}${m2.img}')`:m2.bg)):`url('${s.bg}')`;
+  // 美图视图始终用实景图做卡底（跟随左侧滑动位置）
+  const bgCss=m2?`url('${IMG}${dayMoments[slideIdx].img||dayMoments[slideIdx].fb}')`:`url('${s.bg}')`;
   card.innerHTML=`
-    <div class="tc-bg ${m2&&stage2View==='scenic'?'scenic-bg':''}" style="background-image:${bgCss}"></div>
+    <div class="tc-bg ${m2?'scenic-bg':''}" style="background-image:${bgCss}"></div>
     <button class="tc-pull" onclick="event.stopPropagation();openAppPage()" title="查看全程计划">↗</button>
     ${progress}
     <div class="tc-body">${body}</div>`;
@@ -1800,13 +1773,6 @@ function updateClock(){
 // ====== 事件绑定 ======
 document.getElementById('stage-btns').addEventListener('click',e=>{
   if(e.target.tagName==='BUTTON') switchStage(parseInt(e.target.dataset.stage));
-});
-// 卡片视图切换（一日进度 / 景点美图），仅游览中阶段；点了会自动跳到游览中
-document.getElementById('view-btns').addEventListener('click',e=>{
-  if(e.target.tagName!=='BUTTON') return;
-  stage2View=e.target.dataset.view;
-  document.querySelectorAll('#view-btns button').forEach(b=>b.classList.toggle('on',b.dataset.view===stage2View));
-  if(curStage!==2) switchStage(2); else renderCard();
 });
 document.getElementById('path-btns').addEventListener('click',e=>{
   if(e.target.tagName==='BUTTON') switchPath(e.target.dataset.path);
