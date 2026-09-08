@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小艺生成攻略 → 加桌卡片 · 单卡旅行助手</title>
+<style>
+  :root{
+    --page-bg:#F5F6FA; --panel-bg:#FFFFFF; --panel-text:#1A1A1A; --panel-sub:#6B6B6B;
+    --accent:#0A59F7; --wall1:#DCE7FF; --wall2:#ECE3FF; --wall3:#E6F4FF;
+    --card-line:#EAEAEA;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:"HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--page-bg);color:var(--panel-text);padding:28px 20px;display:flex;
+    justify-content:center;gap:36px;align-items:flex-start;flex-wrap:wrap;min-height:100vh}
+
+  /* ====== 左侧步骤说明 ====== */
+  .side{width:300px;flex-shrink:0}
+  .side h1{font-size:22px;font-weight:800;letter-spacing:-.3px}
+  .side .slogan{font-size:12px;font-weight:800;margin-top:6px;letter-spacing:.5px;
+    background:linear-gradient(90deg,#0A59F7,#8A5CF6,#F472B6);-webkit-background-clip:text;
+    background-clip:text;color:transparent}
+  .side .sub{font-size:12px;color:var(--panel-sub);margin-top:6px;line-height:1.6}
+  .step-card{background:var(--panel-bg);border-radius:14px;padding:14px 16px;margin-top:12px;
+    box-shadow:0 2px 12px rgba(0,0,0,.05);display:flex;gap:12px;align-items:flex-start;
+    border:1px solid transparent;transition:.25s}
+  .step-card.active{border-color:var(--accent);box-shadow:0 4px 18px rgba(10,89,247,.12)}
+  .step-num{width:26px;height:26px;border-radius:8px;background:var(--accent);color:#fff;
+    font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .step-t{font-size:14px;font-weight:700}
+  .step-d{font-size:11px;color:var(--panel-sub);margin-top:3px;line-height:1.6}
+  .replay{margin-top:16px;font-size:12px;color:var(--accent);cursor:pointer;font-weight:600}
+  .replay:hover{text-decoration:underline}
+
+  /* ====== 手机（机框复刻华为 Mate 70：384×814 / 屏幕 362×800） ====== */
+  .phone{width:384px;height:814px;background:#1c1c1e;border-radius:46px;padding:7px 11px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;flex-shrink:0}
+  .screen{width:362px;height:800px;border-radius:36px;overflow:hidden;position:relative;
+    background:linear-gradient(165deg,var(--wall1),var(--wall2) 55%,var(--wall3));
+    display:flex;flex-direction:column}
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:10px;height:10px;
+    border-radius:50%;background:#000;z-index:30}
+  .statusbar{height:40px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;font-size:14px;font-weight:600;color:#1a1a1a;z-index:20;flex-shrink:0}
+  .statusbar .right{display:flex;align-items:center;gap:6px;font-size:12px}
+
+  /* ====== 屏 1：小艺对话 ====== */
+  #chatScreen{flex:1;display:flex;flex-direction:column;overflow:hidden;
+    background:linear-gradient(180deg,#F7F8FC,#EFF1F8)}
+  .chat-head{display:flex;align-items:center;gap:10px;padding:6px 16px 10px;
+    border-bottom:1px solid rgba(0,0,0,.05);background:rgba(255,255,255,.7);
+    backdrop-filter:blur(8px);flex-shrink:0}
+  .chat-avatar{width:34px;height:34px;border-radius:50%;color:#fff;font-size:15px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#0A59F7,#8A5CF6)}
+  .chat-name{font-size:14px;font-weight:800}
+  .chat-sub{font-size:10px;color:var(--panel-sub)}
+  .chat-body{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:12px}
+  .chat-body::-webkit-scrollbar{width:0}
+  .msg{max-width:86%;padding:10px 13px;border-radius:16px;font-size:12.5px;line-height:1.65;
+    animation:msgIn .35s ease}
+  @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+  .msg.ai{align-self:flex-start;background:#fff;color:var(--panel-text);border-bottom-left-radius:4px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06)}
+  .msg.typing{display:flex;gap:4px;padding:13px 16px}
+  .msg.typing i{width:6px;height:6px;border-radius:50%;background:#B9BEC6;animation:blink 1s infinite}
+  .msg.typing i:nth-child(2){animation-delay:.2s}
+  .msg.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+  /* 攻略卡片消息 */
+  .guide{align-self:stretch;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.08);
+    overflow:hidden;animation:msgIn .4s ease}
+  .guide-head{padding:12px 14px 10px;background:linear-gradient(135deg,#0A59F7,#8A5CF6);color:#fff}
+  .guide-title{font-size:14px;font-weight:800}
+  .guide-meta{font-size:10px;opacity:.9;margin-top:2px}
+  .gday{padding:10px 14px;border-bottom:1px dashed var(--card-line);display:none}
+  .gday.show{display:block;animation:msgIn .4s ease}
+  .gday-t{font-size:12px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .gday-t .dn{background:var(--accent);color:#fff;font-size:9px;padding:1px 7px;border-radius:8px}
+  .gloc{display:flex;gap:8px;font-size:11px;padding:3px 0;align-items:baseline}
+  .gloc .gt{color:var(--panel-sub);width:40px;flex-shrink:0;font-weight:600}
+  .gloc .gn{font-weight:600}
+  .gloc .gd{color:var(--panel-sub);font-size:10px}
+  /* 加桌按钮 */
+  .add-card-wrap{padding:12px 14px 14px;display:none}
+  .add-card-wrap.show{display:block;animation:msgIn .4s ease}
+  .add-card-btn{width:100%;border:none;border-radius:12px;padding:12px 0;font-size:13px;font-weight:800;
+    color:#fff;background:linear-gradient(135deg,#0A59F7,#8A5CF6);cursor:pointer;font-family:inherit;
+    box-shadow:0 6px 16px rgba(10,89,247,.35);transition:.2s;animation:pulse 2s infinite}
+  .add-card-btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(10,89,247,.45)}
+  @keyframes pulse{0%,100%{box-shadow:0 6px 16px rgba(10,89,247,.35)}50%{box-shadow:0 6px 24px rgba(10,89,247,.6)}}
+  .add-card-cap{font-size:10px;color:var(--panel-sub);text-align:center;margin-top:7px;line-height:1.5}
+  .chat-input{display:flex;gap:8px;padding:10px 12px;background:rgba(255,255,255,.8);
+    border-top:1px solid rgba(0,0,0,.05);flex-shrink:0;align-items:center}
+  .chat-input .ci{flex:1;background:#F0F1F5;border-radius:16px;padding:8px 12px;font-size:12px;color:#9AA0AA}
+  .chat-input .send{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px}
+
+  /* ====== 屏 2：桌面（卡片三阶段） ====== */
+  #desktopScreen{flex:1;display:none;flex-direction:column;overflow:hidden}
+  #desktopScreen.on{display:flex}
+  .desktop{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:77px;
+    gap:8px;padding:4px 12px 0;overflow:hidden;align-content:start}
+  .travel-card{grid-column:1/span 4;grid-row:1/span 2;border-radius:20px;overflow:hidden;
+    position:relative;box-shadow:0 6px 20px rgba(0,0,0,.15);
+    transition:opacity .35s,transform .35s;animation:cardIn .45s ease;
+    display:flex;flex-direction:column;cursor:pointer}
+  @keyframes cardIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+  .tc-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+  .tc-bg::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(0,0,0,.14) 0%,rgba(0,0,0,.26) 48%,rgba(0,0,0,.46) 100%)}
+  .tc-bg.scenic-bg::after{background:linear-gradient(180deg,rgba(0,0,0,.34) 0%,rgba(0,0,0,.36) 48%,rgba(0,0,0,.52) 100%)}
+  .tc-progress{display:flex;gap:2px;padding:6px 34px 0 10px;position:relative;z-index:2;flex-shrink:0}
+  .tc-progress .seg{flex:1;height:2px;border-radius:1px;background:rgba(255,255,255,.2);transition:.3s;cursor:pointer}
+  .tc-progress .seg.done{background:rgba(255,255,255,.5)}
+  .tc-progress .seg.cur{background:#fff;box-shadow:0 0 4px rgba(255,255,255,.6)}
+  .tc-progress .seg:hover{background:rgba(255,255,255,.4)}
+  .tc-body{position:relative;z-index:2;flex:1;padding:9px 13px 14px;display:flex;
+    flex-direction:column;overflow:hidden}
+  .tc-glass-panel{flex:1;display:flex;flex-direction:column;gap:5px;overflow:hidden;padding:1px}
+  .tc-big{font-size:34px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.35)}
+  .tc-text{font-size:11px;color:rgba(255,255,255,.92);line-height:1.4;text-shadow:0 1px 4px rgba(0,0,0,.45)}
+  .tc-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#fff;flex-shrink:0;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+  .tc-row .ico{font-size:14px;flex-shrink:0}
+  .tc-row .val{font-weight:600}
+  .tc-row .sub{font-size:10px;color:rgba(255,255,255,.7)}
+  .tc-chips{display:flex;gap:5px;flex-wrap:wrap}
+  .tc-chip{font-size:10px;background:rgba(255,255,255,.16);color:#fff;padding:4px 9px;
+    border-radius:13px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08);
+    cursor:pointer;transition:.15s;user-select:none}
+  .tc-chip:hover{filter:brightness(1.15);transform:scale(1.03)}
+  .tc-chip.done{background:rgba(52,199,89,.32);border-color:rgba(52,199,89,.25)}
+  .tc-chip.todo{background:rgba(255,159,10,.28);border-color:rgba(255,159,10,.2)}
+  /* 滑动区 */
+  .vis-left{position:relative;border-radius:14px;overflow:hidden;min-width:0;
+    border:1px solid rgba(255,255,255,.12);box-shadow:0 2px 10px rgba(0,0,0,.2)}
+  .vl-img{position:absolute;inset:0;background-size:cover;background-position:center}
+  .vl-img::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.55) 100%)}
+  .vl-tag{position:absolute;left:8px;font-weight:800;color:#fff;z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+  .vl-sub{position:absolute;left:8px;font-size:9px;color:rgba(255,255,255,.9);z-index:1;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+  .sl-slide{position:absolute;inset:0;transition:transform .45s ease,opacity .45s ease}
+  .sl-cur{position:absolute;top:6px;left:6px;z-index:2;font-size:8px;background:#0A59F7;
+    color:#fff;padding:2px 6px;border-radius:6px;font-weight:700}
+  .sl-warn{position:absolute;top:6px;right:6px;z-index:2;font-size:8px;font-weight:700;
+    background:rgba(234,88,12,.92);color:#fff;padding:2px 6px;border-radius:6px;backdrop-filter:blur(4px)}
+  .sl-note{position:absolute;top:6px;right:6px;z-index:2;font-size:8px;font-weight:700;
+    background:rgba(10,89,247,.85);color:#fff;padding:2px 7px;border-radius:6px;backdrop-filter:blur(4px)}
+  .sl-stat{font-size:9px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.45);
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:7px;
+    padding:4px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sl-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:10px;
+    padding:7px 0;font-size:10px;font-weight:700;color:#fff;cursor:pointer;backdrop-filter:blur(6px);
+    transition:.15s;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .sl-act span{font-size:15px}
+  .sl-act:hover{background:rgba(255,255,255,.28)}
+  /* 回忆卡 */
+  .mem-feature{display:flex;gap:5px;flex:1;min-height:0;overflow:hidden}
+  .mf-main{flex:2;border-radius:10px;background-size:cover;background-position:center;
+    position:relative;cursor:pointer;min-width:0}
+  .mf-side{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+  .mf-side .mem-ph{flex:1;border-radius:8px;background-size:cover;background-position:center;
+    cursor:pointer;min-height:0;position:relative}
+  .mem-tag{position:absolute;left:0;right:0;bottom:0;font-size:7px;color:#fff;font-weight:600;
+    text-align:center;padding:2px 3px;text-shadow:0 1px 3px rgba(0,0,0,.6);
+    background:linear-gradient(0deg,rgba(0,0,0,.55),transparent)}
+  .mf-main .mem-tag{font-size:8px;padding:3px 4px}
+  .mem-last-line{display:flex;gap:6px;align-items:center;flex-shrink:0}
+  .mem-archive-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.14);border-radius:9px;
+    padding:5px 0;font-size:10px;color:#fff;font-weight:600;cursor:pointer;transition:.15s;
+    backdrop-filter:blur(6px)}
+  /* dock */
+  .dock{height:60px;margin:4px 12px 12px;border-radius:22px;background:rgba(255,255,255,.3);
+    backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;
+    flex-shrink:0;z-index:21}
+  .dock .d{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;
+    justify-content:center;font-size:20px;background:rgba(255,255,255,.85)}
+  /* 桌面提示 toast */
+  .desk-hint{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);z-index:22;
+    background:rgba(0,0,0,.62);color:#fff;font-size:10px;padding:6px 12px;border-radius:12px;
+    backdrop-filter:blur(6px);white-space:nowrap;animation:msgIn .5s ease;pointer-events:none}
+
+  @media(max-width:780px){
+    body{flex-direction:column;align-items:center}
+    .side{width:100%;max-width:384px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== 左侧步骤说明 ====== -->
+<div class="side">
+  <h1>小艺生成攻略 → 加桌卡片</h1>
+  <div class="slogan">让卡片不再是一个人的便利贴</div>
+  <div class="sub">单卡旅行助手 · 创建入口体验模拟（数据为小艺模拟数据）</div>
+
+  <div class="step-card" id="step1">
+    <div class="step-num">1</div>
+    <div><div class="step-t">对话生成攻略</div>
+      <div class="step-d">对小艺说「帮我规划大理 3 天旅行攻略」，小艺流式生成完整行程</div></div>
+  </div>
+  <div class="step-card" id="step2">
+    <div class="step-num">2</div>
+    <div><div class="step-t">点击「添加桌面卡片」</div>
+      <div class="step-d">攻略生成完毕后，卡片下方出现加桌按钮</div></div>
+  </div>
+  <div class="step-card" id="step3">
+    <div class="step-num">3</div>
+    <div><div class="step-t">三阶段卡片上桌</div>
+      <div class="step-d">出行前 → 游览中 → 回忆，点卡片顶部三段进度条切换查看</div></div>
+  </div>
+
+  <div class="replay" onclick="replay()">↻ 重新播放完整流程</div>
+</div>
+
+<!-- ====== 手机 ====== -->
+<div class="phone">
+  <div class="notch"></div>
+  <div class="screen">
+    <div class="statusbar">
+      <span>9:41</span>
+      <div class="right"><span>5G</span><span>📶</span><span>🔋</span></div>
+    </div>
+
+    <!-- 屏 1：小艺对话 -->
+    <div id="chatScreen">
+      <div class="chat-head">
+        <div class="chat-avatar">艺</div>
+        <div>
+          <div class="chat-name">小艺</div>
+          <div class="chat-sub">你的旅行助手</div>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-input">
+        <div class="ci">和小艺说说你的旅行计划…</div>
+        <div class="send">↑</div>
+      </div>
+    </div>
+
+    <!-- 屏 2：桌面 -->
+    <div id="desktopScreen">
+      <div class="desktop">
+        <div class="travel-card" id="travel-card"></div>
+      </div>
+      <div class="desk-hint" id="deskHint">点卡片顶部三段进度条：出行前 / 游览中 / 回忆</div>
+      <div class="dock">
+        <div class="d">📞</div><div class="d">💬</div><div class="d">📷</div><div class="d">🌐</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const IMG='../travel-fork/images/';
+let curStage=1;
+let timers=[];
+function later(fn,ms){timers.push(setTimeout(fn,ms));}
+function clearTimers(){timers.forEach(clearTimeout);timers=[];}
+
+/* ================= 卡片数据（与单卡旅行助手一致，小艺模拟数据） ================= */
+const chipState={1:{'机票':true,'酒店':true,'身份证':true,'防晒霜':false}};
+function toggleChip(stage,item){chipState[stage][item]=!chipState[stage][item];renderCard();}
+function chipHTML(stage){
+  const items=Object.keys(chipState[stage]);
+  return '<div class="tc-chips" style="margin-top:10px">'+
+    items.map(function(item){
+      var d=chipState[stage][item];
+      return '<span class="tc-chip '+(d?'done':'todo')+'" onclick="event.stopPropagation();toggleChip('+stage+',\''+item+'\')">'+(d?'✓':'✗')+' '+item+'</span>';
+    }).join('')+'</div>';
+}
+
+// 一日时间轴：当前 + 下一地点（时间推算为主，点按打卡纠偏）
+const dayMoments=[
+  {time:'08:00',period:'早餐',short:'再回首米线',sub:'早餐 · 古城人民路',nextName:'苍山洗马潭',nextMeta:'🚠 索道 09:30 前到',fb:'erhai.jpg',img:'',from:'距 栖云客栈 300m',warn:'',note:'🔑 房卡 · 🧥 外套 别忘带'},
+  {time:'09:30',period:'上午景点',short:'苍山',sub:'洗马潭 · 游览中 40 分钟',nextName:'复兴路美食街',nextMeta:'午餐 · 建议 11:45 下山',fb:'',img:'cangshan.jpg',from:'距 再回首米线 8km',warn:'🚠 建议 11:45 下山'},
+  {time:'12:00',period:'午餐',short:'复兴路美食街',sub:'午餐 · 收藏 3 家店',nextName:'崇圣寺三塔',nextMeta:'14:00 · ⚠️ 17:30 停止入园',fb:'dali.jpg',img:'',from:'距 苍山 12km',warn:''},
+  {time:'14:00',period:'下午景点',short:'崇圣寺三塔',sub:'游览中 · 17:30 停止入园',nextName:'段公子·砂锅鱼',nextMeta:'18:00 · 已订座',fb:'',img:'dali.jpg',from:'距 复兴路美食街 2.4km',warn:'⚠️ 17:30 停止入园'},
+  {time:'18:00',period:'晚餐',short:'段公子砂锅鱼',sub:'晚餐 · 已订座 18:00',nextName:'洱海篝火晚会',nextMeta:'20:00 · 才村码头广场',fb:'sunset.jpg',img:'',from:'距 崇圣寺三塔 3.1km',warn:''},
+  {time:'20:00',period:'晚间活动',short:'洱海篝火晚会',sub:'进行中 · 才村码头广场',nextName:'回酒店',nextMeta:'⚠️ 末班公交 22:00',fb:'',img:'sunset.jpg',from:'距 段公子砂锅鱼 2.6km',warn:'⚠️ 末班公交 22:00'},
+  {time:'22:00',period:'今日收官',short:'回酒店',sub:'今日收官 · 走了 6 站',nextName:'明日早餐',nextMeta:'08:00 · 已排 4 站',fb:'lijiang.jpg',img:'',from:'距 才村码头 4.2km',warn:''},
+];
+let curMoment=1;
+let slideIdx=1, slideHold=0, slideX0=null;
+function slideStart(e){slideX0=e.clientX;}
+function slideEnd(e){
+  if(slideX0===null) return;
+  const dx=e.clientX-slideX0; slideX0=null;
+  if(Math.abs(dx)>24){
+    slideIdx=(slideIdx+(dx<0?1:-1)+dayMoments.length)%dayMoments.length;
+    slideHold=Date.now()+8000;
+    renderCard();
+  }else if(slideIdx!==curMoment){
+    // 点按（未滑动）= 在该站打卡纠偏
+    curMoment=slideIdx;
+    slideHold=Date.now()+8000;
+    renderCard();
+  }
+}
+// 自动轮播：仅在 游览中阶段 且 8 秒内无手动滑动时转动
+setInterval(function(){
+  if(curStage===2&&document.getElementById('desktopScreen').classList.contains('on')&&Date.now()>slideHold){
+    slideIdx=(slideIdx+1)%dayMoments.length;renderCard();
+  }
+},4000);
+
+const stages={
+  1:{name:'出行前',bg:IMG+'lijiang.jpg'},
+  2:{name:'游览中',bg:IMG+'dali.jpg'},
+  3:{name:'回忆',bg:IMG+'lijiang.jpg'},
+};
+
+function switchStage(n){
+  if(n===curStage) return;
+  curStage=n;
+  const card=document.getElementById('travel-card');
+  card.style.animation='none';void card.offsetHeight;card.style.animation='';
+  renderCard();
+}
+
+/* ================= 卡片渲染（三阶段） ================= */
+function renderCard(){
+  const s=stages[curStage];
+  const card=document.getElementById('travel-card');
+  let body='';
+
+  let progress='<div class="tc-progress">';
+  for(let i=1;i<=3;i++){
+    let cls=i<curStage?'done':(i===curStage?'cur':'');
+    progress+='<div class="seg '+cls+'" onclick="switchStage('+i+')" title="'+stages[i].name+'"></div>';
+  }
+  progress+='</div>';
+
+  if(curStage===1){
+    body=`
+      <div class="tc-glass-panel">
+        <div class="tc-big" style="font-size:36px">3 天</div>
+        <div class="tc-text" style="font-size:11px;color:rgba(255,255,255,.8);margin-top:2px">8月21日 周四 · 08:45 起飞</div>
+        <div class="tc-row" style="gap:14px;margin-top:8px">
+          <span class="tc-row"><span class="ico">☁️</span><span class="val">昆明 14°</span><span class="sub">多云</span></span>
+          <span class="tc-row"><span class="ico">☀️</span><span class="val">大理 22°</span><span class="sub">晴</span></span>
+        </div>
+        ${chipHTML(1)}
+      </div>`;
+  }
+  else if(curStage===2){
+    const sl=dayMoments[slideIdx];
+    let slides='';
+    dayMoments.forEach((d,i)=>{
+      slides+=`<div class="sl-slide" style="transform:translateX(${(i-slideIdx)*106}%);opacity:${i===slideIdx?1:0}">
+        <div class="vl-img" style="background-image:url('${IMG}${d.img||d.fb}')"></div>
+        ${i===curMoment?'<div class="sl-cur">当前</div>':''}
+        ${d.warn?`<div class="sl-warn">${d.warn}</div>`:''}
+        ${d.note?`<div class="sl-note">${d.note}</div>`:''}
+        <div class="vl-tag" style="font-size:13px;bottom:44px">${d.short}</div>
+        <div class="vl-sub" style="bottom:31px">${d.time} · ${d.period}</div>
+        <div class="vl-sub" style="bottom:18px">📏 ${d.from}</div>
+      </div>`;
+    });
+    let dots='';
+    dayMoments.forEach((_,i)=>{dots+=`<span style="width:4px;height:4px;border-radius:50%;background:${i===slideIdx?'#fff':'rgba(255,255,255,.45)'}"></span>`;});
+    const stepsArr=['0.2','0.6','0.9','1.1','1.2','1.3','1.4'];
+    body=`
+      <div class="tc-glass-panel">
+        <div style="flex:1;display:flex;gap:10px;min-height:0">
+          <div class="vis-left" id="locSlider" style="flex:1.5;cursor:grab"
+            onpointerdown="slideStart(event)" onpointerup="slideEnd(event)">
+            ${slides}
+            <div style="position:absolute;bottom:6px;left:0;right:0;z-index:2;display:flex;gap:4px;justify-content:center">${dots}</div>
+          </div>
+          <div class="vis-right" style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:5px;padding:0 2px 0 0;min-width:0">
+            <div class="sl-stat" style="display:flex;align-items:center;justify-content:center">☀️ 22°晴</div>
+            <div class="sl-stat" style="display:flex;align-items:center;justify-content:center">👣 ${stepsArr[slideIdx]}万步</div>
+            <div class="sl-act" style="font-size:9px;padding:4px 0;gap:2px" onclick="event.stopPropagation();alert('打开 ${sl.short} 的攻略原文')"><span>📖</span>攻略</div>
+            <div class="sl-act" style="font-size:9px;padding:4px 0;gap:2px" onclick="event.stopPropagation();alert('查看今日计划')"><span>🗓️</span>计划</div>
+            <div class="sl-act" style="font-size:9px;padding:4px 0;gap:2px" onclick="event.stopPropagation();alert('导航前往 ${sl.short}')"><span>🧭</span>导航</div>
+            <div class="sl-act" style="font-size:9px;padding:4px 0;gap:2px;background:rgba(10,89,247,.55)" onclick="event.stopPropagation();alert('打车前往 ${sl.short}')"><span>🚕</span>打车</div>
+          </div>
+        </div>
+      </div>`;
+  }
+  else if(curStage===3){
+    const photos=[
+      {img:'cangshan',tag:'苍山 · Day2',main:true},
+      {img:'erhai',tag:'洱海'},
+      {img:'dali',tag:'古城'},
+    ];
+    let photoHTML='<div class="mem-feature">';
+    photos.forEach(p=>{
+      if(p.main){
+        photoHTML+=`<div class="mf-main" style="background-image:url('${IMG}${p.img}.jpg')" onclick="event.stopPropagation();alert('查看照片')">
+          <div class="mem-tag">${p.tag}</div></div>`;
+      }else{
+        photoHTML+=`<div class="mf-side"><div class="mem-ph" style="background-image:url('${IMG}${p.img}.jpg')" onclick="event.stopPropagation();alert('查看照片')">
+          <div class="mem-tag">${p.tag}</div></div></div>`;
+      }
+    });
+    photoHTML+='</div>';
+    body=`
+      <div class="tc-glass-panel">
+        <div class="tc-row" style="justify-content:space-between">
+          <span class="tc-text" style="font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">✨ 苍山云海 · 洱海日出</span>
+          <span class="tc-row" style="flex-shrink:0"><span class="ico" style="font-size:11px">🏆</span><span class="val" style="font-size:8px">最爱 Day2</span></span>
+        </div>
+        <div class="tc-text" style="font-size:9px;color:rgba(255,255,255,.7)">
+          3天 · 12景点 · 248张 · 42km · 最高3800m
+        </div>
+        ${photoHTML}
+        <div class="mem-last-line">
+          <div class="mem-archive-btn" onclick="event.stopPropagation();alert('归档行程')"><span class="ab-ico">📦</span>归档行程</div>
+        </div>
+      </div>`;
+  }
+
+  const m2=curStage===2?dayMoments[curMoment]:null;
+  const bgCss=m2?`url('${IMG}${dayMoments[slideIdx].img||dayMoments[slideIdx].fb}')`:`url('${s.bg}')`;
+  card.innerHTML=`
+    <div class="tc-bg ${m2?'scenic-bg':''}" style="background-image:${bgCss}"></div>
+    ${progress}
+    <div class="tc-body">${body}</div>`;
+}
+
+/* ================= 屏 1：小艺对话序列（模拟小艺数据） ================= */
+const chatBody=document.getElementById('chatBody');
+function scrollChat(){chatBody.scrollTop=chatBody.scrollHeight;}
+function addMsg(html){const d=document.createElement('div');d.innerHTML=html;const el=d.firstElementChild;chatBody.appendChild(el);scrollChat();return el;}
+
+function guideHTML(){
+  return `<div class="guide">
+    <div class="guide-head">
+      <div class="guide-title">大理 3 日游</div>
+      <div class="guide-meta">8月21日出发 · 昆明✈大理 · 3天12景点</div>
+    </div>
+    <div class="gday" id="g1">
+      <div class="gday-t"><span class="dn">Day 1</span> 8月21日</div>
+      <div class="gloc"><span class="gt">08:45</span><span class="gn">✈️ 昆明 ✈ 大理</span><span class="gd">MU5731 · 1h35m</span></div>
+      <div class="gloc"><span class="gt">11:00</span><span class="gn">🏨 大理古城客栈</span><span class="gd">入住 · 2晚</span></div>
+      <div class="gloc"><span class="gt">14:00</span><span class="gn">🏛️ 崇圣寺三塔</span><span class="gd">¥75 · 建议1.5h</span></div>
+      <div class="gloc"><span class="gt">18:00</span><span class="gn">🍜 人民路小吃街</span><span class="gd">白族砂锅鱼 · 人均¥80</span></div>
+    </div>
+    <div class="gday" id="g2">
+      <div class="gday-t"><span class="dn">Day 2</span> 8月22日</div>
+      <div class="gloc"><span class="gt">08:00</span><span class="gn">🏔️ 苍山</span><span class="gd">索道¥282 · 最高3800m</span></div>
+      <div class="gloc"><span class="gt">12:30</span><span class="gn">🍜 喜洲粑粑</span><span class="gd">白族特色 · 人均¥25</span></div>
+      <div class="gloc"><span class="gt">15:00</span><span class="gn">🏞️ 洱海公园</span><span class="gd">日落最佳</span></div>
+      <div class="gloc"><span class="gt">19:00</span><span class="gn">🏨 大理古城客栈</span><span class="gd">续住 · 第2晚</span></div>
+    </div>
+    <div class="gday" id="g3">
+      <div class="gday-t"><span class="dn">Day 3</span> 8月23日</div>
+      <div class="gloc"><span class="gt">09:00</span><span class="gn">🏘️ 大理古城</span><span class="gd">南城门 · 五华楼 · 洋人街</span></div>
+      <div class="gloc"><span class="gt">11:30</span><span class="gn">🍜 再回首烧饵块</span><span class="gd">人均¥15</span></div>
+      <div class="gloc"><span class="gt">15:30</span><span class="gn">🛫 大理 → 昆明</span><span class="gd">MU5732 · 建议13:00出发</span></div>
+    </div>
+    <div class="add-card-wrap" id="addWrap">
+      <button class="add-card-btn" onclick="addCard()">✨ 添加桌面卡片</button>
+      <div class="add-card-cap">生成「单卡旅行助手」桌卡<br>出行前 · 游览中 · 回忆，三阶段自动切换</div>
+    </div>
+  </div>`;
+}
+
+function playChat(){
+  document.getElementById('step1').classList.add('active');
+  // 1. 用户提问
+  later(()=>{addMsg('<div class="msg user">帮我规划一个大理 3 天的旅行攻略</div>');},600);
+  // 2. 小艺输入中
+  later(()=>{addMsg('<div class="msg ai typing" id="typing"><i></i><i></i><i></i></div>');},1500);
+  // 3. 小艺回复文字
+  later(()=>{
+    const t=document.getElementById('typing');if(t)t.remove();
+    addMsg('<div class="msg ai">好的，已为你生成大理 3 日游攻略 👇<br>含机票、住宿、12 个景点和沿途美食，可以直接执行。</div>');
+  },2600);
+  // 4. 攻略卡逐段浮现
+  later(()=>{addMsg(guideHTML());},3300);
+  later(()=>{document.getElementById('g1').classList.add('show');scrollChat();},4000);
+  later(()=>{document.getElementById('g2').classList.add('show');scrollChat();},4800);
+  later(()=>{document.getElementById('g3').classList.add('show');scrollChat();},5600);
+  // 5. 出现「添加桌面卡片」按钮
+  later(()=>{
+    document.getElementById('addWrap').classList.add('show');scrollChat();
+    document.getElementById('step2').classList.add('active');
+  },6400);
+}
+
+/* ================= 点击加桌按钮 → 屏 2 桌面三阶段卡片 ================= */
+function addCard(){
+  document.getElementById('chatScreen').style.display='none';
+  document.getElementById('desktopScreen').classList.add('on');
+  document.getElementById('step3').classList.add('active');
+  curStage=1;curMoment=1;slideIdx=1;slideHold=0;
+  renderCard();
+  later(()=>{const h=document.getElementById('deskHint');if(h)h.style.display='none';},6000);
+}
+
+function replay(){
+  clearTimers();
+  chatBody.innerHTML='';
+  document.getElementById('chatScreen').style.display='flex';
+  document.getElementById('desktopScreen').classList.remove('on');
+  document.getElementById('deskHint').style.display='';
+  ['step1','step2','step3'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  curStage=1;curMoment=1;slideIdx=1;slideHold=0;
+  playChat();
+}
+
+// 支持 #desktop / #desktop2 / #desktop3 直达桌面屏对应阶段（便于直接查看三阶段卡片）
+const hashM=location.hash.match(/^#desktop([123])?$/);
+if(hashM){
+  addCard();
+  if(hashM[1]){curStage=parseInt(hashM[1]);renderCard();}
+}else{
+  playChat();
+}
+</script>
+</body>
+</html>
