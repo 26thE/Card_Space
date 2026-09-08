@@ -57,6 +57,7 @@
   .chat-name{font-size:14px;font-weight:800}
   .chat-sub{font-size:10px;color:var(--panel-sub)}
   .chat-body{flex:1;min-height:0;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:12px}
+  .chat-body>*{flex-shrink:0}
   .chat-body::-webkit-scrollbar{width:0}
   .msg{max-width:86%;padding:10px 13px;border-radius:16px;font-size:12.5px;line-height:1.65;
     animation:msgIn .35s ease}
@@ -72,17 +73,108 @@
   /* 攻略卡片消息 */
   .guide{align-self:stretch;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.08);
     overflow:hidden;animation:msgIn .4s ease}
-  .guide-head{padding:12px 14px 10px;background:linear-gradient(135deg,#0A59F7,#8A5CF6);color:#fff}
+  .guide-head{padding:12px 14px 10px;color:#fff;
+    background:linear-gradient(135deg,rgba(10,89,247,.88),rgba(138,92,246,.80)),url('./images/lijiang.jpg') center 35%/cover}
+  /* 纯文字长文配图（主图 + 两小图，复刻小艺图文回答） */
+  .lt-photos{display:grid;grid-template-columns:2fr 1fr;gap:5px;margin-top:8px}
+  .ltp-main{height:118px;border-radius:10px;background-size:cover;background-position:center}
+  .ltp-side{display:flex;flex-direction:column;gap:5px}
+  .ltp-side i{flex:1;border-radius:10px;background-size:cover;background-position:center;display:block}
+  /* 卡片进度条左侧阶段名 */
+  .tc-progress .tc-progress-name{font-size:9px;font-weight:700;color:#fff;margin-right:2px;
+    text-shadow:0 1px 3px rgba(0,0,0,.5);align-self:center;white-space:nowrap}
+  /* 卡片右上角详情按钮（同 index.html） */
+  .tc-pull{position:absolute;top:7px;right:7px;z-index:4;width:24px;height:24px;
+    border-radius:7px;background:rgba(255,255,255,.22);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
+    cursor:pointer;transition:.2s;border:none}
+  .tc-pull:hover{background:rgba(255,255,255,.38)}
+  /* 全程计划详情页（机框内滑上覆盖，结构参照 index.html 全程计划应用页） */
+  .detail{position:absolute;inset:0;z-index:25;background:#fff;display:flex;flex-direction:column;
+    transform:translateY(100%);transition:transform .35s ease}
+  .detail.on{transform:none}
+  .ap-bar{height:48px;display:flex;align-items:center;gap:10px;padding:0 12px;flex-shrink:0;
+    border-bottom:1px solid var(--card-line);background:#fff}
+  .ap-back{border:none;background:var(--card-line);width:28px;height:28px;border-radius:50%;
+    font-size:18px;cursor:pointer;color:var(--panel-text);line-height:1;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center}
+  .ap-tt{flex:1;min-width:0}
+  .ap-title{font-size:14px;font-weight:800;color:var(--panel-text)}
+  .ap-sub{font-size:10px;color:var(--panel-sub);margin-top:1px}
+  .ap-share{border:none;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    padding:6px 12px;border-radius:14px;cursor:pointer;flex-shrink:0;font-family:inherit}
+  .ap-body{flex:1;min-height:0;overflow-y:auto;padding:12px 14px 20px}
+  .ap-body::-webkit-scrollbar{width:0}
+  .ap-search-input{width:100%;border:1px solid var(--card-line);border-radius:9px;padding:7px 11px;
+    font-size:11px;font-family:inherit;outline:none}
+  .ap-search-input:focus{border-color:var(--accent)}
+  .ap-cat-filter{display:flex;gap:5px;margin:8px 0 12px;flex-wrap:wrap}
+  .ap-cat-filter button{border:1px solid var(--card-line);background:#fff;color:var(--panel-sub);
+    font-size:10px;padding:3px 9px;border-radius:11px;cursor:pointer;font-family:inherit}
+  .ap-cat-filter button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .ap-route-map{background:#F5F6FA;border-radius:12px;padding:8px;margin-bottom:12px;border:1px solid var(--card-line)}
+  .ap-route-map svg{width:100%;height:auto;display:block}
+  .ap-day-tabs{display:flex;margin-bottom:10px;border-bottom:1px solid var(--card-line);overflow-x:auto}
+  .ap-day-tabs::-webkit-scrollbar{display:none}
+  .ap-day-tab{padding:8px 11px;font-size:11px;font-weight:600;color:var(--panel-sub);white-space:nowrap;
+    cursor:pointer;border-bottom:2px solid transparent;flex-shrink:0}
+  .ap-day-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .ap-day-tab .dt-dist{font-size:9px;font-weight:500;opacity:.7;margin-left:3px}
+  .ap-day-head{font-size:10px;font-weight:700;color:var(--panel-sub);margin:6px 0 2px;padding-left:2px}
+  .ap-loc-item{display:flex;gap:8px;padding:9px 0;align-items:flex-start}
+  .ap-loc-item:not(:last-child){border-bottom:1px solid var(--card-line)}
+  .ap-loc-time{flex-shrink:0;width:40px;font-size:11px;font-weight:600;color:var(--panel-text);padding-top:3px}
+  .ap-loc-ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    font-size:14px;flex-shrink:0}
+  .ap-loc-info{flex:1;min-width:0}
+  .ap-loc-name{font-size:12px;font-weight:700;color:var(--panel-text)}
+  .ap-loc-detail{font-size:10px;color:var(--panel-sub);margin-top:2px;line-height:1.4}
+  .ap-loc-dist{font-size:10px;font-weight:500;margin-top:2px}
+  .ap-loc-cat{font-size:9px;padding:2px 6px;border-radius:7px;font-weight:500;flex-shrink:0;align-self:center}
+  /* 分享面板（底部弹出，同 index.html） */
+  .ap-share-mask{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:40;display:none;align-items:flex-end}
+  .ap-share-mask.show{display:flex}
+  .ap-share-sheet{width:100%;background:#fff;border-radius:16px 16px 0 0;padding:16px 16px 20px}
+  .ap-share-title{font-size:13px;font-weight:800;text-align:center;color:var(--panel-text)}
+  .ap-share-sub{font-size:10px;color:var(--panel-sub);text-align:center;margin-top:3px}
+  .ap-share-opts{display:flex;gap:8px;margin-top:12px}
+  .ap-share-opt{flex:1;background:#F5F6FA;border-radius:12px;padding:11px 0;text-align:center;cursor:pointer}
+  .ap-share-opt .ic{font-size:20px}
+  .ap-share-opt .tx{font-size:10px;font-weight:600;margin-top:4px;color:var(--panel-text)}
+  .ap-share-cancel{margin-top:10px;text-align:center;font-size:12px;font-weight:700;background:#F5F6FA;
+    border-radius:12px;padding:10px 0;cursor:pointer;color:var(--panel-text)}
+  /* 二级攻略（小艺帮记收藏的帖子，快速复访入口） */
+  .ap-guide{margin-top:5px;display:inline-flex;align-items:center;gap:4px;max-width:100%;
+    background:#FFF0F3;border:1px solid #FFD6DE;color:#E8385D;font-size:10px;font-weight:600;
+    padding:3px 8px;border-radius:9px;cursor:pointer}
+  .ap-guide span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* 攻略半模态 */
+  .gd-mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:45;display:none;align-items:flex-end}
+  .gd-mask.show{display:flex}
+  .gd-sheet{width:100%;background:#fff;border-radius:16px 16px 0 0;overflow:hidden}
+  .gd-img{height:120px;background:url('./images/lijiang.jpg') center 40%/cover;position:relative}
+  .gd-close{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;
+    background:rgba(0,0,0,.45);color:#fff;border:none;font-size:12px;cursor:pointer}
+  .gd-body{padding:12px 14px 18px}
+  .gd-from{font-size:9px;color:#E8385D;font-weight:700;margin-bottom:4px}
+  .gd-title{font-size:13px;font-weight:800;color:var(--panel-text);line-height:1.4}
+  .gd-text{font-size:11px;color:var(--panel-sub);line-height:1.7;margin-top:6px}
   .guide-title{font-size:14px;font-weight:800}
   .guide-meta{font-size:10px;opacity:.9;margin-top:2px}
-  .gday{padding:10px 14px;border-bottom:1px dashed var(--card-line);display:none}
-  .gday.show{display:block;animation:msgIn .4s ease}
+  .gday{padding:0;border-bottom:1px dashed var(--card-line);display:none}
+  .gday.show{display:flex;animation:msgIn .4s ease}
+  .gday-main{flex:1;min-width:0;padding:10px 8px 10px 14px}
+  .gpics{width:120px;flex-shrink:0;display:flex;flex-direction:column;gap:4px}
+  .gpic-big{flex:2;min-height:0;background-size:cover;background-position:center}
+  .gpic-row{flex:1;min-height:0;display:flex;gap:4px}
+  .gpic-row i{flex:1;display:block;background-size:cover;background-position:center}
+  .gdesc{font-size:10px;color:var(--panel-sub);margin:-2px 0 6px;line-height:1.5}
   .gday-t{font-size:12px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px}
   .gday-t .dn{background:var(--accent);color:#fff;font-size:9px;padding:1px 7px;border-radius:8px}
-  .gloc{display:flex;gap:8px;font-size:11px;padding:3px 0;align-items:baseline}
-  .gloc .gt{color:var(--panel-sub);width:40px;flex-shrink:0;font-weight:600}
+  .gloc{display:flex;gap:5px;font-size:10px;padding:3px 0;align-items:baseline}
+  .gloc .gt{color:var(--panel-sub);width:32px;flex-shrink:0;font-weight:600}
   .gloc .gn{font-weight:600}
-  .gloc .gd{color:var(--panel-sub);font-size:10px}
+  .gloc .gd{color:var(--panel-sub);font-size:9px}
   /* 加桌按钮 */
   .add-card-wrap{padding:12px 14px 14px;display:none}
   .add-card-wrap.show{display:block;animation:msgIn .4s ease}
@@ -103,7 +195,7 @@
   #desktopScreen.on{display:flex}
   .desktop{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:77px;
     gap:8px;padding:4px 12px 0;overflow:hidden;align-content:start}
-  .travel-card{grid-column:1/span 4;grid-row:1/span 2;border-radius:20px;overflow:hidden;
+  .travel-card{grid-column:1/span 4;grid-row:auto/span 2;border-radius:20px;overflow:hidden;
     position:relative;box-shadow:0 6px 20px rgba(0,0,0,.15);
     transition:opacity .35s,transform .35s;animation:cardIn .45s ease;
     display:flex;flex-direction:column;cursor:pointer}
@@ -201,6 +293,12 @@
   .pain-hint{align-self:center;font-size:10px;color:#8A9099;background:rgba(0,0,0,.05);
     padding:5px 12px;border-radius:11px;animation:msgIn .4s ease;max-width:90%;text-align:center;line-height:1.5}
 
+  /* ====== 三阶段上桌：单机框三卡填满 4×6 桌面 ====== */
+  #stagesView{display:none}
+  #stagesView.on{display:block}
+  #stagesView .phone{animation:stageIn .5s ease}
+  @keyframes stageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
   @media(max-width:780px){
     body{flex-direction:column;align-items:center}
     .side{width:100%;max-width:384px}
@@ -237,22 +335,20 @@
   <div class="step-card" id="step3">
     <div class="step-num">3</div>
     <div><div class="step-t">三阶段卡片上桌</div>
-      <div class="step-d">出行前 → 游览中 → 回忆，点卡片顶部三段进度条切换查看</div></div>
+      <div class="step-d">上桌的三张卡其实是同一张桌卡的三个阶段：出行前 → 游览中 → 回忆，随旅程自动切换；点卡片右上角 ↗ 可拉起全程计划详情页</div></div>
   </div>
 
   <div class="replay" onclick="replay()">↻ 重新播放完整流程</div>
 </div>
 
-<!-- ====== 手机 ====== -->
-<div class="phone">
+<!-- ====== 手机（屏 1：小艺对话） ====== -->
+<div class="phone" id="chatPhone">
   <div class="notch"></div>
   <div class="screen">
     <div class="statusbar">
       <span>9:41</span>
       <div class="right"><span>5G</span><span>📶</span><span>🔋</span></div>
     </div>
-
-    <!-- 屏 1：小艺对话 -->
     <div id="chatScreen">
       <div class="chat-head">
         <div class="chat-avatar">艺</div>
@@ -267,30 +363,66 @@
         <div class="send">↑</div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- 屏 2：桌面 -->
-    <div id="desktopScreen">
+<!-- ====== 屏 2：三阶段卡片上桌（一个机框，三张卡填满 4×6 桌面） ====== -->
+<div id="stagesView">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="statusbar"><span>9:41</span><div class="right"><span>5G</span><span>📶</span><span>🔋</span></div></div>
       <div class="desktop">
-        <div class="travel-card" id="travel-card"></div>
+        <div class="travel-card" id="card1"></div>
+        <div class="travel-card" id="card2"></div>
+        <div class="travel-card" id="card3"></div>
       </div>
-      <div class="desk-hint" id="deskHint">点卡片顶部三段进度条：出行前 / 游览中 / 回忆</div>
-      <div class="dock">
-        <div class="d">📞</div><div class="d">💬</div><div class="d">📷</div><div class="d">🌐</div>
+      <div class="dock"><div class="d">📞</div><div class="d">💬</div><div class="d">📷</div><div class="d">🌐</div></div>
+      <!-- 全程计划详情页（↗ 按钮拉起，结构参照 index.html） -->
+      <div class="detail" id="detail">
+        <div class="ap-bar">
+          <button class="ap-back" onclick="closeDetail()">‹</button>
+          <div class="ap-tt"><div class="ap-title">全程计划</div><div class="ap-sub">丽江大理 5 日游 · 9月12日出发</div></div>
+          <button class="ap-share" onclick="openShare()">↗ 分享</button>
+        </div>
+        <div class="ap-body" id="dtBody"></div>
+        <div class="ap-share-mask" id="shareMask" onclick="if(event.target===this)closeShare()">
+          <div class="ap-share-sheet">
+            <div class="ap-share-title">分享旅行计划</div>
+            <div class="ap-share-sub">让卡片不再是一个人的便利贴 · 同行人领取后行程实时同步</div>
+            <div class="ap-share-opts">
+              <div class="ap-share-opt" onclick="doShare('碰一碰')"><div class="ic">📲</div><div class="tx">碰一碰</div></div>
+              <div class="ap-share-opt" onclick="doShare('扫码领取')"><div class="ic">🔳</div><div class="tx">扫码领取</div></div>
+              <div class="ap-share-opt" onclick="doShare('复制链接')"><div class="ic">🔗</div><div class="tx">复制链接</div></div>
+            </div>
+            <div class="ap-share-cancel" onclick="closeShare()">取消</div>
+          </div>
+        </div>
+        <!-- 二级攻略半模态（小艺帮记收藏的帖子，示意） -->
+        <div class="gd-mask" id="gdMask" onclick="if(event.target===this)closeGuide()">
+          <div class="gd-sheet">
+            <div class="gd-img"><button class="gd-close" onclick="closeGuide()">✕</button></div>
+            <div class="gd-body">
+              <div class="gd-from">📕 来自小艺帮记 · 你收藏的攻略</div>
+              <div class="gd-title">丽江古城拍照机位全整理📷｜大水车→四方街→木府一条线走完</div>
+              <div class="gd-text">姐妹们听我一句劝，丽江古城一定要早上 8 点前进！大水车那里没人随便拍。四方街往里走第三个巷子口有一家老奶奶烤乳扇，5 块钱一串。木府建议请讲解，40 分钟逛完，「忠义」牌坊是必拍机位。傍晚直接上狮子山，万古楼门票 35，古城全景 + 玉龙雪山同框，日落前 40 分钟去占位，去晚了全是三脚架……</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const IMG='../travel-fork/images/';
-let curStage=1;
+const IMG='./images/';
 let timers=[];
 function later(fn,ms){timers.push(setTimeout(fn,ms));}
 function clearTimers(){timers.forEach(clearTimeout);timers=[];}
 
 /* ================= 卡片数据（与单卡旅行助手一致，小艺模拟数据） ================= */
 const chipState={1:{'机票':true,'酒店':true,'身份证':true,'氧气瓶':false}};
-function toggleChip(stage,item){chipState[stage][item]=!chipState[stage][item];renderCard();}
+function toggleChip(stage,item){chipState[stage][item]=!chipState[stage][item];renderStageCard(1);}
 function chipHTML(stage){
   const items=Object.keys(chipState[stage]);
   return '<div class="tc-chips" style="margin-top:10px">'+
@@ -302,13 +434,13 @@ function chipHTML(stage){
 
 // 一日时间轴：Day2 玉龙雪山当天（时间推算为主，点按打卡纠偏）
 const dayMoments=[
-  {time:'07:30',period:'早餐',short:'二哥米线',sub:'早餐 · 古城内',nextName:'玉龙雪山',nextMeta:'⚠️ 索道预约 9:00-9:30',fb:'lijiang.jpg',img:'',from:'距 阳光客栈 200m',warn:'',note:'🧥 厚外套 · 🍫 巧克力 别忘带'},
-  {time:'09:00',period:'上午景点',short:'玉龙雪山',sub:'冰川公园大索道 · 4680m',nextName:'甘海子餐厅',nextMeta:'午餐 · 景区简餐',fb:'',img:'cangshan.jpg',from:'距 古城 25km',warn:'⚠️ 索道预约 9:00-9:30'},
-  {time:'12:00',period:'午餐',short:'甘海子餐厅',sub:'午餐 · 景区简餐',nextName:'蓝月谷',nextMeta:'14:00 · 蒂芙尼蓝出片圣地',fb:'sky.jpg',img:'',from:'距 冰川公园 6km',warn:''},
+  {time:'07:30',period:'早餐',short:'二哥米线',sub:'早餐 · 古城内',nextName:'玉龙雪山',nextMeta:'⚠️ 索道预约 9:00-9:30',fb:'dali.jpg',img:'',from:'距 阳光客栈 200m',warn:'',note:'🧥 厚外套 · 🍫 巧克力 别忘带'},
+  {time:'09:00',period:'上午景点',short:'玉龙雪山',sub:'冰川公园大索道 · 4680m',nextName:'甘海子餐厅',nextMeta:'午餐 · 景区简餐',fb:'',img:'lijiang.jpg',from:'距 古城 25km',warn:'⚠️ 索道预约 9:00-9:30'},
+  {time:'12:00',period:'午餐',short:'甘海子餐厅',sub:'午餐 · 景区简餐',nextName:'蓝月谷',nextMeta:'14:00 · 蒂芙尼蓝出片圣地',fb:'cangshan.jpg',img:'',from:'距 冰川公园 6km',warn:''},
   {time:'14:00',period:'下午景点',short:'蓝月谷',sub:'下午 · 雪山倒影如镜',nextName:'樱花餐厅',nextMeta:'18:00 · 纳西特色菜',fb:'',img:'erhai.jpg',from:'距 甘海子 3km',warn:''},
-  {time:'18:00',period:'晚餐',short:'樱花餐厅',sub:'晚餐 · 纳西特色菜',nextName:'油纸伞街',nextMeta:'20:00 · 古城夜景',fb:'lijiang.jpg',img:'',from:'距 蓝月谷 28km',warn:''},
+  {time:'18:00',period:'晚餐',short:'樱花餐厅',sub:'晚餐 · 纳西特色菜',nextName:'油纸伞街',nextMeta:'20:00 · 古城夜景',fb:'dali.jpg',img:'',from:'距 蓝月谷 28km',warn:''},
   {time:'20:00',period:'晚间活动',short:'油纸伞街',sub:'晚间 · 民谣街巷',nextName:'回客栈',nextMeta:'🌧️ 9月多小雨 备伞',fb:'sunset.jpg',img:'',from:'距 樱花餐厅 600m',warn:'🌧️ 夜间有雨 备伞'},
-  {time:'22:00',period:'今日收官',short:'回阳光客栈',sub:'今日收官 · 走了 6 站',nextName:'束河古镇',nextMeta:'明日 · Day3 转场大理',fb:'lijiang.jpg',img:'',from:'距 油纸伞街 300m',warn:''},
+  {time:'22:00',period:'今日收官',short:'回阳光客栈',sub:'今日收官 · 走了 6 站',nextName:'束河古镇',nextMeta:'明日 · Day3 转场大理',fb:'cangshan.jpg',img:'',from:'距 油纸伞街 300m',warn:''},
 ];
 let curMoment=1;
 let slideIdx=1, slideHold=0, slideX0=null;
@@ -319,49 +451,34 @@ function slideEnd(e){
   if(Math.abs(dx)>24){
     slideIdx=(slideIdx+(dx<0?1:-1)+dayMoments.length)%dayMoments.length;
     slideHold=Date.now()+8000;
-    renderCard();
+    renderStageCard(2);
   }else if(slideIdx!==curMoment){
     // 点按（未滑动）= 在该站打卡纠偏
     curMoment=slideIdx;
     slideHold=Date.now()+8000;
-    renderCard();
+    renderStageCard(2);
   }
 }
-// 自动轮播：仅在 游览中阶段 且 8 秒内无手动滑动时转动
+// 自动轮播：上桌后 8 秒内无手动滑动时转动（仅游览中那张）
 setInterval(function(){
-  if(curStage===2&&document.getElementById('desktopScreen').classList.contains('on')&&Date.now()>slideHold){
-    slideIdx=(slideIdx+1)%dayMoments.length;renderCard();
+  if(document.getElementById('stagesView').classList.contains('on')&&Date.now()>slideHold){
+    slideIdx=(slideIdx+1)%dayMoments.length;renderStageCard(2);
   }
 },4000);
 
 const stages={
   1:{name:'出行前',bg:IMG+'lijiang.jpg'},
   2:{name:'游览中',bg:IMG+'dali.jpg'},
-  3:{name:'回忆',bg:IMG+'lijiang.jpg'},
+  3:{name:'回忆',bg:IMG+'sunset.jpg'},
 };
 
-function switchStage(n){
-  if(n===curStage) return;
-  curStage=n;
-  const card=document.getElementById('travel-card');
-  card.style.animation='none';void card.offsetHeight;card.style.animation='';
-  renderCard();
-}
-
-/* ================= 卡片渲染（三阶段） ================= */
-function renderCard(){
-  const s=stages[curStage];
-  const card=document.getElementById('travel-card');
+/* ================= 卡片渲染（三阶段，每张手机各渲染一个阶段） ================= */
+function renderStageCard(n){
+  const s=stages[n];
+  const card=document.getElementById('card'+n);
   let body='';
 
-  let progress='<div class="tc-progress">';
-  for(let i=1;i<=3;i++){
-    let cls=i<curStage?'done':(i===curStage?'cur':'');
-    progress+='<div class="seg '+cls+'" onclick="switchStage('+i+')" title="'+stages[i].name+'"></div>';
-  }
-  progress+='</div>';
-
-  if(curStage===1){
+  if(n===1){
     body=`
       <div class="tc-glass-panel">
         <div class="tc-big" style="font-size:36px">3 天</div>
@@ -373,7 +490,7 @@ function renderCard(){
         ${chipHTML(1)}
       </div>`;
   }
-  else if(curStage===2){
+  else if(n===2){
     const sl=dayMoments[slideIdx];
     let slides='';
     dayMoments.forEach((d,i)=>{
@@ -409,11 +526,11 @@ function renderCard(){
         </div>
       </div>`;
   }
-  else if(curStage===3){
+  else if(n===3){
     const photos=[
-      {img:'cangshan',tag:'玉龙雪山 · Day2',main:true},
+      {img:'lijiang',tag:'玉龙雪山 · Day2',main:true},
       {img:'erhai',tag:'蓝月谷'},
-      {img:'lijiang',tag:'丽江古城'},
+      {img:'dali',tag:'丽江古城'},
     ];
     let photoHTML='<div class="mem-feature">';
     photos.forEach(p=>{
@@ -442,12 +559,129 @@ function renderCard(){
       </div>`;
   }
 
-  const m2=curStage===2?dayMoments[curMoment]:null;
+  const m2=n===2?dayMoments[curMoment]:null;
   const bgCss=m2?`url('${IMG}${dayMoments[slideIdx].img||dayMoments[slideIdx].fb}')`:`url('${s.bg}')`;
   card.innerHTML=`
     <div class="tc-bg ${m2?'scenic-bg':''}" style="background-image:${bgCss}"></div>
-    ${progress}
+    <button class="tc-pull" onclick="event.stopPropagation();openDetail()" title="查看全程计划">↗</button>
     <div class="tc-body">${body}</div>`;
+}
+
+/* ================= 全程计划详情页（↗ 拉起，结构参照 index.html，数据同 5 日攻略） ================= */
+const catBg={spot:'#E8F5E9',food:'#FFF3E0',transport:'#E3F2FD',hotel:'#F3E5F5'};
+const catFg={spot:'#2E7D32',food:'#E65100',transport:'#0A59F7',hotel:'#7B1FA2'};
+const catLabel={spot:'景点',food:'美食',transport:'交通',hotel:'住宿'};
+const tripDays=[
+  {label:'Day 1',title:'初见丽江',date:'9月12日',dist:'32km',locs:[
+    {cat:'transport',ico:'🛬',name:'抵达丽江三义机场',time:'12:40',detail:'机场大巴→古城 · 约40分钟',dist:'28km'},
+    {cat:'hotel',ico:'🏨',name:'丽江古城阳光客栈',time:'14:00',detail:'入住 · 2晚 · 先适应高原',dist:''},
+    {cat:'spot',ico:'🏘️',name:'丽江古城',time:'15:30',detail:'大水车→四方街→木府 · 木府17:30停止入场',dist:'0.8km',guide:'丽江古城拍照机位全整理📷一条线走完'},
+    {cat:'spot',ico:'🌄',name:'狮子山观景台',time:'18:00',detail:'古城×雪山同框 · 日落前占位',dist:'0.5km'},
+    {cat:'food',ico:'🏮',name:'油纸伞巷',time:'20:00',detail:'民谣街巷 · 内涵饵块宵夜',dist:'0.6km'},
+  ]},
+  {label:'Day 2',title:'玉龙雪山',date:'9月13日',dist:'58km',locs:[
+    {cat:'spot',ico:'🏔️',name:'冰川公园大索道',time:'07:30',detail:'4680m · 提前7天抢票 · 备氧气瓶',dist:'25km',guide:'玉龙雪山4680登顶实录｜高反避坑必看'},
+    {cat:'spot',ico:'💙',name:'蓝月谷',time:'13:00',detail:'蒂芙尼蓝出片圣地 · 下午光线最佳',dist:'3km',guide:'蓝月谷蒂芙尼蓝💙下午2点光线绝了'},
+    {cat:'food',ico:'🍽️',name:'樱花餐厅',time:'18:30',detail:'纳西特色菜 · 人均¥90',dist:'22km'},
+    {cat:'hotel',ico:'🏨',name:'续住古城阳光客栈',time:'20:00',detail:'第2晚 · 早点休息缓高反',dist:''},
+  ]},
+  {label:'Day 3',title:'转场大理',date:'9月14日',dist:'185km',locs:[
+    {cat:'spot',ico:'🏘️',name:'束河古镇',time:'09:00',detail:'青龙桥 · 九鼎龙潭 · 比大研安静',dist:'6km'},
+    {cat:'food',ico:'🍜',name:'浮娴小锅饭',time:'12:00',detail:'云南民俗风味 · 人均¥45',dist:'1km'},
+    {cat:'transport',ico:'🚄',name:'丽江→大理动车',time:'15:00',detail:'约1小时 · 靠右窗看洱海',dist:'160km'},
+    {cat:'spot',ico:'🌅',name:'龙龛码头',time:'18:00',detail:'洱海日落红杉林 · 18:40日落',dist:'4km',guide:'龙龛码头红杉日落🌅18点前到！'},
+    {cat:'hotel',ico:'🏨',name:'大理古城空想美宿',time:'20:00',detail:'入住 · 2晚',dist:''},
+  ]},
+  {label:'Day 4',title:'环洱海',date:'9月15日',dist:'120km',locs:[
+    {cat:'spot',ico:'🛵',name:'磻溪S湾',time:'09:00',detail:'生态廊道骑行 · 网红S弯打卡',dist:'12km'},
+    {cat:'food',ico:'🥮',name:'喜洲古镇',time:'12:30',detail:'破酥粑粑 · 严家大院',dist:'18km'},
+    {cat:'spot',ico:'🏞️',name:'鹿卧山→双廊',time:'15:00',detail:'观苍山洱海全景 · 沿环海东路',dist:'35km'},
+    {cat:'food',ico:'☕',name:'双廊海边咖啡馆',time:'17:30',detail:'洱海晚霞 · 靠窗位提前订',dist:'2km'},
+    {cat:'hotel',ico:'🏨',name:'续住空想美宿',time:'20:00',detail:'第2晚',dist:''},
+  ]},
+  {label:'Day 5',title:'圆满返程',date:'9月16日',dist:'25km',locs:[
+    {cat:'spot',ico:'🏯',name:'大理古城',time:'09:00',detail:'五华楼 · 洋人街 · 买伴手礼',dist:'1km'},
+    {cat:'food',ico:'🍽️',name:'段公子·天龙八部店',time:'12:00',detail:'白族特色菜 · 人均¥85',dist:'0.5km'},
+    {cat:'transport',ico:'🛫',name:'返程',time:'15:00',detail:'按航班/高铁时间 · 建议提前2小时出发',dist:''},
+  ]},
+];
+let dtDay=0, dtQuery='', dtCat='all';
+function dtRouteSVG(){
+  return `<svg viewBox="0 0 320 130">
+    <rect width="320" height="130" rx="10" fill="#F8F9FC"/>
+    <ellipse cx="230" cy="80" rx="42" ry="26" fill="#E3F2FD" opacity=".7"/>
+    <text x="230" y="83" font-size="8" fill="#0A59F7" opacity=".55" text-anchor="middle">洱海</text>
+    <path d="M55 95 L72 55 L88 80 L102 48 L118 95 Z" fill="#E8F5E9" opacity=".6"/>
+    <text x="86" y="44" font-size="7" fill="#2E7D32" opacity=".6" text-anchor="middle">玉龙雪山</text>
+    <path d="M60 100 Q120 115 165 95" fill="none" stroke="#FF9500" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="112" y="113" font-size="8" text-anchor="middle">🚄</text>
+    <circle cx="60" cy="100" r="5" fill="#0A59F7" stroke="#fff" stroke-width="1.5"/>
+    <text x="60" y="88" font-size="8" font-weight="700" fill="#1A1A1A" text-anchor="middle">丽江</text>
+    <circle cx="95" cy="70" r="4" fill="#34C759" stroke="#fff" stroke-width="1"/>
+    <text x="95" y="62" font-size="6" fill="#6B6B6B" text-anchor="middle">大索道</text>
+    <circle cx="120" cy="95" r="4" fill="#BF5AF2" stroke="#fff" stroke-width="1"/>
+    <text x="120" y="87" font-size="6" fill="#6B6B6B" text-anchor="middle">束河</text>
+    <circle cx="165" cy="95" r="5" fill="#FF6B35" stroke="#fff" stroke-width="1.5"/>
+    <text x="165" y="83" font-size="8" font-weight="700" fill="#1A1A1A" text-anchor="middle">大理</text>
+    <circle cx="205" cy="60" r="4" fill="#FF9500" stroke="#fff" stroke-width="1"/>
+    <text x="205" y="52" font-size="6" fill="#6B6B6B" text-anchor="middle">喜洲</text>
+    <circle cx="255" cy="65" r="4" fill="#0A84FF" stroke="#fff" stroke-width="1"/>
+    <text x="255" y="57" font-size="6" fill="#6B6B6B" text-anchor="middle">双廊</text>
+    <path d="M165 95 Q185 70 205 60 Q235 50 255 65" fill="none" stroke="#FF9500" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>`;
+}
+function renderDetail(){
+  const q=dtQuery.toLowerCase();
+  let h=`<input class="ap-search-input" placeholder="搜索地点名称或详情..." value="${dtQuery}" oninput="dtQuery=this.value;renderDetail()">
+  <div class="ap-cat-filter">
+    <button class="${dtCat==='all'?'active':''}" onclick="dtCat='all';renderDetail()">全部</button>
+    <button class="${dtCat==='spot'?'active':''}" onclick="dtCat='spot';renderDetail()">景点</button>
+    <button class="${dtCat==='food'?'active':''}" onclick="dtCat='food';renderDetail()">美食</button>
+    <button class="${dtCat==='transport'?'active':''}" onclick="dtCat='transport';renderDetail()">交通</button>
+    <button class="${dtCat==='hotel'?'active':''}" onclick="dtCat='hotel';renderDetail()">住宿</button>
+  </div>
+  <div class="ap-route-map">${dtRouteSVG()}</div>
+  <div class="ap-day-tabs"><div class="ap-day-tab ${dtDay===0?'active':''}" onclick="dtDay=0;renderDetail()">总览</div>`;
+  tripDays.forEach((d,i)=>{h+=`<div class="ap-day-tab ${dtDay===i+1?'active':''}" onclick="dtDay=${i+1};renderDetail()">${d.label}<span class="dt-dist">${d.dist}</span></div>`;});
+  h+='</div>';
+  const idxs=dtDay===0?tripDays.map((_,i)=>i):[dtDay-1];
+  idxs.forEach(i=>{
+    const d=tripDays[i];
+    if(dtDay===0) h+=`<div class="ap-day-head">${d.label} · ${d.title} · ${d.date} · 共${d.dist}</div>`;
+    d.locs.forEach(l=>{
+      if(dtCat!=='all'&&l.cat!==dtCat) return;
+      if(q&&!l.name.toLowerCase().includes(q)&&!(l.detail&&l.detail.toLowerCase().includes(q))) return;
+      h+=`<div class="ap-loc-item">
+        <div class="ap-loc-time">${l.time}</div>
+        <div class="ap-loc-ico" style="background:${catBg[l.cat]}">${l.ico}</div>
+        <div class="ap-loc-info">
+          <div class="ap-loc-name">${l.name}</div>
+          <div class="ap-loc-detail">${l.detail}</div>
+          ${l.dist?`<div class="ap-loc-dist" style="color:${catFg[l.cat]}">📍 ${l.dist}</div>`:''}
+          ${l.guide?`<div class="ap-guide" onclick="openGuide()">📕 <span>${l.guide}</span></div>`:''}
+        </div>
+        <div class="ap-loc-cat" style="background:${catBg[l.cat]};color:${catFg[l.cat]}">${catLabel[l.cat]}</div>
+      </div>`;
+    });
+  });
+  document.getElementById('dtBody').innerHTML=h;
+}
+function openDetail(){renderDetail();document.getElementById('detail').classList.add('on');}
+function closeDetail(){document.getElementById('detail').classList.remove('on');}
+function openShare(){document.getElementById('shareMask').classList.add('show');}
+function closeShare(){document.getElementById('shareMask').classList.remove('show');}
+function openGuide(){document.getElementById('gdMask').classList.add('show');}
+function closeGuide(){document.getElementById('gdMask').classList.remove('show');}
+function doShare(way){
+  closeShare();
+  const d=document.getElementById('detail');
+  const old=document.getElementById('dtToast'); if(old) old.remove();
+  const t=document.createElement('div'); t.id='dtToast';
+  t.style.cssText='position:absolute;left:14px;right:14px;bottom:80px;background:rgba(26,26,26,.92);color:#fff;border-radius:12px;padding:10px 12px;z-index:50;font-size:11px;text-align:center;opacity:0;transition:.25s;pointer-events:none';
+  t.textContent=`已通过「${way}」分享给同行人 · 行程将实时同步`;
+  d.appendChild(t);
+  requestAnimationFrame(()=>{t.style.opacity='1';});
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},1800);
 }
 
 /* ================= 屏 1：小艺对话序列（模拟小艺数据） ================= */
@@ -462,38 +696,58 @@ function guideHTML(){
       <div class="guide-meta">9月出发 · 丽江→大理 · 5天4晚双城记</div>
     </div>
     <div class="gday" id="g1">
-      <div class="gday-t"><span class="dn">Day 1</span> 初见丽江 · 古城慢时光</div>
-      <div class="gloc"><span class="gt">上午</span><span class="gn">🛬 抵达丽江</span><span class="gd">入住客栈 · 适应高原气候</span></div>
-      <div class="gloc"><span class="gt">下午</span><span class="gn">🏘️ 丽江古城</span><span class="gd">大水车 → 四方街 → 木府</span></div>
-      <div class="gloc"><span class="gt">傍晚</span><span class="gn">🌄 狮子山观景台</span><span class="gd">古城全景 × 雪山同框</span></div>
-      <div class="gloc"><span class="gt">入住</span><span class="gn">🏨 古城阳光客栈</span><span class="gd">步行可达四方街</span></div>
+      <div class="gday-main">
+        <div class="gday-t"><span class="dn">Day 1</span> 初见丽江 · 古城慢时光</div>
+        <div class="gdesc">慢逛古城适应高原，傍晚看雪山与万家灯火同框</div>
+        <div class="gloc"><span class="gt">上午</span><span class="gn">🛬 抵达丽江</span><span class="gd">适应高原</span></div>
+        <div class="gloc"><span class="gt">下午</span><span class="gn">🏘️ 丽江古城</span><span class="gd">大水车→木府</span></div>
+        <div class="gloc"><span class="gt">傍晚</span><span class="gn">🌄 狮子山</span><span class="gd">古城×雪山同框</span></div>
+        <div class="gloc"><span class="gt">入住</span><span class="gn">🏨 古城阳光客栈</span><span class="gd">步行达四方街</span></div>
+      </div>
+      <div class="gpics"><div class="gpic-big" style="background-image:url('./images/cangshan.jpg')"></div><div class="gpic-row"><i style="background-image:url('./images/dali.jpg')"></i><i style="background-image:url('./images/lijiang.jpg')"></i></div></div>
     </div>
     <div class="gday" id="g2">
-      <div class="gday-t"><span class="dn">Day 2</span> 玉龙雪山 · 冰川秘境</div>
-      <div class="gloc"><span class="gt">上午</span><span class="gn">🏔️ 冰川公园大索道</span><span class="gd">4680m · 提前7天抢票</span></div>
-      <div class="gloc"><span class="gt">下午</span><span class="gn">💙 蓝月谷</span><span class="gd">蒂芙尼蓝 · 出片圣地</span></div>
-      <div class="gloc"><span class="gt">傍晚</span><span class="gn">🍽️ 樱花餐厅</span><span class="gd">纳西特色菜</span></div>
-      <div class="gloc"><span class="gt">入住</span><span class="gn">🏨 续住阳光客栈</span><span class="gd">古城内</span></div>
+      <div class="gday-main">
+        <div class="gday-t"><span class="dn">Day 2</span> 玉龙雪山 · 冰川秘境</div>
+        <div class="gdesc">登顶 4680m 冰川公园，下山邂逅蒂芙尼蓝</div>
+        <div class="gloc"><span class="gt">上午</span><span class="gn">🏔️ 冰川公园索道</span><span class="gd">提前7天抢票</span></div>
+        <div class="gloc"><span class="gt">下午</span><span class="gn">💙 蓝月谷</span><span class="gd">出片圣地</span></div>
+        <div class="gloc"><span class="gt">傍晚</span><span class="gn">🍽️ 樱花餐厅</span><span class="gd">纳西菜</span></div>
+        <div class="gloc"><span class="gt">入住</span><span class="gn">🏨 续住阳光客栈</span><span class="gd">古城内</span></div>
+      </div>
+      <div class="gpics"><div class="gpic-big" style="background-image:url('./images/lijiang.jpg')"></div><div class="gpic-row"><i style="background-image:url('./images/erhai.jpg')"></i><i style="background-image:url('./images/cangshan.jpg')"></i></div></div>
     </div>
     <div class="gday" id="g3">
-      <div class="gday-t"><span class="dn">Day 3</span> 束河静谧 · 转场大理</div>
-      <div class="gloc"><span class="gt">上午</span><span class="gn">🏘️ 束河古镇</span><span class="gd">青龙桥 · 九鼎龙潭</span></div>
-      <div class="gloc"><span class="gt">中午</span><span class="gn">🍜 浮娴小锅饭</span><span class="gd">云南民俗风味</span></div>
-      <div class="gloc"><span class="gt">下午</span><span class="gn">🚄 丽江 → 大理</span><span class="gd">动车约 1 小时</span></div>
-      <div class="gloc"><span class="gt">傍晚</span><span class="gn">🌅 龙龛码头</span><span class="gd">洱海日落 · 红杉林</span></div>
+      <div class="gday-main">
+        <div class="gday-t"><span class="dn">Day 3</span> 束河静谧 · 转场大理</div>
+        <div class="gdesc">上午束河慢时光，傍晚追到洱海最美日落</div>
+        <div class="gloc"><span class="gt">上午</span><span class="gn">🏘️ 束河古镇</span><span class="gd">青龙桥·九鼎潭</span></div>
+        <div class="gloc"><span class="gt">中午</span><span class="gn">🍜 浮娴小锅饭</span><span class="gd">云南风味</span></div>
+        <div class="gloc"><span class="gt">下午</span><span class="gn">🚄 丽江 → 大理</span><span class="gd">动车约1小时</span></div>
+        <div class="gloc"><span class="gt">傍晚</span><span class="gn">🌅 龙龛码头</span><span class="gd">洱海日落</span></div>
+      </div>
+      <div class="gpics"><div class="gpic-big" style="background-image:url('./images/sunset.jpg')"></div><div class="gpic-row"><i style="background-image:url('./images/erhai.jpg')"></i><i style="background-image:url('./images/dali.jpg')"></i></div></div>
     </div>
     <div class="gday" id="g4">
-      <div class="gday-t"><span class="dn">Day 4</span> 环洱海 · 追风逐浪</div>
-      <div class="gloc"><span class="gt">上午</span><span class="gn">🛵 磻溪S湾</span><span class="gd">生态廊道骑行</span></div>
-      <div class="gloc"><span class="gt">中午</span><span class="gn">🥮 喜洲古镇</span><span class="gd">破酥粑粑 · 严家大院</span></div>
-      <div class="gloc"><span class="gt">下午</span><span class="gn">🏞️ 鹿卧山 → 双廊</span><span class="gd">观苍山洱海全景</span></div>
-      <div class="gloc"><span class="gt">傍晚</span><span class="gn">☕ 双廊海边咖啡馆</span><span class="gd">洱海晚霞</span></div>
+      <div class="gday-main">
+        <div class="gday-t"><span class="dn">Day 4</span> 环洱海 · 追风逐浪</div>
+        <div class="gdesc">环海一整天，从 S 湾骑行到双廊晚霞</div>
+        <div class="gloc"><span class="gt">上午</span><span class="gn">🛵 磻溪S湾</span><span class="gd">廊道骑行</span></div>
+        <div class="gloc"><span class="gt">中午</span><span class="gn">🥮 喜洲古镇</span><span class="gd">破酥粑粑</span></div>
+        <div class="gloc"><span class="gt">下午</span><span class="gn">🏞️ 鹿卧山→双廊</span><span class="gd">观全景</span></div>
+        <div class="gloc"><span class="gt">傍晚</span><span class="gn">☕ 双廊咖啡馆</span><span class="gd">洱海晚霞</span></div>
+      </div>
+      <div class="gpics"><div class="gpic-big" style="background-image:url('./images/erhai.jpg')"></div><div class="gpic-row"><i style="background-image:url('./images/sunset.jpg')"></i><i style="background-image:url('./images/dali.jpg')"></i></div></div>
     </div>
     <div class="gday" id="g5">
-      <div class="gday-t"><span class="dn">Day 5</span> 大理古韵 · 圆满返程</div>
-      <div class="gloc"><span class="gt">上午</span><span class="gn">🏯 大理古城</span><span class="gd">五华楼 · 洋人街</span></div>
-      <div class="gloc"><span class="gt">中午</span><span class="gn">🍽️ 段公子·天龙八部店</span><span class="gd">白族特色菜</span></div>
-      <div class="gloc"><span class="gt">下午</span><span class="gn">🛫 返程</span><span class="gd">按航班或高铁时间</span></div>
+      <div class="gday-main">
+        <div class="gday-t"><span class="dn">Day 5</span> 大理古韵 · 圆满返程</div>
+        <div class="gdesc">古城拾遗买手信，带着回忆返程</div>
+        <div class="gloc"><span class="gt">上午</span><span class="gn">🏯 大理古城</span><span class="gd">五华楼·洋人街</span></div>
+        <div class="gloc"><span class="gt">中午</span><span class="gn">🍽️ 段公子餐厅</span><span class="gd">白族特色菜</span></div>
+        <div class="gloc"><span class="gt">下午</span><span class="gn">🛫 返程</span><span class="gd">按航班高铁</span></div>
+      </div>
+      <div class="gpics"><div class="gpic-big" style="background-image:url('./images/dali.jpg')"></div><div class="gpic-row"><i style="background-image:url('./images/cangshan.jpg')"></i><i style="background-image:url('./images/sunset.jpg')"></i></div></div>
     </div>
     <div class="add-card-wrap" id="addWrap">
       <button class="add-card-btn" onclick="addCard()">✨ 添加桌面卡片</button>
@@ -517,7 +771,7 @@ function setGuideMode(m){
 
 /* 纯文字长文版攻略（复刻小艺实际生成的长文：一屏放不下，阅读翻找不便） */
 function longTextHTML(){
-  return `<div class="msg ai longtext">⭐ <b>5天4晚丽江大理双城记</b><br><br>雪山、古城、洱海，一次集齐云南三大精华。9月正值雨季尾声，记得带伞，早晚温差大，备件薄外套。节奏适中，每天1-2个核心景点，不赶路，适合深度体验。<br><br><b>Day 1：初见丽江，古城慢时光</b><br>上午：抵达丽江，入住古城周边客栈，适应高原气候。<br>下午：漫步丽江古城，从大水车出发，经四方街到木府，感受纳西族青砖黛瓦建筑群。<br>傍晚：登狮子山观景台，俯瞰古城全景与玉龙雪山同框的壮丽画面。<br>晚上：逛油纸伞街与民谣街巷，品尝内涵饵块或二哥米线等本地小吃。<br>入住：丽江古城阳光客栈（古城内，步行可达四方街）。<br><br><b>Day 2：玉龙雪山，触碰冰川秘境</b><br>上午：乘大索道登顶玉龙雪山冰川公园（4680米），近距离感受雪山壮美，提前7天在「丽江旅游集团」小程序抢票。<br>下午：下山游览蓝月谷，湖水呈蒂芙尼蓝，雪山倒影如镜，是出片圣地。<br>傍晚：返回古城，在樱花餐厅品尝纳西特色菜。<br>入住：续住丽江古城阳光客栈。<br><br><b>Day 3：束河静谧，转场大理</b><br>上午：前往束河古镇，比大研古城更安静，青龙桥、九鼎龙潭人少好拍照。<br>中午：在浮娴小锅饭·云南民俗风味餐厅品尝地道云南菜。<br>下午：乘动车从丽江至大理（约1小时），抵达后入住洱海西岸民宿。<br>傍晚：前往龙龛码头看洱海日落，红杉林与晚霞交织成画。<br>入住：大理古城空想美宿（古城内，步行可达洋人街）。<br><br><b>Day 4：环洱海，追风逐浪</b><br>上午：租电动车或包车环洱海，首站磻溪S湾，生态廊道骑行，海景与稻田相伴。<br>中午：抵达喜洲古镇，品尝乡绅·杨记喜洲破酥粑粑，逛严家大院与转角楼。<br>下午：继续环海东，经鹿卧山遗址（情人崖）至双廊古镇，这里是观苍山洱海全景的最佳位置。<br>傍晚：在双廊海边咖啡馆小憩，看洱海晚霞。<br>入住：续住大理古城空想美宿。<br><br><b>Day 5：大理古韵，圆满返程</b><br>上午：游览大理古城，登五华楼远眺苍山洱海，逛洋人街品小吃、购手工艺品。<br>中午：在段公子·天龙八部店品尝白族特色菜。<br>下午：根据航班或高铁时间返程，结束愉快的云南之旅。<br><br>💡 <b>实用提醒</b><br>1. 门票预约：玉龙雪山大索道票需提前7天在「丽江旅游集团」小程序抢票，旺季20:00开售，推荐选择9:00-9:30时段。<br>2. 高原防护：雪山海拔高，建议提前备好氧气瓶、巧克力，避免剧烈运动，预防高反。<br>3. 防晒必备：云南紫外线强，SPF50+防晒霜、墨镜、遮阳帽不可少。<br>4. 雨具常备：9月多小雨，带晴雨两用伞，穿防滑鞋。<br>5. 交通提示：丽江至大理建议乘动车（约1小时），环洱海可租电动车（约80元/天）或包车（约300元/天）。<br>6. 避坑指南：古城内拉客的「一日游」不要信，路边低价茶马古道、骑马项目谨慎选择，银饰药材理性消费。<br><br>交通信息需实际查证。</div>`;
+  return `<div class="msg ai longtext">⭐ <b>5天4晚丽江大理双城记</b><br><br>雪山、古城、洱海，一次集齐云南三大精华。9月正值雨季尾声，记得带伞，早晚温差大，备件薄外套。节奏适中，每天1-2个核心景点，不赶路，适合深度体验。<br><br><b>Day 1：初见丽江，古城慢时光</b><br>上午：抵达丽江，入住古城周边客栈，适应高原气候。<br>下午：漫步丽江古城，从大水车出发，经四方街到木府，感受纳西族青砖黛瓦建筑群。<br>傍晚：登狮子山观景台，俯瞰古城全景与玉龙雪山同框的壮丽画面。<br>晚上：逛油纸伞街与民谣街巷，品尝内涵饵块或二哥米线等本地小吃。<br>入住：丽江古城阳光客栈（古城内，步行可达四方街）。<br><div class='lt-photos'><div class='ltp-main' style="background-image:url('./images/cangshan.jpg')"></div><div class='ltp-side'><i style="background-image:url('./images/dali.jpg')"></i><i style="background-image:url('./images/lijiang.jpg')"></i></div></div><br><b>Day 2：玉龙雪山，触碰冰川秘境</b><br>上午：乘大索道登顶玉龙雪山冰川公园（4680米），近距离感受雪山壮美，提前7天在「丽江旅游集团」小程序抢票。<br>下午：下山游览蓝月谷，湖水呈蒂芙尼蓝，雪山倒影如镜，是出片圣地。<br>傍晚：返回古城，在樱花餐厅品尝纳西特色菜。<br>入住：续住丽江古城阳光客栈。<br><div class='lt-photos'><div class='ltp-main' style="background-image:url('./images/lijiang.jpg')"></div><div class='ltp-side'><i style="background-image:url('./images/erhai.jpg')"></i><i style="background-image:url('./images/cangshan.jpg')"></i></div></div><br><b>Day 3：束河静谧，转场大理</b><br>上午：前往束河古镇，比大研古城更安静，青龙桥、九鼎龙潭人少好拍照。<br>中午：在浮娴小锅饭·云南民俗风味餐厅品尝地道云南菜。<br>下午：乘动车从丽江至大理（约1小时），抵达后入住洱海西岸民宿。<br>傍晚：前往龙龛码头看洱海日落，红杉林与晚霞交织成画。<br>入住：大理古城空想美宿（古城内，步行可达洋人街）。<br><div class='lt-photos'><div class='ltp-main' style="background-image:url('./images/sunset.jpg')"></div><div class='ltp-side'><i style="background-image:url('./images/erhai.jpg')"></i><i style="background-image:url('./images/dali.jpg')"></i></div></div><br><b>Day 4：环洱海，追风逐浪</b><br>上午：租电动车或包车环洱海，首站磻溪S湾，生态廊道骑行，海景与稻田相伴。<br>中午：抵达喜洲古镇，品尝乡绅·杨记喜洲破酥粑粑，逛严家大院与转角楼。<br>下午：继续环海东，经鹿卧山遗址（情人崖）至双廊古镇，这里是观苍山洱海全景的最佳位置。<br>傍晚：在双廊海边咖啡馆小憩，看洱海晚霞。<br>入住：续住大理古城空想美宿。<br><br><b>Day 5：大理古韵，圆满返程</b><br>上午：游览大理古城，登五华楼远眺苍山洱海，逛洋人街品小吃、购手工艺品。<br>中午：在段公子·天龙八部店品尝白族特色菜。<br>下午：根据航班或高铁时间返程，结束愉快的云南之旅。<br><div class='lt-photos'><div class='ltp-main' style="background-image:url('./images/dali.jpg')"></div><div class='ltp-side'><i style="background-image:url('./images/cangshan.jpg')"></i><i style="background-image:url('./images/lijiang.jpg')"></i></div></div><br>💡 <b>实用提醒</b><br>1. 门票预约：玉龙雪山大索道票需提前7天在「丽江旅游集团」小程序抢票，旺季20:00开售，推荐选择9:00-9:30时段。<br>2. 高原防护：雪山海拔高，建议提前备好氧气瓶、巧克力，避免剧烈运动，预防高反。<br>3. 防晒必备：云南紫外线强，SPF50+防晒霜、墨镜、遮阳帽不可少。<br>4. 雨具常备：9月多小雨，带晴雨两用伞，穿防滑鞋。<br>5. 交通提示：丽江至大理建议乘动车（约1小时），环洱海可租电动车（约80元/天）或包车（约300元/天）。<br>6. 避坑指南：古城内拉客的「一日游」不要信，路边低价茶马古道、骑马项目谨慎选择，银饰药材理性消费。<br><br>交通信息需实际查证。</div>`;
 }
 /* 独立于攻略卡的加桌按钮（纯文字模式用） */
 function addWrapHTML(cap){
@@ -563,39 +817,37 @@ function playChat(){
   }
 }
 
-/* ================= 点击加桌按钮 → 屏 2 桌面三阶段卡片 ================= */
+/* ================= 点击加桌按钮 → 屏 2 三机并排展示三阶段 ================= */
 function addCard(){
-  document.getElementById('chatScreen').style.display='none';
-  document.getElementById('desktopScreen').classList.add('on');
+  document.getElementById('chatPhone').style.display='none';
+  document.getElementById('stagesView').classList.add('on');
   document.getElementById('step3').classList.add('active');
-  curStage=1;curMoment=1;slideIdx=1;slideHold=0;
-  renderCard();
-  later(()=>{const h=document.getElementById('deskHint');if(h)h.style.display='none';},6000);
+  curMoment=1;slideIdx=1;slideHold=0;
+  renderStageCard(1);renderStageCard(2);renderStageCard(3);
 }
 
 function replay(){
   clearTimers();
   chatBody.innerHTML='';
-  document.getElementById('chatScreen').style.display='flex';
-  document.getElementById('desktopScreen').classList.remove('on');
-  document.getElementById('deskHint').style.display='';
+  document.getElementById('chatPhone').style.display='';
+  document.getElementById('stagesView').classList.remove('on');
   ['step1','step2','step3'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  curStage=1;curMoment=1;slideIdx=1;slideHold=0;
+  curMoment=1;slideIdx=1;slideHold=0;
   playChat();
 }
 
-// 支持 #desktop / #desktop2 / #desktop3 直达桌面屏对应阶段（便于直接查看三阶段卡片）
+// 支持 #desktop 直达三阶段上桌屏（便于直接查看三阶段卡片）
 // 支持 #text 直接以「纯文字长文」模式播放（对比演示）
-const hashM=location.hash.match(/^#desktop([123])?$/);
 if(location.hash==='#text'){
   guideMode='text';
   document.getElementById('modeCard').classList.remove('active');
   document.getElementById('modeText').classList.add('active');
   document.getElementById('modeNote').textContent='当前：纯文字长文 —— 一千多字挤在对话里，旅行中翻找不便，向下滑动感受 👇';
   playChat();
-}else if(hashM){
+}else if(location.hash.startsWith('#desktop')){
   addCard();
-  if(hashM[1]){curStage=parseInt(hashM[1]);renderCard();}
+  if(location.hash==='#desktop-detail'){document.getElementById('detail').style.transition='none';openDetail();}
+  if(location.hash==='#desktop-guide'){document.getElementById('detail').style.transition='none';openDetail();openGuide();}
 }else{
   playChat();
 }
