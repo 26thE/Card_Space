@@ -56,7 +56,7 @@
     background:linear-gradient(135deg,#0A59F7,#8A5CF6)}
   .chat-name{font-size:14px;font-weight:800}
   .chat-sub{font-size:10px;color:var(--panel-sub)}
-  .chat-body{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:12px}
+  .chat-body{flex:1;min-height:0;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:12px}
   .chat-body::-webkit-scrollbar{width:0}
   .msg{max-width:86%;padding:10px 13px;border-radius:16px;font-size:12.5px;line-height:1.65;
     animation:msgIn .35s ease}
@@ -184,6 +184,23 @@
     background:rgba(0,0,0,.62);color:#fff;font-size:10px;padding:6px 12px;border-radius:12px;
     backdrop-filter:blur(6px);white-space:nowrap;animation:msgIn .5s ease;pointer-events:none}
 
+  /* 攻略呈现方式切换（结构化卡片 vs 纯文字长文） */
+  .mode-switch{background:var(--panel-bg);border-radius:14px;padding:13px 16px;margin-top:14px;
+    box-shadow:0 2px 12px rgba(0,0,0,.05)}
+  .ms-label{font-size:11px;font-weight:800;color:var(--panel-text)}
+  .ms-btns{display:flex;gap:8px;margin-top:9px}
+  .ms-btn{flex:1;border:1px solid #E3E6EC;background:#F7F8FA;border-radius:10px;padding:8px 0;
+    font-size:12px;font-weight:700;cursor:pointer;color:var(--panel-sub);font-family:inherit;transition:.15s}
+  .ms-btn:hover{border-color:#C9D4F5}
+  .ms-btn.active{background:rgba(10,89,247,.08);border-color:var(--accent);color:var(--accent)}
+  .ms-note{margin-top:9px;font-size:10.5px;color:var(--panel-sub);line-height:1.6}
+  /* 纯文字长文攻略气泡 */
+  .msg.ai.longtext{max-width:94%;font-size:11.5px;line-height:1.8}
+  .msg.ai.longtext b{font-size:12px}
+  /* 长文痛点提示 */
+  .pain-hint{align-self:center;font-size:10px;color:#8A9099;background:rgba(0,0,0,.05);
+    padding:5px 12px;border-radius:11px;animation:msgIn .4s ease;max-width:90%;text-align:center;line-height:1.5}
+
   @media(max-width:780px){
     body{flex-direction:column;align-items:center}
     .side{width:100%;max-width:384px}
@@ -197,6 +214,15 @@
   <h1>小艺生成攻略 → 加桌卡片</h1>
   <div class="slogan">让卡片不再是一个人的便利贴</div>
   <div class="sub">单卡旅行助手 · 创建入口体验模拟（数据为小艺模拟数据）</div>
+
+  <div class="mode-switch">
+    <div class="ms-label">攻略呈现方式 · 点击切换对比</div>
+    <div class="ms-btns">
+      <button class="ms-btn active" id="modeCard" onclick="setGuideMode('card')">🗂️ 结构化卡片</button>
+      <button class="ms-btn" id="modeText" onclick="setGuideMode('text')">📄 纯文字长文</button>
+    </div>
+    <div class="ms-note" id="modeNote">当前：结构化卡片 —— 分天逐段生成，一眼定位每天行程</div>
+  </div>
 
   <div class="step-card" id="step1">
     <div class="step-num">1</div>
@@ -462,6 +488,31 @@ function guideHTML(){
   </div>`;
 }
 
+/* 攻略呈现方式：card=结构化卡片（默认） text=纯文字长文（对比） */
+let guideMode='card';
+function setGuideMode(m){
+  if(m===guideMode) return;
+  guideMode=m;
+  document.getElementById('modeCard').classList.toggle('active',m==='card');
+  document.getElementById('modeText').classList.toggle('active',m==='text');
+  document.getElementById('modeNote').textContent = m==='card'
+    ? '当前：结构化卡片 —— 分天逐段生成，一眼定位每天行程'
+    : '当前：纯文字长文 —— 一千多字挤在对话里，旅行中翻找不便，向下滑动感受 👇';
+  replay();
+}
+
+/* 纯文字长文版攻略（复刻小艺常见的长文回答：一屏放不下，阅读翻找不便） */
+function longTextHTML(){
+  return `<div class="msg ai longtext">⭐ <b>大理3日慢游双城记</b><br><br>古城、苍山、洱海，一次集齐大理三大精华。8月下旬正值雨季尾声，记得带伞，早晚温差大，备件薄外套。<br><br><b>Day 1：初见大理，古城慢时光</b><br>上午：昆明长水✈大理荒草坝（MU5731，08:45起飞，1h35m），落地打车约40分钟到古城。<br>中午：入住大理古城客栈，放下行李稍作休整。<br>下午：崇圣寺三塔（¥75，建议1.5h），三塔倒影公园是经典机位。<br>晚上：人民路小吃街，白族砂锅鱼人均¥80，饭后逛夜市。<br>入住：大理古城客栈（古城内，步行可达洋人街）。<br><br><b>Day 2：苍山洱海，云端的一天</b><br>上午：苍山洗马潭索道（¥282），最高海拔3800m，云海栈道拐角最出片。<br>中午：喜洲粑粑，白族特色人均¥25。<br>下午：洱海公园看日落，生态廊道骑行也很舒服。<br>晚上：续住大理古城客栈。<br><br><b>Day 3：古城拾遗，圆满返程</b><br>上午：大理古城南城门、五华楼、洋人街。<br>中午：再回首烧饵块，人均¥15。<br>下午：大理→昆明（MU5732，15:30起飞，建议13:00出发去机场）。<br><br>💡 <b>实用提醒</b><br>1. 门票预约：苍山索道旺季建议提前在小程序购票。<br>2. 高原防护：苍山海拔高，避免剧烈运动，预防高反。<br>3. 防晒必备：云南紫外线强，SPF50+防晒霜、墨镜、遮阳帽不可少。<br>4. 雨具常备：8月多小雨，带晴雨伞，穿防滑鞋。<br>5. 交通提示：环洱海可租电动车（约¥80/天）或包车（约¥300/天）。</div>`;
+}
+/* 独立于攻略卡的加桌按钮（纯文字模式用） */
+function addWrapHTML(cap){
+  return `<div class="add-card-wrap show">
+    <button class="add-card-btn" onclick="addCard()">✨ 添加桌面卡片</button>
+    <div class="add-card-cap">${cap}</div>
+  </div>`;
+}
+
 function playChat(){
   document.getElementById('step1').classList.add('active');
   // 1. 用户提问
@@ -473,16 +524,27 @@ function playChat(){
     const t=document.getElementById('typing');if(t)t.remove();
     addMsg('<div class="msg ai">好的，已为你生成大理 3 日游攻略 👇<br>含机票、住宿、12 个景点和沿途美食，可以直接执行。</div>');
   },2600);
-  // 4. 攻略卡逐段浮现
-  later(()=>{addMsg(guideHTML());},3300);
-  later(()=>{document.getElementById('g1').classList.add('show');scrollChat();},4000);
-  later(()=>{document.getElementById('g2').classList.add('show');scrollChat();},4800);
-  later(()=>{document.getElementById('g3').classList.add('show');scrollChat();},5600);
-  // 5. 出现「添加桌面卡片」按钮
-  later(()=>{
-    document.getElementById('addWrap').classList.add('show');scrollChat();
-    document.getElementById('step2').classList.add('active');
-  },6400);
+  if(guideMode==='card'){
+    // 4a. 结构化攻略卡逐段浮现
+    later(()=>{addMsg(guideHTML());},3300);
+    later(()=>{document.getElementById('g1').classList.add('show');scrollChat();},4000);
+    later(()=>{document.getElementById('g2').classList.add('show');scrollChat();},4800);
+    later(()=>{document.getElementById('g3').classList.add('show');scrollChat();},5600);
+    // 5a. 出现「添加桌面卡片」按钮
+    later(()=>{
+      document.getElementById('addWrap').classList.add('show');scrollChat();
+      document.getElementById('step2').classList.add('active');
+    },6400);
+  }else{
+    // 4b. 纯文字长文（一整段砸下来）
+    later(()=>{addMsg(longTextHTML());},3300);
+    // 5b. 痛点提示 + 加桌按钮
+    later(()=>{addMsg('<div class="pain-hint">一千多字 · 重点全埋在文字里，旅行中翻找不便</div>');},4800);
+    later(()=>{
+      addMsg(addWrapHTML('把这篇长文变成会自己更新的桌卡<br>出行前 · 游览中 · 回忆，三阶段自动切换'));
+      document.getElementById('step2').classList.add('active');
+    },5600);
+  }
 }
 
 /* ================= 点击加桌按钮 → 屏 2 桌面三阶段卡片 ================= */
@@ -507,8 +569,15 @@ function replay(){
 }
 
 // 支持 #desktop / #desktop2 / #desktop3 直达桌面屏对应阶段（便于直接查看三阶段卡片）
+// 支持 #text 直接以「纯文字长文」模式播放（对比演示）
 const hashM=location.hash.match(/^#desktop([123])?$/);
-if(hashM){
+if(location.hash==='#text'){
+  guideMode='text';
+  document.getElementById('modeCard').classList.remove('active');
+  document.getElementById('modeText').classList.add('active');
+  document.getElementById('modeNote').textContent='当前：纯文字长文 —— 一千多字挤在对话里，旅行中翻找不便，向下滑动感受 👇';
+  playChat();
+}else if(hashM){
   addCard();
   if(hashM[1]){curStage=parseInt(hashM[1]);renderCard();}
 }else{
