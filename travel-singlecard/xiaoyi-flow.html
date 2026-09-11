@@ -459,12 +459,7 @@ function slideEnd(e){
     renderStageCard(2);
   }
 }
-// 自动轮播：上桌后 8 秒内无手动滑动时转动（仅游览中那张）
-setInterval(function(){
-  if(document.getElementById('stagesView').classList.contains('on')&&Date.now()>slideHold){
-    slideIdx=(slideIdx+1)%dayMoments.length;renderStageCard(2);
-  }
-},4000);
+// 游览中卡片：仅按住滑动切换站点（点按未滑动 = 在该站打卡纠偏），不自动轮播
 
 const stages={
   1:{name:'出行前',bg:IMG+'lijiang.jpg'},
